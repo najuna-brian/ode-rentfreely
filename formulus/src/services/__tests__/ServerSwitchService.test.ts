@@ -111,4 +111,3 @@ describe('ServerSwitchService', () => {
     expect(result).toBe(5);
   });
 });
-
