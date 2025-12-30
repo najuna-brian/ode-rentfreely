@@ -1,9 +1,9 @@
 ---
 name: Bug Report
 about: Report a bug or unexpected behavior
-title: "[Component] Brief description of the issue"
+title: '[Component] Brief description of the issue'
 labels: bug
-assignees: ""
+assignees: ''
 ---
 
 ## Component
@@ -23,23 +23,9 @@ assignees: ""
 <!-- Format: As a [user type], I want to [goal] so that [benefit] -->
 <!-- Example: As a developer, I want to submit a form so that my data is saved correctly -->
 
-## User Story
-
-<!-- Optional: Help us understand the context and what you're trying to achieve -->
-<!-- Format: As a [user type], I want to [goal] so that [benefit] -->
-<!-- Example: As a developer, I want to submit a form so that my data is saved correctly -->
-
 ## Description
 
 <!-- A clear and concise description of what the bug is -->
-
-## Details
-
-<!-- Optional: Additional structured details about the bug -->
-<!-- Include information such as: -->
-<!-- - When does this bug occur? (always, sometimes, specific conditions) -->
-<!-- - What triggers the bug? -->
-<!-- - Any patterns or related issues? -->
 
 ## Details
 
@@ -62,14 +48,6 @@ assignees: ""
 ## Actual Behavior
 
 <!-- What actually happened -->
-
-## Acceptance Criteria
-
-<!-- Optional: Define how to verify this bug is fixed and test the solution -->
-<!-- Example: -->
-<!-- - [ ] The form submits successfully without errors -->
-<!-- - [ ] Error message is displayed when validation fails -->
-<!-- - [ ] The bug can be reproduced using the steps above -->
 
 ## Acceptance Criteria
 
