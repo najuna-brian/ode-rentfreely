@@ -29,6 +29,7 @@ import {
 import {FormCompletionResult} from '../webview/FormulusInterfaceDefinition';
 
 import {databaseService} from '../database';
+import {colors} from '../theme/colors';
 import {FormSpec} from '../services'; // FormService will be imported directly
 import {ExtensionService} from '../services/ExtensionService';
 import RNFS from 'react-native-fs';
@@ -459,7 +460,11 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
               <Icon
                 name="close"
                 size={24}
-                color={isSubmitting || isClosing ? '#ccc' : '#000'}
+                color={
+                  isSubmitting || isClosing
+                    ? colors.neutral[400]
+                    : colors.neutral.black
+                }
               />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>
@@ -479,7 +484,10 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
           {isSubmitting && (
             <View style={styles.loadingOverlay}>
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#007bff" />
+                <ActivityIndicator
+                  size="large"
+                  color={colors.semantic.info.ios}
+                />
                 <Text style={styles.loadingText}>Saving form data...</Text>
               </View>
             </View>
@@ -493,7 +501,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.neutral.white,
   },
   header: {
     flexDirection: 'row',
@@ -501,7 +509,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: colors.neutral[200],
   },
   headerTitle: {
     fontSize: 18,
@@ -533,11 +541,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   loadingContainer: {
-    backgroundColor: 'white',
+    backgroundColor: colors.neutral.white,
     padding: 20,
     borderRadius: 10,
     alignItems: 'center',
-    shadowColor: '#000',
+    shadowColor: colors.neutral.black,
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
@@ -546,7 +554,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#333',
+    color: colors.neutral[800],
   },
 });
 

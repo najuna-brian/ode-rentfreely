@@ -4,6 +4,7 @@ import RNFS from 'react-native-fs';
 import CustomAppWebView, {
   CustomAppWebViewHandle,
 } from '../components/CustomAppWebView';
+import {colors} from '../theme/colors';
 
 const HomeScreen = ({navigation}: any) => {
   const [localUri, setLocalUri] = useState<string | null>(null);
@@ -48,7 +49,7 @@ const HomeScreen = ({navigation}: any) => {
   if (!localUri) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#4A90E2" />
+        <ActivityIndicator size="large" color={colors.semantic.info.medium} />
       </View>
     );
   }
@@ -58,7 +59,7 @@ const HomeScreen = ({navigation}: any) => {
       {isLoading ? (
         <ActivityIndicator
           size="large"
-          color="#4A90E2"
+          color={colors.semantic.info.medium}
           style={styles.loading}
         />
       ) : (

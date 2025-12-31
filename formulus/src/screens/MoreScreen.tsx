@@ -15,6 +15,7 @@ import {
 } from '../types/NavigationTypes';
 import MenuDrawer from '../components/MenuDrawer';
 import {logout} from '../api/synkronus/Auth';
+import {colors} from '../theme/colors';
 
 type MainAppDrawerScreen = 'FormManagement';
 
@@ -101,7 +102,7 @@ const MoreScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.neutral.white,
   },
 });
 

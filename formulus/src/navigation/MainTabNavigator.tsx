@@ -10,6 +10,7 @@ import SettingsScreen from '../screens/SettingsScreen';
 import AboutScreen from '../screens/AboutScreen';
 import HelpScreen from '../screens/HelpScreen';
 import MoreScreen from '../screens/MoreScreen';
+import {colors} from '../theme/colors';
 import {MainTabParamList} from '../types/NavigationTypes';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
@@ -48,12 +49,12 @@ const MainTabNavigator: React.FC = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#999999',
+        tabBarActiveTintColor: colors.semantic.info.ios,
+        tabBarInactiveTintColor: colors.neutral[500],
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: colors.neutral.white,
           borderTopWidth: 1,
-          borderTopColor: '#E5E5E5',
+          borderTopColor: colors.ui.gray.light,
           paddingBottom: Math.max(insets.bottom, 4),
           paddingTop: 4,
           height: tabBarHeight,

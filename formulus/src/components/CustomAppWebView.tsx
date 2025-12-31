@@ -13,6 +13,7 @@ import {Platform} from 'react-native';
 import {readFileAssets} from 'react-native-fs';
 import {FormulusWebViewMessageManager} from '../webview/FormulusWebViewHandler';
 import {FormInitData} from '../webview/FormulusInterfaceDefinition';
+import {colors} from '../theme/colors';
 
 export interface CustomAppWebViewHandle {
   reload: () => void;
@@ -250,7 +251,7 @@ const CustomAppWebView = forwardRef<
   if (!isScriptReady) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color={colors.semantic.info.ios} />
       </View>
     );
   }
@@ -309,7 +310,7 @@ const CustomAppWebView = forwardRef<
       originWhitelist={['*']}
       renderLoading={() => (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#007AFF" />
+          <ActivityIndicator size="large" color={colors.semantic.info.ios} />
         </View>
       )}
     />

@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Signature, {SignatureViewRef} from 'react-native-signature-canvas';
+import {colors} from '../theme/colors';
 
 interface SignatureCaptureModalProps {
   visible: boolean;
@@ -107,12 +108,12 @@ const SignatureCaptureModal: React.FC<SignatureCaptureModalProps> = ({
     .m-signature-pad {
       box-shadow: none;
       border: none;
-      background-color: white;
+      background-color: ${colors.neutral.white};
     }
     .m-signature-pad--body {
-      border: 2px dashed #ccc;
+      border: 2px dashed ${colors.ui.gray.medium};
       border-radius: 8px;
-      background-color: white;
+      background-color: ${colors.neutral.white};
     }
     .m-signature-pad--footer {
       display: none;
@@ -185,33 +186,33 @@ const SignatureCaptureModal: React.FC<SignatureCaptureModalProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: colors.neutral[100],
   },
   header: {
     padding: 20,
-    backgroundColor: 'white',
+    backgroundColor: colors.neutral.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    borderBottomColor: colors.neutral[300],
     alignItems: 'center',
   },
   title: {
     fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.neutral[800],
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
-    color: '#666',
+    color: colors.neutral[600],
     textAlign: 'center',
   },
   signatureContainer: {
     flex: 1,
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: colors.neutral.white,
     borderRadius: 12,
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: colors.neutral.black,
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -223,9 +224,9 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'row',
     padding: 20,
-    backgroundColor: 'white',
+    backgroundColor: colors.neutral.white,
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    borderTopColor: colors.neutral[300],
     justifyContent: 'space-around',
   },
   button: {
@@ -236,30 +237,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   clearButton: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.neutral[200],
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.ui.gray.medium,
   },
   clearButtonText: {
-    color: '#666',
+    color: colors.neutral[600],
     fontSize: 16,
     fontWeight: '600',
   },
   cancelButton: {
-    backgroundColor: '#f0f0f0',
+    backgroundColor: colors.neutral[200],
     borderWidth: 1,
-    borderColor: '#ccc',
+    borderColor: colors.ui.gray.medium,
   },
   cancelButtonText: {
-    color: '#666',
+    color: colors.neutral[600],
     fontSize: 16,
     fontWeight: '600',
   },
   saveButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.semantic.info.ios,
   },
   saveButtonText: {
-    color: 'white',
+    color: colors.neutral.white,
     fontSize: 16,
     fontWeight: '600',
   },

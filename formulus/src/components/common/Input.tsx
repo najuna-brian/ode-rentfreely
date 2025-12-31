@@ -7,6 +7,7 @@ import {
   TextInputProps,
   ViewStyle,
 } from 'react-native';
+import {colors} from '../../theme/colors';
 
 export interface InputProps extends TextInputProps {
   label?: string;
@@ -29,7 +30,7 @@ const Input: React.FC<InputProps> = ({
       <TextInput
         {...textInputProps}
         style={[styles.input, error && styles.inputError, style]}
-        placeholderTextColor="#999999"
+        placeholderTextColor={colors.neutral[500]}
         testID={testID}
         accessibilityLabel={label || textInputProps.placeholder || 'Text input'}
         accessibilityRole="text"
@@ -47,25 +48,25 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#333333',
+    color: colors.neutral[800],
     marginBottom: 8,
   },
   input: {
     height: 48,
     borderWidth: 1,
-    borderColor: '#CCCCCC',
+    borderColor: colors.ui.gray.medium,
     borderRadius: 8,
     paddingHorizontal: 12,
     fontSize: 16,
-    color: '#000000',
-    backgroundColor: '#FFFFFF',
+    color: colors.neutral.black,
+    backgroundColor: colors.neutral.white,
   },
   inputError: {
-    borderColor: '#FF3B30',
+    borderColor: colors.semantic.error.ios,
   },
   errorText: {
     fontSize: 12,
-    color: '#FF3B30',
+    color: colors.semantic.error.ios,
     marginTop: 4,
   },
 });

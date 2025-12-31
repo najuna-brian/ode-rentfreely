@@ -46,6 +46,7 @@ export const colors = {
     800: '#424242',
     900: '#212121',
     black: '#000000',
+    transparent: 'transparent',
   },
   semantic: {
     success: {
@@ -57,6 +58,7 @@ export const colors = {
       50: '#FEF2F2',
       500: '#F44336',
       600: '#DC2626',
+      ios: '#FF3B30', // iOS error red
     },
     warning: {
       50: '#FFFBEB',
@@ -67,6 +69,21 @@ export const colors = {
       50: '#EFF6FF',
       500: '#2196F3',
       600: '#2563EB',
+      ios: '#007AFF', // iOS blue
+      light: '#E3F2FD', // Light blue background
+      medium: '#4A90E2', // Medium blue
+    },
+    scanner: {
+      success: '#00ff00', // Bright green for QR scanner success
+    },
+  },
+  ui: {
+    gray: {
+      lightest: '#F8F8F8',
+      lighter: '#F0F2F5',
+      light: '#E5E5E5',
+      medium: '#CCCCCC',
+      ios: '#8E8E93', // iOS system gray
     },
   },
 };

@@ -32,7 +32,10 @@ const StatusTabs: React.FC<StatusTabsProps> = ({
             activeOpacity={0.7}>
             {tab.icon && (
               <View
-                style={[styles.dot, {backgroundColor: tab.iconColor || '#999'}]}
+                style={[
+                  styles.dot,
+                  {backgroundColor: tab.iconColor || colors.neutral[500]},
+                ]}
               />
             )}
             <Text style={[styles.tabLabel, isActive && styles.tabLabelActive]}>

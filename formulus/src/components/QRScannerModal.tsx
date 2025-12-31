@@ -14,6 +14,7 @@ import {
   useCodeScanner,
   useCameraPermission,
 } from 'react-native-vision-camera';
+import {colors} from '../theme/colors';
 const {width} = Dimensions.get('window');
 
 interface QRScannerModalProps {
@@ -269,7 +270,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: 30,
     height: 30,
-    borderColor: '#00ff00',
+    borderColor: colors.semantic.scanner.success,
     borderWidth: 3,
   },
   topLeft: {
@@ -313,7 +314,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   resultText: {
-    color: '#00ff00',
+    color: colors.semantic.scanner.success,
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 20,
@@ -325,20 +326,20 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.semantic.info.ios,
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 8,
     marginVertical: 10,
   },
   retryButton: {
-    backgroundColor: '#FF9500',
+    backgroundColor: colors.semantic.warning[500],
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 8,
   },
   confirmButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: colors.semantic.success[500],
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 8,

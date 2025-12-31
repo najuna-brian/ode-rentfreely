@@ -8,6 +8,7 @@ import FormManagementScreen from '../screens/FormManagementScreen';
 import ObservationDetailScreen from '../screens/ObservationDetailScreen';
 import {MainAppStackParamList} from '../types/NavigationTypes';
 import {serverConfigService} from '../services/ServerConfigService';
+import {colors} from '../theme/colors';
 
 const Stack = createStackNavigator<MainAppStackParamList>();
 
@@ -78,9 +79,9 @@ const MainAppNavigator: React.FC = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: {backgroundColor: '#ffffff'},
-        headerTintColor: '#000000',
-        headerTitleStyle: {color: '#000000'},
+        headerStyle: {backgroundColor: colors.neutral.white},
+        headerTintColor: colors.neutral.black,
+        headerTitleStyle: {color: colors.neutral.black},
       }}
       initialRouteName={isConfigured ? 'MainApp' : 'Welcome'}>
       <Stack.Screen

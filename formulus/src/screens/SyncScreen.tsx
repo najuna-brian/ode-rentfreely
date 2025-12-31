@@ -495,7 +495,11 @@ const SyncScreen = () => {
         {syncState.error && (
           <View style={styles.errorCard}>
             <View style={styles.errorHeader}>
-              <Icon name="alert-circle" size={20} color="#FF3B30" />
+              <Icon
+                name="alert-circle"
+                size={20}
+                color={colors.semantic.error.ios}
+              />
               <Text style={styles.errorTitle}>Error</Text>
             </View>
             <Text style={styles.errorText}>{syncState.error}</Text>

@@ -18,6 +18,7 @@ import {ObservationCard, EmptyState} from '../components/common';
 import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {MainAppStackParamList} from '../types/NavigationTypes';
+import {colors} from '../theme/colors';
 
 type FormManagementScreenNavigationProp = StackNavigationProp<
   MainAppStackParamList,
@@ -257,7 +258,11 @@ const FormManagementScreen = () => {
           activeOpacity={0.7}>
           <View style={styles.formTypeInfo}>
             <View style={styles.iconContainer}>
-              <Icon name="file-document-outline" size={32} color="#007AFF" />
+              <Icon
+                name="file-document-outline"
+                size={32}
+                color={colors.semantic.info.ios}
+              />
             </View>
             <View style={styles.textContainer}>
               <Text style={styles.formTypeName}>{item.name}</Text>
@@ -284,13 +289,13 @@ const FormManagementScreen = () => {
                 e.stopPropagation();
                 handleAddObservation(item);
               }}>
-              <Icon name="plus" size={20} color="#FFFFFF" />
+              <Icon name="plus" size={20} color={colors.neutral.white} />
               <Text style={styles.buttonText}>Add</Text>
             </TouchableOpacity>
             <Icon
               name={isExpanded ? 'chevron-up' : 'chevron-down'}
               size={24}
-              color="#999"
+              color={colors.neutral[500]}
             />
           </View>
         </TouchableOpacity>
@@ -320,7 +325,10 @@ const FormManagementScreen = () => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#007AFF" />
+          <ActivityIndicator
+            size="large"
+            color={colors.semantic.info.ios}
+          />
           <Text style={styles.loadingText}>Loading forms...</Text>
         </View>
       </SafeAreaView>
@@ -356,7 +364,11 @@ const FormManagementScreen = () => {
             <TouchableOpacity
               style={styles.resetButton}
               onPress={handleResetDatabase}>
-              <Icon name="database-remove" size={20} color="#FFFFFF" />
+              <Icon
+                name="database-remove"
+                size={20}
+                color={colors.neutral.white}
+              />
               <Text style={styles.buttonText}>Reset Database</Text>
             </TouchableOpacity>
           </View>
@@ -375,23 +387,23 @@ const FormManagementScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F0F2F5',
+    backgroundColor: colors.ui.gray.lighter,
   },
   header: {
     padding: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.neutral.white,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
+    borderBottomColor: colors.ui.gray.light,
   },
   title: {
     fontSize: 28,
     fontWeight: 'bold',
-    color: '#333333',
+    color: colors.neutral[800],
     marginBottom: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: '#666666',
+    color: colors.neutral[600],
   },
   formTypesList: {
     flex: 1,
@@ -401,11 +413,11 @@ const styles = StyleSheet.create({
   },
   formTypeContainer: {
     marginBottom: 12,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.neutral.white,
     borderRadius: 12,
     marginHorizontal: 16,
     overflow: 'hidden',
-    shadowColor: '#000',
+    shadowColor: colors.neutral.black,
     shadowOffset: {width: 0, height: 2},
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -425,7 +437,7 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    backgroundColor: '#E3F2FD',
+    backgroundColor: colors.semantic.info.light,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 12,
@@ -436,12 +448,12 @@ const styles = StyleSheet.create({
   formTypeName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: colors.neutral[800],
     marginBottom: 4,
   },
   formTypeDescription: {
     fontSize: 14,
-    color: '#666',
+    color: colors.neutral[600],
     marginBottom: 8,
   },
   metaContainer: {
@@ -451,17 +463,17 @@ const styles = StyleSheet.create({
   },
   version: {
     fontSize: 12,
-    color: '#999',
+    color: colors.neutral[500],
   },
   countBadge: {
-    backgroundColor: '#E3F2FD',
+    backgroundColor: colors.semantic.info.light,
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 10,
   },
   countText: {
     fontSize: 11,
-    color: '#007AFF',
+    color: colors.semantic.info.ios,
     fontWeight: '500',
   },
   formTypeActions: {
@@ -472,20 +484,20 @@ const styles = StyleSheet.create({
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.semantic.info.ios,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
     gap: 4,
   },
   buttonText: {
-    color: '#FFFFFF',
+    color: colors.neutral.white,
     fontWeight: '600',
     fontSize: 14,
   },
   observationsWrapper: {
     borderTopWidth: 1,
-    borderTopColor: '#E5E5E5',
+    borderTopColor: colors.ui.gray.light,
     paddingTop: 8,
   },
   noObservationsContainer: {
@@ -493,15 +505,15 @@ const styles = StyleSheet.create({
   },
   footer: {
     padding: 16,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.neutral.white,
     borderTopWidth: 1,
-    borderTopColor: '#E5E5E5',
+    borderTopColor: colors.ui.gray.light,
   },
   resetButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FF3B30',
+    backgroundColor: colors.semantic.error.ios,
     padding: 12,
     borderRadius: 8,
     gap: 8,
@@ -514,7 +526,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    color: '#666',
+    color: colors.neutral[600],
   },
 });
 

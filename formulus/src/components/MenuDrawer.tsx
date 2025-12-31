@@ -10,6 +10,7 @@ import {
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {getUserInfo, UserInfo, UserRole} from '../api/synkronus/Auth';
+import {colors} from '../theme/colors';
 
 interface MenuItem {
   icon: string;
@@ -120,7 +121,11 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
               <Text style={styles.headerTitle}>Menu</Text>
               {allowClose && (
                 <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                  <Icon name="close" size={24} color="#000000" />
+                  <Icon
+                    name="close"
+                    size={24}
+                    color={colors.neutral.black}
+                  />
                 </TouchableOpacity>
               )}
             </View>
@@ -129,7 +134,11 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
             {userInfo ? (
               <View style={styles.userSection}>
                 <View style={styles.userAvatar}>
-                  <Icon name="account" size={32} color="#fff" />
+                  <Icon
+                    name="account"
+                    size={32}
+                    color={colors.neutral.white}
+                  />
                 </View>
                 <View style={styles.userInfo}>
                   <Text style={styles.userName}>{userInfo.username}</Text>
@@ -145,7 +154,11 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
             ) : (
               <View style={styles.userSection}>
                 <View style={[styles.userAvatar, styles.userAvatarInactive]}>
-                  <Icon name="account-off" size={32} color="#999" />
+                  <Icon
+                    name="account-off"
+                    size={32}
+                    color={colors.neutral[500]}
+                  />
                 </View>
                 <View style={styles.userInfo}>
                   <Text style={styles.userNameInactive}>Not logged in</Text>
@@ -160,7 +173,11 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                   key={index}
                   style={styles.menuItem}
                   onPress={() => onNavigate(item.screen)}>
-                  <Icon name={item.icon} size={24} color="#333333" />
+                  <Icon
+                    name={item.icon}
+                    size={24}
+                    color={colors.neutral[800]}
+                  />
                   <Text style={styles.menuLabel}>{item.label}</Text>
                 </TouchableOpacity>
               ))}
@@ -171,7 +188,11 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 <TouchableOpacity
                   style={styles.logoutButton}
                   onPress={onLogout}>
-                  <Icon name="logout" size={24} color="#FF3B30" />
+                  <Icon
+                    name="logout"
+                    size={24}
+                    color={colors.semantic.error.ios}
+                  />
                   <Text style={styles.logoutText}>Logout</Text>
                 </TouchableOpacity>
               </View>
@@ -197,8 +218,8 @@ const styles = StyleSheet.create({
     top: 0,
     width: '80%',
     maxWidth: 320,
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
+    backgroundColor: colors.neutral.white,
+    shadowColor: colors.neutral.black,
     shadowOffset: {width: -2, height: 0},
     shadowOpacity: 0.25,
     shadowRadius: 8,
@@ -213,12 +234,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
+    borderBottomColor: colors.ui.gray.light,
   },
   headerTitle: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#000000',
+    color: colors.neutral.black,
   },
   closeButton: {
     padding: 4,
@@ -227,20 +248,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: 16,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: colors.ui.gray.lightest,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
+    borderBottomColor: colors.ui.gray.light,
   },
   userAvatar: {
     width: 50,
     height: 50,
     borderRadius: 25,
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.semantic.info.ios,
     justifyContent: 'center',
     alignItems: 'center',
   },
   userAvatarInactive: {
-    backgroundColor: '#ddd',
+    backgroundColor: colors.ui.gray.medium,
   },
   userInfo: {
     marginLeft: 12,
@@ -249,18 +270,18 @@ const styles = StyleSheet.create({
   userName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#333',
+    color: colors.neutral[800],
     marginBottom: 4,
   },
   userNameInactive: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#999',
+    color: colors.neutral[500],
     marginBottom: 4,
   },
   loginHint: {
     fontSize: 12,
-    color: '#666',
+    color: colors.neutral[600],
   },
   roleBadge: {
     alignSelf: 'flex-start',
@@ -269,16 +290,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   roleBadgeAdmin: {
-    backgroundColor: '#FF3B30',
+    backgroundColor: colors.semantic.error.ios,
   },
   roleBadgeReadWrite: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.semantic.info.ios,
   },
   roleBadgeReadOnly: {
-    backgroundColor: '#8E8E93',
+    backgroundColor: colors.ui.gray.ios,
   },
   roleBadgeText: {
-    color: '#fff',
+    color: colors.neutral.white,
     fontSize: 11,
     fontWeight: '600',
   },
@@ -290,17 +311,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#F5F5F5',
+    borderBottomColor: colors.neutral[100],
   },
   menuLabel: {
     flex: 1,
     marginLeft: 16,
     fontSize: 16,
-    color: '#333333',
+    color: colors.neutral[800],
   },
   footer: {
     borderTopWidth: 1,
-    borderTopColor: '#E5E5E5',
+    borderTopColor: colors.ui.gray.light,
     padding: 16,
   },
   logoutButton: {
@@ -311,7 +332,7 @@ const styles = StyleSheet.create({
   logoutText: {
     marginLeft: 16,
     fontSize: 16,
-    color: '#FF3B30',
+    color: colors.semantic.error.ios,
     fontWeight: '500',
   },
 });

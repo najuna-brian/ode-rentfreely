@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {SortOption, FilterOption} from './FilterBar.types';
+import {colors} from '../../theme/colors';
 
 export type {SortOption, FilterOption};
 
@@ -46,17 +47,22 @@ const FilterBar: React.FC<FilterBarProps> = ({
   return (
     <View style={styles.container}>
       <View style={styles.searchContainer}>
-        <Icon name="magnify" size={20} color="#999" style={styles.searchIcon} />
+        <Icon
+          name="magnify"
+          size={20}
+          color={colors.neutral[500]}
+          style={styles.searchIcon}
+        />
         <TextInput
           style={styles.searchInput}
           placeholder="Search..."
-          placeholderTextColor="#999"
+          placeholderTextColor={colors.neutral[500]}
           value={searchQuery}
           onChangeText={onSearchChange}
         />
         {searchQuery.length > 0 && (
           <TouchableOpacity onPress={() => onSearchChange('')}>
-            <Icon name="close-circle" size={20} color="#999" />
+            <Icon name="close-circle" size={20} color={colors.neutral[500]} />
           </TouchableOpacity>
         )}
       </View>
@@ -112,15 +118,15 @@ const FilterBar: React.FC<FilterBarProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.neutral.white,
     padding: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E5E5',
+    borderBottomColor: colors.ui.gray.light,
   },
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
+    backgroundColor: colors.neutral[100],
     borderRadius: 8,
     paddingHorizontal: 12,
     marginBottom: 12,
@@ -131,7 +137,7 @@ const styles = StyleSheet.create({
   searchInput: {
     flex: 1,
     fontSize: 14,
-    color: '#333',
+    color: colors.neutral[800],
     paddingVertical: 8,
   },
   controlsRow: {
@@ -153,7 +159,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
-    color: '#666',
+    color: colors.neutral[600],
     marginRight: 8,
     fontWeight: '500',
   },
@@ -161,20 +167,20 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: colors.neutral[100],
     marginRight: 6,
     marginBottom: 4,
   },
   optionButtonActive: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.semantic.info.ios,
   },
   optionText: {
     fontSize: 12,
-    color: '#666',
+    color: colors.neutral[600],
     fontWeight: '500',
   },
   optionTextActive: {
-    color: '#FFFFFF',
+    color: colors.neutral.white,
   },
 });
 

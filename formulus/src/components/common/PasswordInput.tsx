@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import {colors} from '../../theme/colors';
 
 export interface PasswordInputProps
   extends Omit<TextInputProps, 'secureTextEntry'> {
@@ -67,7 +68,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
           ]}
           secureTextEntry={!isPasswordVisible}
           placeholderTextColor={
-            textInputProps.placeholderTextColor || '#999999'
+            textInputProps.placeholderTextColor || colors.neutral[500]
           }
           testID={testID}
           accessibilityLabel={
@@ -91,7 +92,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
           <Icon
             name={isPasswordVisible ? 'eye-off' : 'eye'}
             size={22}
-            color="#666666"
+            color={colors.neutral[600]}
           />
         </TouchableOpacity>
       </View>
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     fontWeight: '500',
-    color: '#333333',
+    color: colors.neutral[800],
     marginBottom: 8,
   },
   inputContainer: {
@@ -119,15 +120,15 @@ const styles = StyleSheet.create({
     flex: 1,
     height: 48,
     borderWidth: 1,
-    borderColor: '#CCCCCC',
+    borderColor: colors.ui.gray.medium,
     borderRadius: 8,
     paddingHorizontal: 12,
     fontSize: 16,
-    color: '#000000',
-    backgroundColor: '#FFFFFF',
+    color: colors.neutral.black,
+    backgroundColor: colors.neutral.white,
   },
   inputError: {
-    borderColor: '#FF3B30',
+    borderColor: colors.semantic.error.ios,
   },
   inputMultiline: {
     minHeight: 48,
@@ -143,7 +144,7 @@ const styles = StyleSheet.create({
   },
   errorText: {
     fontSize: 12,
-    color: '#FF3B30',
+    color: colors.semantic.error.ios,
     marginTop: 4,
   },
 });
