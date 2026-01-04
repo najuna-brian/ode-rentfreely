@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useAuth } from '../contexts/AuthContext'
-import { Input } from '@ode/components/react-web'
-import { Button } from '@ode/components/react-web'
+import { Button, Input } from "@ode/components/react-web";
+
 import odeLogo from '../assets/ode_logo.png'
 import './Login.css'
 

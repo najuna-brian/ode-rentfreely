@@ -1,7 +1,8 @@
 import { useState, useRef } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { api } from '../services/api'
-import { Button, Input, Badge } from '@ode/components/react-web'
+import { Button, Input, Badge } from "@ode/components/react-web";
+
 import { 
   HiOutlineChartBar, HiChartBar,
   HiOutlineCube, HiCube,
@@ -1508,7 +1509,7 @@ export function Dashboard() {
                   label="Username"
                   type="text"
                   value={createUserForm.username}
-                  onChangeText={(text) => setCreateUserForm({ ...createUserForm, username: text })}
+                  onChangeText={(text: string) => setCreateUserForm({ ...createUserForm, username: text })}
                   required
                   disabled={loading}
                   className="modal-input"
@@ -1519,7 +1520,7 @@ export function Dashboard() {
                   label="Password"
                   type="password"
                   value={createUserForm.password}
-                  onChangeText={(text) => setCreateUserForm({ ...createUserForm, password: text })}
+                  onChangeText={(text: string) => setCreateUserForm({ ...createUserForm, password: text })}
                   required
                   disabled={loading}
                   className="modal-input"
@@ -1566,7 +1567,7 @@ export function Dashboard() {
                   label="Username"
                   type="text"
                   value={resetPasswordForm.username}
-                  onChangeText={(text) => setResetPasswordForm({ ...resetPasswordForm, username: text })}
+                  onChangeText={(text: string) => setResetPasswordForm({ ...resetPasswordForm, username: text })}
                   required
                   disabled={loading}
                   className="modal-input"
@@ -1577,7 +1578,7 @@ export function Dashboard() {
                   label="New Password"
                   type="password"
                   value={resetPasswordForm.newPassword}
-                  onChangeText={(text) => setResetPasswordForm({ ...resetPasswordForm, newPassword: text })}
+                  onChangeText={(text: string) => setResetPasswordForm({ ...resetPasswordForm, newPassword: text })}
                   required
                   disabled={loading}
                   className="modal-input"
@@ -1610,7 +1611,7 @@ export function Dashboard() {
                   label="Current Password"
                   type="password"
                   value={changePasswordForm.currentPassword}
-                  onChangeText={(text) => setChangePasswordForm({ ...changePasswordForm, currentPassword: text })}
+                  onChangeText={(text: string) => setChangePasswordForm({ ...changePasswordForm, currentPassword: text })}
                   required
                   disabled={loading}
                   className="modal-input"
@@ -1621,7 +1622,7 @@ export function Dashboard() {
                   label="New Password"
                   type="password"
                   value={changePasswordForm.newPassword}
-                  onChangeText={(text) => setChangePasswordForm({ ...changePasswordForm, newPassword: text })}
+                  onChangeText={(text: string) => setChangePasswordForm({ ...changePasswordForm, newPassword: text })}
                   required
                   disabled={loading}
                   className="modal-input"
@@ -1632,7 +1633,7 @@ export function Dashboard() {
                   label="Confirm New Password"
                   type="password"
                   value={changePasswordForm.confirmPassword}
-                  onChangeText={(text) => setChangePasswordForm({ ...changePasswordForm, confirmPassword: text })}
+                  onChangeText={(text: string) => setChangePasswordForm({ ...changePasswordForm, confirmPassword: text })}
                   required
                   disabled={loading}
                   className="modal-input"

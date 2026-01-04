@@ -103,8 +103,6 @@ const Button: React.FC<WebButtonProps> = ({
     if (actualVariant === 'primary' || actualVariant === 'secondary') {
       return '#FFFFFF';
     }
-    // For neutral, check if it's a light or dark color
-    const neutralColor = getColor('color.neutral.600');
     // If neutral is dark, use white text; if light, use black
     return '#FFFFFF'; // Default to white for dark theme
   };
