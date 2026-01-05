@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import type { BadgeProps } from '../shared/types';
+import { BadgeProps } from '../shared/types';
 import tokensJson from '@ode/tokens/dist/json/tokens.json';
 
 const tokens = tokensJson as any;
@@ -108,4 +108,3 @@ const Badge: React.FC<BadgeProps> = ({
 };
 
 export default Badge;
-

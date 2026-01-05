@@ -190,4 +190,3 @@ export interface BadgeProps {
 }
 
 export type ThemeMode = 'light' | 'dark';
-

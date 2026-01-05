@@ -6,7 +6,7 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import type { ButtonProps, ButtonVariant } from '../shared/types';
+import { ButtonProps, ButtonVariant, ButtonPosition } from '../shared/types';
 import { getOppositeVariant, getFadeDirection } from '../shared/utils';
 import tokensJson from '@ode/tokens/dist/json/tokens.json';
 
@@ -76,8 +76,8 @@ const Button: React.FC<WebButtonProps> = ({
     }
   }, [actualVariant]);
 
-  const borderRadius = getColor('border.radius.md') || getColor('border.radius.lg') || '8px';
-  const borderWidth = getColor('border.width.thin') || '1px';
+  const borderRadius = getColor('border.radius.full');
+  const borderWidth = getColor('border.width.thin');
 
   // Size-based spacing
   const paddingMap = {
@@ -95,16 +95,15 @@ const Button: React.FC<WebButtonProps> = ({
   const padding = paddingMap[size];
   const fontSize = fontSizeMap[size];
 
-  // Note: createFadeMask is not used - border fade is handled via SVG gradient
-
-  // Determine text color on hover - use white for dark backgrounds, black for light
-  const getHoverTextColor = () => {
-    // For primary (green) and secondary (yellow), use white text on hover
-    if (actualVariant === 'primary' || actualVariant === 'secondary') {
-      return '#FFFFFF';
+  // Create gradient mask for fading border effect
+  const createFadeMask = () => {
+    if (fadeDirection === 'right') {
+      // Fade on right end - gradient from opaque to transparent
+      return `linear-gradient(to right, black 0%, black 85%, transparent 100%)`;
+    } else {
+      // Fade on left end - gradient from transparent to opaque
+      return `linear-gradient(to right, transparent 0%, black 15%, black 100%)`;
     }
-    // If neutral is dark, use white text; if light, use black
-    return '#FFFFFF'; // Default to white for dark theme
   };
 
   const buttonStyle: React.CSSProperties = {
@@ -113,7 +112,9 @@ const Button: React.FC<WebButtonProps> = ({
     fontSize,
     fontFamily: getColor('font.family.sans'),
     fontWeight: getColor('font.weight.medium'),
-    color: isHovered ? getHoverTextColor() : borderColor,
+    color: isHovered 
+      ? (document.documentElement.classList.contains('dark') ? '#000000' : '#FFFFFF')
+      : borderColor,
     backgroundColor: isHovered ? borderColor : 'transparent',
     border: 'none',
     borderRadius,
