@@ -4,7 +4,7 @@
  * Modern minimalist input with clean styling and error states
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import type { InputProps } from '../shared/types';
 import tokensJson from '@ode/tokens/dist/json/tokens.json';
 
@@ -35,13 +35,8 @@ const Input: React.FC<InputProps> = ({
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    setHasValue(!!value);
-  }, [value]);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    setHasValue(!!newValue);
     if (onChangeText) {
       onChangeText(newValue);
     }
