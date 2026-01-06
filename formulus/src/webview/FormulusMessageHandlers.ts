@@ -6,9 +6,26 @@ import {GeolocationService} from '../services/GeolocationService';
 import {WebViewMessageEvent, WebView} from 'react-native-webview';
 import RNFS from 'react-native-fs';
 import * as Keychain from 'react-native-keychain';
+import {Alert} from 'react-native';
+import ImagePicker from 'react-native-image-picker';
+import NitroSound, {AudioSet} from 'react-native-nitro-sound';
+import {
+  pick,
+  types,
+  isErrorWithCode,
+  errorCodes,
+} from '@react-native-documents/picker';
+import {
+  FormInitData,
+  FormCompletionResult,
+  FormInfo,
+} from './FormulusInterfaceDefinition';
+import {FormulusMessageHandlers} from './FormulusMessageHandlers.types';
+import {FormService} from '../services/FormService';
+import {Observation, ObservationData} from '../database/models/Observation';
 
 export type HandlerArgs = {
-  data: any;
+  data: unknown;
   webViewRef: React.RefObject<WebView | null>;
   event: WebViewMessageEvent;
 };
@@ -16,7 +33,7 @@ export type HandlerArgs = {
 export type Handler = (args: HandlerArgs) => void | Promise<void>;
 
 // Simple event emitter for cross-component communication
-type Listener = (...args: any[]) => void;
+type Listener = (...args: unknown[]) => void;
 
 class SimpleEventEmitter {
   private listeners: Record<string, Listener[]> = {};
@@ -35,16 +52,14 @@ class SimpleEventEmitter {
     );
   }
 
-  emit(eventName: string, ...args: any[]): void {
+  emit(eventName: string, ...args: unknown[]): void {
     if (!this.listeners[eventName]) return;
     this.listeners[eventName].forEach(listener => listener(...args));
   }
 }
 
-// Create a global event emitter for app-wide events
 export const appEvents = new SimpleEventEmitter();
 
-// Track pending form operations with their promise resolvers
 const pendingFormOperations = new Map<
   string,
   {
@@ -55,14 +70,10 @@ const pendingFormOperations = new Map<
   }
 >();
 
-// Internal helper to start a formplayer operation and return a promise that resolves
-// when the form is completed or closed. This is used both by the WebView-driven
-// onOpenFormplayer handler and by native screens that want to open Formplayer
-// directly in a promise-based way.
 const startFormplayerOperation = (
   formType: string,
-  params: Record<string, any> = {},
-  savedData: Record<string, any> = {},
+  params: Record<string, unknown> = {},
+  savedData: Record<string, unknown> = {},
   observationId: string | null = null,
 ): Promise<FormCompletionResult> => {
   const operationId = `${formType}_${Date.now()}_${Math.random()
@@ -70,7 +81,6 @@ const startFormplayerOperation = (
     .substr(2, 9)}`;
 
   return new Promise<FormCompletionResult>((resolve, reject) => {
-    // Store the promise resolvers
     pendingFormOperations.set(operationId, {
       resolve,
       reject,
@@ -78,8 +88,6 @@ const startFormplayerOperation = (
       startTime: Date.now(),
     });
 
-    // Emit the event with the operation ID so the HomeScreen/FormplayerModal
-    // stack can open the modal and initialize the form
     appEvents.emit('openFormplayerRequested', {
       formType,
       params,
@@ -88,33 +96,31 @@ const startFormplayerOperation = (
       operationId,
     });
 
-    // Set a timeout to prevent hanging promises (8 hours)
-    setTimeout(() => {
-      if (pendingFormOperations.has(operationId)) {
-        pendingFormOperations.delete(operationId);
-        reject(new Error('Form operation timed out'));
-      }
-    }, 8 * 60 * 60 * 1000);
+    setTimeout(
+      () => {
+        if (pendingFormOperations.has(operationId)) {
+          pendingFormOperations.delete(operationId);
+          reject(new Error('Form operation timed out'));
+        }
+      },
+      8 * 60 * 60 * 1000,
+    );
   });
 };
 
-// Public helper for native React Native screens to open Formplayer
-// in a promise-based way, without needing to manage appEvents or
-// pending operation maps directly.
 export const openFormplayerFromNative = (
   formType: string,
-  params: Record<string, any> = {},
-  savedData: Record<string, any> = {},
+  params: Record<string, unknown> = {},
+  savedData: Record<string, unknown> = {},
   observationId: string | null = null,
 ): Promise<FormCompletionResult> => {
   return startFormplayerOperation(formType, params, savedData, observationId);
 };
 
-// Global reference to the active FormplayerModal for direct submission handling
 let activeFormplayerModalRef: {
   handleSubmission: (data: {
     formType: string;
-    finalData: Record<string, any>;
+    finalData: Record<string, unknown>;
   }) => Promise<string>;
 } | null = null;
 
@@ -122,94 +128,46 @@ export const setActiveFormplayerModal = (
   modalRef: {
     handleSubmission: (data: {
       formType: string;
-      finalData: Record<string, any>;
+      finalData: Record<string, unknown>;
     }) => Promise<string>;
   } | null,
 ) => {
   activeFormplayerModalRef = modalRef;
 };
 
-// Helper functions to resolve form operations
 export const resolveFormOperation = (
   operationId: string,
   result: FormCompletionResult,
 ) => {
   const operation = pendingFormOperations.get(operationId);
   if (operation) {
-    console.log(
-      `Resolving form operation ${operationId} with status: ${result.status}`,
-    );
     operation.resolve(result);
     pendingFormOperations.delete(operationId);
-  } else {
-    console.warn(`No pending operation found for ID: ${operationId}`);
   }
 };
 
 export const rejectFormOperation = (operationId: string, error: Error) => {
   const operation = pendingFormOperations.get(operationId);
   if (operation) {
-    console.log(
-      `Rejecting form operation ${operationId} with error:`,
-      error.message,
-    );
     operation.reject(error);
     pendingFormOperations.delete(operationId);
-  } else {
-    console.warn(`No pending operation found for ID: ${operationId}`);
   }
 };
 
-// Helper to resolve operation by form type (fallback when operationId is not available)
-export const resolveFormOperationByType = (
-  formType: string,
-  result: FormCompletionResult,
-) => {
-  // Find the most recent operation for this form type
-  let mostRecentOperation: string | null = null;
-  let mostRecentTime = 0;
-
-  for (const [operationId, operation] of pendingFormOperations.entries()) {
-    if (
-      operation.formType === formType &&
-      operation.startTime > mostRecentTime
-    ) {
-      mostRecentOperation = operationId;
-      mostRecentTime = operation.startTime;
-    }
-  }
-
-  if (mostRecentOperation) {
-    resolveFormOperation(mostRecentOperation, result);
-  } else {
-    console.warn(`No pending operation found for form type: ${formType}`);
-  }
-};
-
-// Helper function to save form data to storage
 const saveFormData = async (
   formType: string,
-  data: any,
+  data: ObservationData,
   observationId: string | null,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   isPartial = true,
 ) => {
-  const isUpdate = observationId !== null;
-  console.log(
-    `Message Handler: Saving form data: ${
-      isUpdate ? 'Update' : 'New'
-    } observation`,
-    formType,
-    data,
-    observationId,
-    isPartial,
-  );
   try {
-    let observation: Partial<Observation> = {
+    const observation: Partial<Observation> = {
       formType,
       data,
     };
 
-    if (isUpdate) {
+    if (observationId !== null) {
       observation.observationId = observationId;
       observation.updatedAt = new Date();
     } else {
@@ -217,59 +175,21 @@ const saveFormData = async (
     }
 
     const formService = await FormService.getInstance();
-
-    const id = isUpdate
-      ? await formService.updateObservation(observationId, data)
-      : await formService.addNewObservation(formType, data);
-
-    console.log(`${isUpdate ? 'Updated' : 'Saved'} observation with id: ${id}`);
-
-    // Don't emit closeFormplayer here - let FormplayerModal handle closing after its own submission process
-    // appEvents.emit('closeFormplayer', { observationId: id, isUpdate });
+    const id =
+      observationId !== null
+        ? await formService.updateObservation(observationId, data)
+        : await formService.addNewObservation(formType, data);
 
     return id;
-
-    // TODO: Handle attachments/files
-    // const directory = `${RNFS.DocumentDirectoryPath}/form_data`;
-    // const exists = await RNFS.exists(directory);
-    // if (!exists) {
-    //   await RNFS.mkdir(directory);
-    // }
   } catch (error) {
     console.error('Error saving form data:', error);
     return null;
   }
 };
 
-// Helper function to load form data from storage (currently unused)
-// const loadFormData = async (formType: string) => {
-//   try {
-//     const filePath = `${RNFS.DocumentDirectoryPath}/form_data/${formType}_partial.json`;
-//     const exists = await RNFS.exists(filePath);
-//     if (!exists) {
-//       return null;
-//     }
-//
-//     const data = await RNFS.readFile(filePath, 'utf8');
-//     return JSON.parse(data);
-//   } catch (error) {
-//     console.error('Error loading form data:', error);
-//     return null;
-//   }
-// };
-
-import {FormulusMessageHandlers} from './FormulusMessageHandlers.types';
-import {
-  FormInitData,
-  FormCompletionResult,
-  FormInfo,
-} from './FormulusInterfaceDefinition';
-import {FormService} from '../services/FormService';
-import {Observation} from '../database/models/Observation';
-
 export function createFormulusMessageHandlers(): FormulusMessageHandlers {
   return {
-    onInitForm: (payload: any) => {
+    onInitForm: (payload: unknown) => {
       // TODO: implement init form logic
       console.log('FormulusMessageHandlers: onInitForm called', payload);
     },
@@ -281,7 +201,7 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
     },
     onSubmitObservation: async (data: {
       formType: string;
-      finalData: Record<string, any>;
+      finalData: Record<string, unknown>;
     }) => {
       const {formType, finalData} = data;
       console.log(
@@ -309,28 +229,21 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
     onUpdateObservation: async (data: {
       observationId: string;
       formType: string;
-      finalData: Record<string, any>;
+      finalData: Record<string, unknown>;
     }) => {
-      const {observationId, formType, finalData} = data;
-      console.log(
-        'FormulusMessageHandlers: onUpdateObservation handler invoked.',
-        {observationId, formType, finalData},
+      return await saveFormData(
+        data.formType,
+        data.finalData,
+        data.observationId,
+        false,
       );
-      const id = await saveFormData(formType, finalData, observationId, false);
-      return id;
     },
-    onRequestCamera: async (fieldId: string): Promise<any> => {
+    onRequestCamera: async (fieldId: string): Promise<unknown> => {
       console.log('Request camera handler called', fieldId);
 
-      return new Promise((resolve, _reject) => {
+      return new Promise(resolve => {
         try {
-          // Import react-native-image-picker directly
-          const ImagePicker = require('react-native-image-picker');
-
-          if (
-            !ImagePicker ||
-            (!ImagePicker.showImagePicker && !ImagePicker.launchImageLibrary)
-          ) {
+          if (!ImagePicker || !ImagePicker.launchImageLibrary) {
             console.error(
               'react-native-image-picker not available or not properly linked',
             );
@@ -346,7 +259,7 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
           // Image picker options for react-native-image-picker
           const options = {
             mediaType: 'photo' as const,
-            quality: 0.8,
+            quality: 0.8 as const,
             includeBase64: true,
             maxWidth: 1920,
             maxHeight: 1080,
@@ -361,10 +274,8 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
             options,
           );
 
-          // Import Alert for showing action sheet
-          const {Alert} = require('react-native');
-
           // Common response handler for both camera and gallery
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const handleImagePickerResponse = (response: any) => {
             console.log('Camera response received:', response);
 
@@ -474,7 +385,7 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
                     },
                   });
                 })
-                .catch((error: any) => {
+                .catch(error => {
                   console.error(
                     'Error copying image to attachment sync system:',
                     error,
@@ -536,15 +447,15 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
         }
       });
     },
-    onRequestQrcode: async (fieldId: string): Promise<any> => {
+    onRequestQrcode: async (fieldId: string): Promise<unknown> => {
       console.log('Request QR code handler called', fieldId);
 
-      return new Promise((resolve, _reject) => {
+      return new Promise(resolve => {
         try {
           // Emit event to open QR scanner modal
           appEvents.emit('openQRScanner', {
             fieldId,
-            onResult: (result: any) => {
+            onResult: (result: unknown) => {
               console.log('QR scan result received:', result);
               resolve(result);
             },
@@ -561,14 +472,15 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
         }
       });
     },
-    onRequestSignature: async (fieldId: string): Promise<any> => {
+    onRequestSignature: async (fieldId: string): Promise<unknown> => {
       console.log('Request signature handler called', fieldId);
 
-      return new Promise((resolve, _reject) => {
+      return new Promise(resolve => {
         try {
           // Emit event to open signature capture modal
           appEvents.emit('openSignatureCapture', {
             fieldId,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             onResult: async (result: any) => {
               console.log('Signature capture result received:', result);
 
@@ -621,12 +533,12 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
                   // Return result as-is if no base64 data or if it's an error/cancellation
                   resolve(result);
                 }
-              } catch (fileError: any) {
+              } catch (fileError) {
                 console.error('Error saving signature file:', fileError);
                 resolve({
                   fieldId,
                   status: 'error',
-                  message: `Error saving signature: ${fileError.message}`,
+                  message: `Error saving signature: ${fileError}`,
                 });
               }
             },
@@ -643,9 +555,11 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
         }
       });
     },
-    onRequestLocation: async (fieldId: string): Promise<any> => {
+
+    onRequestLocation: async (fieldId: string): Promise<unknown> => {
       console.log('Request location handler called', fieldId);
 
+      // eslint-disable-next-line no-async-promise-executor
       return new Promise(async (resolve, reject) => {
         try {
           // Get current location using the existing GeolocationService
@@ -674,27 +588,22 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
           } else {
             throw new Error('Unable to get current location');
           }
-        } catch (error: any) {
+        } catch (error) {
           console.error('Location capture failed:', error);
 
           const errorResult = {
             fieldId,
             status: 'error' as const,
-            message: error.message || 'Location capture failed',
+            message: 'Location capture failed',
           };
 
           reject(errorResult);
         }
       });
     },
-    onRequestVideo: async (fieldId: string): Promise<any> => {
-      console.log('Request video handler called', fieldId);
-
+    onRequestVideo: async (fieldId: string): Promise<unknown> => {
       return new Promise((resolve, reject) => {
         try {
-          // Import react-native-image-picker directly
-          const ImagePicker = require('react-native-image-picker');
-
           const options = {
             mediaType: 'video' as const,
             videoQuality: 'high' as const,
@@ -704,8 +613,7 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
               path: 'videos',
             },
           };
-
-          ImagePicker.launchCamera(options, async (response: any) => {
+          ImagePicker.launchCamera(options, async response => {
             if (response.didCancel) {
               console.log('Video recording cancelled');
               reject({
@@ -743,7 +651,11 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
                 await RNFS.mkdir(`${RNFS.DocumentDirectoryPath}/videos`);
 
                 // Copy the video file
-                await RNFS.copyFile(asset.uri, destinationPath);
+                if (asset.uri) {
+                  await RNFS.copyFile(asset.uri, destinationPath);
+                } else {
+                  console.error('Asset uri not available', asset);
+                }
 
                 const videoResult = {
                   fieldId,
@@ -765,12 +677,12 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
 
                 console.log('Video recorded successfully:', videoResult);
                 resolve(videoResult);
-              } catch (fileError: any) {
+              } catch (fileError) {
                 console.error('Error saving video file:', fileError);
                 reject({
                   fieldId,
                   status: 'error',
-                  message: `Error saving video: ${fileError.message}`,
+                  message: `Error saving video: ${fileError}`,
                 });
               }
             } else {
@@ -781,7 +693,7 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
               });
             }
           });
-        } catch (error: any) {
+        } catch (error) {
           console.error('Error in video handler:', error);
           const errorMessage =
             error instanceof Error ? error.message : 'Unknown error';
@@ -793,155 +705,140 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
         }
       });
     },
-    onRequestFile: async (fieldId: string): Promise<any> => {
-      console.log('Request file handler called', fieldId);
 
+    onRequestFile: async (fieldId: string) => {
+      console.log('Request file handler called (v12 API)', fieldId);
       try {
-        // Import DocumentPicker dynamically to handle cases where it might not be available
-        const DocumentPicker = require('@react-native-documents/picker');
-
-        // Pick a single file (new API returns array, destructure first item)
-        const [result] = await DocumentPicker.pick({
-          type: [DocumentPicker.types.allFiles],
-          copyTo: 'cachesDirectory', // Copy to cache for access
+        const [result] = await pick({
+          type: [types.allFiles],
+          mode: 'import',
+          allowMultiSelection: false,
         });
 
         console.log('File selected:', result);
 
-        // Create FileResult object matching our interface
         return {
           fieldId,
           status: 'success' as const,
           data: {
             filename: result.name,
-            uri: result.fileCopyUri || result.uri, // Use copied URI if available
+            uri: result.uri,
             size: result.size || 0,
             mimeType: result.type || 'application/octet-stream',
             type: 'file' as const,
             timestamp: new Date().toISOString(),
           },
         };
-      } catch (error: any) {
-        console.log('File selection error or cancelled:', error);
-
-        // Check if DocumentPicker is available and if this is a cancellation
-        let isCancel = false;
-        try {
-          const DocumentPicker = require('@react-native-documents/picker');
-          isCancel = DocumentPicker.isCancel(error);
-        } catch (importError) {
-          // DocumentPicker not available, treat as regular error
+      } catch (error) {
+        if (isErrorWithCode(error)) {
+          if (error.code === errorCodes.OPERATION_CANCELED) {
+            return {
+              fieldId,
+              status: 'cancelled' as const,
+              message: 'File selection was cancelled',
+            };
+          }
         }
-
-        if (isCancel) {
-          // User cancelled the picker
-          return {
-            fieldId,
-            status: 'cancelled' as const,
-            message: 'File selection was cancelled',
-          };
-        } else {
-          // Other error occurred
-          return {
-            fieldId,
-            status: 'error' as const,
-            message: error.message || 'Failed to select file',
-          };
-        }
+        return {
+          fieldId,
+          status: 'error' as const,
+          message:
+            error instanceof Error ? error.message : 'Failed to select file',
+        };
       }
     },
-    onLaunchIntent: (fieldId: string, intentSpec: Record<string, any>) => {
+
+    onLaunchIntent: (fieldId: string, intentSpec: Record<string, unknown>) => {
       // TODO: implement launch intent logic
       console.log('Launch intent handler called', fieldId, intentSpec);
     },
     onCallSubform: (
       fieldId: string,
       formType: string,
-      options: Record<string, any>,
+      options: Record<string, unknown>,
     ) => {
       // TODO: implement call subform logic
       console.log('Call subform handler called', fieldId, formType, options);
     },
-    onRequestAudio: async (fieldId: string): Promise<any> => {
-      console.log('Request audio handler called', fieldId);
-
+    onRequestAudio: async (fieldId: string) => {
       try {
-        // Import NitroSound dynamically to handle cases where it might not be available
-        const NitroSound = require('react-native-nitro-sound');
+        const filename = `audio_${Date.now()}.m4a`;
+        const path = `${RNFS.DocumentDirectoryPath}/${filename}`;
 
-        // Create a unique filename for the audio recording
-        const timestamp = Date.now();
-        const filename = `audio_${timestamp}.m4a`;
-        const documentsPath = require('react-native-fs').DocumentDirectoryPath;
-        const audioPath = `${documentsPath}/${filename}`;
+        const audioSet: AudioSet = {
+          // Common settings automatically applied to the appropriate platform
+          AudioSamplingRate: 44100,
+          AudioEncodingBitRate: 128000,
+          AudioChannels: 1,
+        };
 
-        console.log('Starting audio recording to:', audioPath);
-
-        // Start recording
-        const recorder = await NitroSound.createRecorder({
-          path: audioPath,
-          format: 'aac', // AAC format for .m4a files
-          quality: 'high',
-          sampleRate: 44100,
-          channels: 1,
-        });
-
-        await recorder.start();
+        await NitroSound.startRecorder(path, audioSet);
 
         // For demo purposes, we'll record for a fixed duration
         // In a real implementation, you'd want user controls for start/stop
-        await new Promise<void>(resolve => setTimeout(() => resolve(), 3000)); // 3 second recording
-
-        const result = await recorder.stop();
-
-        console.log('Audio recording completed:', result);
-
-        // Get file stats for metadata
-        const fileStats = await RNFS.stat(audioPath);
-
-        // Create AudioResult object matching our interface
+        await new Promise<void>(r => setTimeout(() => r(), 3000));
+        await NitroSound.stopRecorder();
+        const fileStats = await RNFS.stat(path);
         return {
           fieldId,
           status: 'success' as const,
           data: {
             type: 'audio' as const,
             filename: filename,
-            uri: `file://${audioPath}`,
+            uri: `file://${path}`,
             timestamp: new Date().toISOString(),
             metadata: {
-              duration: result.duration || 3.0, // Duration in seconds
+              duration: 3.0,
               format: 'm4a',
               size: fileStats.size || 0,
             },
           },
         };
-      } catch (error: any) {
+      } catch (error) {
         console.log('Audio recording error:', error);
 
         // Check if this is a user cancellation or permission error
-        if (
-          error.code === 'PERMISSION_DENIED' ||
-          error.message?.includes('permission')
-        ) {
+        console.log('Audio recording error:', error);
+
+        if (typeof error === 'object' && error !== null) {
+          const err = error as Record<string, unknown>;
+
+          if (
+            err.code === 'PERMISSION_DENIED' ||
+            (typeof err.message === 'string' &&
+              err.message.includes('permission'))
+          ) {
+            return {
+              fieldId,
+              status: 'error' as const,
+              message:
+                'Microphone permission denied. Please enable microphone access in settings.',
+            };
+          }
+
+          if (err.code === 'USER_CANCELLED') {
+            return {
+              fieldId,
+              status: 'cancelled' as const,
+              message: 'Audio recording was cancelled',
+            };
+          }
+
           return {
             fieldId,
             status: 'error' as const,
             message:
-              'Microphone permission denied. Please enable microphone access in settings.',
-          };
-        } else if (error.code === 'USER_CANCELLED') {
-          return {
-            fieldId,
-            status: 'cancelled' as const,
-            message: 'Audio recording was cancelled',
-          };
-        } else {
-          return {
-            fieldId,
-            status: 'error' as const,
-            message: error.message || 'Failed to record audio',
+              typeof err.message === 'string'
+                ? err.message
+                : 'Failed to record audio',
           };
         }
+
+        return {
+          fieldId,
+          status: 'error' as const,
+          message: String(error),
+        };
       }
     },
     onRequestBiometric: (fieldId: string) => {
@@ -959,7 +856,7 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
     onRunLocalModel: (
       fieldId: string,
       modelId: string,
-      input: Record<string, any>,
+      input: Record<string, unknown>,
     ) => {
       // TODO: implement run local model logic
       console.log('Run local model handler called', fieldId, modelId, input);
@@ -1037,35 +934,21 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
         'FormulusMessageHandlers: onGetObservations handler invoked.',
         {formType, isDraft, includeDeleted},
       );
-      if (formType.hasOwnProperty('formType')) {
+      if (typeof formType !== 'string') {
         console.debug(
           'FormulusMessageHandlers: onGetObservations handler invoked with formType object, expected string',
         );
-        formType = (formType as any).formType;
-        isDraft = (formType as any).isDraft;
-        includeDeleted = (formType as any).includeDeleted;
       }
-      const formService = await FormService.getInstance();
-      const observations = await formService.getObservationsByFormType(
-        formType,
-      ); //TODO: Handle deleted etc.
-      return observations;
+      const service = await FormService.getInstance();
+      //TODO: Handle deleted etc.
+      return await service.getObservationsByFormType(formType);
     },
-    onOpenFormplayer: async (
-      data: FormInitData,
-    ): Promise<FormCompletionResult> => {
-      const {formType, params, savedData, observationId} = data;
-      console.log(
-        'FormulusMessageHandlers: onOpenFormplayer handler invoked with data:',
-        data,
-      );
-      // Delegate to the shared helper so WebView and native callers share the same
-      // promise-based behaviour and operation tracking.
+    onOpenFormplayer: async (data: FormInitData) => {
       return startFormplayerOperation(
-        formType,
-        params,
-        savedData,
-        observationId ?? null,
+        data.formType,
+        data.params,
+        data.savedData,
+        data.observationId ?? null,
       );
     },
     onFormplayerInitialized: (data: {formType?: string; status?: string}) => {
@@ -1088,7 +971,7 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
       );
       // TODO: Perform any actions needed when the WebView content signals it's ready
     },
-    onUnknownMessage: (message: any) => {
+    onUnknownMessage: (message: unknown) => {
       console.warn('Unknown message received:', message);
     },
     onError: (error: Error) => {

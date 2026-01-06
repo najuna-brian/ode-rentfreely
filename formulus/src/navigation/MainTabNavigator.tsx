@@ -116,7 +116,7 @@ const MainTabNavigator: React.FC = () => {
           tabBarIcon: renderMoreIcon,
         }}
         listeners={({navigation}) => ({
-          tabPress: _e => {
+          tabPress: () => {
             const state = navigation.getState();
             const currentRoute = state.routes[state.index];
             if (currentRoute?.name === 'More') {

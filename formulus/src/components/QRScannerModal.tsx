@@ -13,15 +13,28 @@ import {
   useCameraDevices,
   useCodeScanner,
   useCameraPermission,
+  CodeType,
 } from 'react-native-vision-camera';
 import {colors} from '../theme/colors';
 const {width} = Dimensions.get('window');
+
+export interface ScannerModalResults {
+  fieldId: string | undefined;
+  status: 'success' | 'cancelled';
+  message?: string;
+  data?: {
+    type: 'qrcode';
+    value: string | undefined;
+    format: CodeType | unknown;
+    timestamp: string;
+  };
+}
 
 interface QRScannerModalProps {
   visible: boolean;
   onClose: () => void;
   fieldId?: string;
-  onResult?: (result: any) => void;
+  onResult?: (result: ScannerModalResults) => void;
 }
 
 const QRScannerModal: React.FC<QRScannerModalProps> = ({
@@ -46,11 +59,15 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
 
   // Reset state when modal opens/closes
   useEffect(() => {
-    if (visible) {
+    if (!visible) {
+      return;
+    }
+    // Defer state updates to avoid synchronous setState in effect
+    Promise.resolve().then(() => {
       setIsScanning(true);
       setScannedData(null);
       resultSentRef.current = false;
-    }
+    });
   }, [visible]);
 
   // Code scanner using built-in functionality
@@ -229,7 +246,7 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: colors.neutral.black,
   },
   camera: {
     flex: 1,
@@ -243,13 +260,13 @@ const styles = StyleSheet.create({
   },
   topOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: colors.ui.background,
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 50,
   },
   instructionText: {
-    color: 'white',
+    color: colors.neutral.white,
     fontSize: 18,
     textAlign: 'center',
     marginHorizontal: 20,
@@ -263,8 +280,8 @@ const styles = StyleSheet.create({
     width: 250,
     height: 250,
     borderWidth: 2,
-    borderColor: 'transparent',
-    backgroundColor: 'transparent',
+    borderColor: colors.neutral.transparent,
+    backgroundColor: colors.neutral.transparent,
   },
   corner: {
     position: 'absolute',
@@ -299,7 +316,7 @@ const styles = StyleSheet.create({
   },
   bottomOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: colors.ui.background,
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 50,
@@ -309,7 +326,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   resultLabel: {
-    color: 'white',
+    color: colors.neutral.white,
     fontSize: 16,
     marginBottom: 10,
   },
@@ -345,21 +362,21 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   cancelButton: {
-    backgroundColor: 'transparent',
+    backgroundColor: colors.neutral.transparent,
     borderWidth: 2,
-    borderColor: 'white',
+    borderColor: colors.neutral.white,
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 8,
   },
   buttonText: {
-    color: 'white',
+    color: colors.neutral.white,
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   cancelButtonText: {
-    color: 'white',
+    color: colors.neutral.white,
     fontSize: 16,
     textAlign: 'center',
   },
@@ -370,7 +387,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   permissionText: {
-    color: 'white',
+    color: colors.neutral.white,
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 30,
@@ -382,7 +399,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   errorText: {
-    color: 'white',
+    color: colors.neutral.white,
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 30,

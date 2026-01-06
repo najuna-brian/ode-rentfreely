@@ -228,10 +228,10 @@ const SyncScreen = () => {
   const statusColor = syncState.isActive
     ? colors.brand.primary[500]
     : syncState.error
-    ? colors.semantic.error[500]
-    : pendingObservations > 0 || pendingUploads.count > 0
-    ? colors.semantic.warning[500]
-    : colors.semantic.success[500];
+      ? colors.semantic.error[500]
+      : pendingObservations > 0 || pendingUploads.count > 0
+        ? colors.semantic.warning[500]
+        : colors.semantic.success[500];
 
   useEffect(() => {
     const unsubscribeStatus = syncService.subscribeToStatusUpdates(() => {});
@@ -345,10 +345,10 @@ const SyncScreen = () => {
                   syncState.isActive
                     ? 'sync'
                     : syncState.error
-                    ? 'alert-circle'
-                    : pendingObservations > 0 || pendingUploads.count > 0
-                    ? 'clock-alert-outline'
-                    : 'check-circle'
+                      ? 'alert-circle'
+                      : pendingObservations > 0 || pendingUploads.count > 0
+                        ? 'clock-alert-outline'
+                        : 'check-circle'
                 }
                 size={20}
                 color={statusColor}

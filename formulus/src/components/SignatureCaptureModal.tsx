@@ -15,7 +15,7 @@ import {colors} from '../theme/colors';
 interface SignatureCaptureModalProps {
   visible: boolean;
   onClose: () => void;
-  onSignatureCapture: (result: any) => void;
+  onSignatureCapture: (result: unknown) => void;
   fieldId: string;
 }
 

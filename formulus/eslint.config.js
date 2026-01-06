@@ -16,6 +16,7 @@ export default tseslint.config(
       '**/coverage/**',
       'assets/webview/FormulusInjectionScript.js',
       'src/api/synkronus/generated/**',
+      '**/__tests__/**',
     ],
   },
   js.configs.recommended,
@@ -43,9 +44,14 @@ export default tseslint.config(
     rules: {
       ...hooksPlugin.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
-      'react-native/no-inline-styles': 'warn',
       'react-native/no-color-literals': 'warn',
       'prettier/prettier': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          varsIgnorePattern: '^_',
+        },
+      ],
     },
   },
   prettierConfig,

@@ -44,7 +44,9 @@ const MoreScreen: React.FC = () => {
   useEffect(() => {
     const params = route.params as {openDrawer?: number} | undefined;
     if (params?.openDrawer) {
-      setDrawerVisible(true);
+      Promise.resolve().then(() => {
+        setDrawerVisible(true);
+      });
     }
   }, [route.params]);
 

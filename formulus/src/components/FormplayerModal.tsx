@@ -42,14 +42,14 @@ interface FormplayerModalProps {
 export interface FormplayerModalHandle {
   initializeForm: (
     formType: FormSpec,
-    params: Record<string, any> | null,
+    params: Record<string, unknown> | null,
     observationId: string | null,
-    existingObservationData: Record<string, any> | null,
+    existingObservationData: Record<string, unknown> | null,
     operationId: string | null,
   ) => void;
   handleSubmission: (data: {
     formType: string;
-    finalData: Record<string, any>;
+    finalData: Record<string, unknown>;
   }) => Promise<string>;
 }
 
@@ -65,10 +65,10 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
       string | null
     >(null);
     const [_currentObservationData, setCurrentObservationData] =
-      useState<Record<string, any> | null>(null);
+      useState<Record<string, unknown> | null>(null);
     const [_currentParams, setCurrentParams] = useState<Record<
       string,
-      any
+      unknown
     > | null>(null);
     const [currentOperationId, setCurrentOperationId] = useState<string | null>(
       null,
@@ -200,9 +200,9 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
     // Initialize a form with the given form type and optional existing data
     const initializeForm = async (
       formType: FormSpec,
-      params: Record<string, any> | null,
+      params: Record<string, unknown> | null,
       observationId: string | null,
-      existingObservationData: Record<string, any> | null,
+      existingObservationData: Record<string, unknown> | null,
       operationId: string | null,
     ) => {
       // Set internal state for the current form and observation
@@ -311,7 +311,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
     const handleSubmission = useCallback(
       async (data: {
         formType: string;
-        finalData: Record<string, any>;
+        finalData: Record<string, unknown>;
       }): Promise<string> => {
         const {formType, finalData} = data;
         console.log('FormplayerModal: handleSubmission called', {
@@ -497,7 +497,6 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
     );
   },
 );
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -536,7 +535,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: colors.ui.background,
     justifyContent: 'center',
     alignItems: 'center',
   },

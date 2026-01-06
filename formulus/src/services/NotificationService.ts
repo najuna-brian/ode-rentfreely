@@ -40,7 +40,7 @@ class NotificationService {
         : 0;
     const phaseText = this.getPhaseText(progress.phase);
 
-    let title = 'Syncing data...';
+    const title = 'Syncing data...';
     let message = `${phaseText}: ${progress.current}/${progress.total}`;
 
     if (progress.details) {

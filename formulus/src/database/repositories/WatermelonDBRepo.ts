@@ -416,7 +416,7 @@ export class WatermelonDBRepo implements LocalRepoInterface {
       return 0;
     }
 
-    var count = await this.database.write(async () => {
+    const count = await this.database.write(async () => {
       const existingRecords = await this.observationsCollection
         .query(
           Q.where('observation_id', Q.oneOf(changes.map(c => c.observationId))),

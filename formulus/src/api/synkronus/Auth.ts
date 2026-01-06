@@ -46,14 +46,15 @@ const decodeBase64 = (input: string): string => {
 };
 
 // Decode JWT payload without verification (claims are in the middle part)
-function decodeJwtPayload(token: string): any {
+function decodeJwtPayload(token: string) {
   try {
     const parts = token.split('.');
     if (parts.length !== 3) return null;
     const payload = parts[1];
     const decoded = decodeBase64(payload.replace(/-/g, '+').replace(/_/g, '/'));
     return JSON.parse(decoded);
-  } catch {
+  } catch(error: unknown) {
+    console.error('Error decoding JWT payload:', error);
     return null;
   }
 }

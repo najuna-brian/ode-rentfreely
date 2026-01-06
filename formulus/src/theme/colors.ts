@@ -85,6 +85,7 @@ export const colors = {
       medium: '#CCCCCC',
       ios: '#8E8E93', // iOS system gray
     },
+    background: 'rgba(0, 0, 0, 0.5)',
   },
 };
 

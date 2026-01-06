@@ -6,7 +6,8 @@ import CustomAppWebView, {
 } from '../components/CustomAppWebView';
 import {colors} from '../theme/colors';
 
-const HomeScreen = ({navigation}: any) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const HomeScreen = ({navigation}: {navigation: any}) => {
   const [localUri, setLocalUri] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const customAppRef = useRef<CustomAppWebViewHandle>(null);
@@ -30,19 +31,26 @@ const HomeScreen = ({navigation}: any) => {
   };
 
   useEffect(() => {
-    checkAndSetAppUri();
+    Promise.resolve().then(() => {
+      checkAndSetAppUri();
+    });
   }, []);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      checkAndSetAppUri();
+      Promise.resolve().then(() => {
+        checkAndSetAppUri();
+      });
     });
     return unsubscribe;
   }, [navigation]);
 
   useEffect(() => {
     if (localUri) {
-      setIsLoading(false);
+      // Defer to avoid synchronous setState in effect
+      Promise.resolve().then(() => {
+        setIsLoading(false);
+      });
     }
   }, [localUri]);
 

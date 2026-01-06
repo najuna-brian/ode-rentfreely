@@ -16,12 +16,11 @@ const MainAppNavigator: React.FC = () => {
   const navigation = useNavigation();
   const [isConfigured, setIsConfigured] = useState<boolean | null>(null);
 
-  const checkConfiguration = async () => {
-    const serverUrl = await serverConfigService.getServerUrl();
-    setIsConfigured(!!serverUrl);
-  };
-
   useEffect(() => {
+    const checkConfiguration = async () => {
+      const serverUrl = await serverConfigService.getServerUrl();
+      setIsConfigured(!!serverUrl);
+    };
     checkConfiguration();
   }, []);
 
@@ -68,7 +67,11 @@ const MainAppNavigator: React.FC = () => {
 
   useFocusEffect(
     React.useCallback(() => {
-      checkConfiguration();
+      const checkConfig = async () => {
+        const serverUrl = await serverConfigService.getServerUrl();
+        setIsConfigured(!!serverUrl);
+      };
+      checkConfig();
     }, []),
   );
 

@@ -121,11 +121,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
               <Text style={styles.headerTitle}>Menu</Text>
               {allowClose && (
                 <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-                  <Icon
-                    name="close"
-                    size={24}
-                    color={colors.neutral.black}
-                  />
+                  <Icon name="close" size={24} color={colors.neutral.black} />
                 </TouchableOpacity>
               )}
             </View>
@@ -134,11 +130,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
             {userInfo ? (
               <View style={styles.userSection}>
                 <View style={styles.userAvatar}>
-                  <Icon
-                    name="account"
-                    size={32}
-                    color={colors.neutral.white}
-                  />
+                  <Icon name="account" size={32} color={colors.neutral.white} />
                 </View>
                 <View style={styles.userInfo}>
                   <Text style={styles.userName}>{userInfo.username}</Text>
@@ -210,7 +202,7 @@ const styles = StyleSheet.create({
   },
   backdrop: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: colors.ui.background,
   },
   drawer: {
     position: 'absolute',

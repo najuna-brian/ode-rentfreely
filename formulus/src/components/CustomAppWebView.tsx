@@ -5,6 +5,7 @@ import React, {
   forwardRef,
   useImperativeHandle,
   useMemo,
+  SyntheticEvent,
 } from 'react';
 import {View, ActivityIndicator, AppState, StyleSheet} from 'react-native';
 import {WebView} from 'react-native-webview';
@@ -21,7 +22,7 @@ export interface CustomAppWebViewHandle {
   goForward: () => void;
   injectJavaScript: (script: string) => void;
   sendFormInit: (formData: FormInitData) => Promise<void>;
-  sendAttachmentData: (attachmentData: any) => Promise<void>;
+  sendAttachmentData: (attachmentData: File) => Promise<void>;
 }
 
 interface CustomAppWebViewProps {
@@ -152,7 +153,8 @@ const CustomAppWebView = forwardRef<
           }
           return;
         }
-      } catch (e) {
+      } catch (error: unknown) {
+        console.error('Error parsing event data:', error);
         // If parsing fails, let the original handler deal with it
       }
 
@@ -174,13 +176,13 @@ const CustomAppWebView = forwardRef<
         webViewRef.current?.injectJavaScript(script),
       sendFormInit: (formData: FormInitData) =>
         messageManager.sendFormInit(formData),
-      sendAttachmentData: (attachmentData: any) =>
+      sendAttachmentData: (attachmentData: File) =>
         messageManager.sendAttachmentData(attachmentData),
     }),
     [messageManager],
   );
 
-  const handleError = (syntheticEvent: any) => {
+  const handleError = (syntheticEvent: SyntheticEvent) => {
     const {nativeEvent} = syntheticEvent;
     console.error('WebView error:', nativeEvent);
   };

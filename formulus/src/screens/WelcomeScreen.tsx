@@ -5,6 +5,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {MainAppStackParamList} from '../types/NavigationTypes';
 import {colors} from '../theme/colors';
+import logo from '../../assets/images/logo.png';
 
 type WelcomeScreenNavigationProp = StackNavigationProp<MainAppStackParamList>;
 
@@ -18,11 +19,7 @@ const WelcomeScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.content}>
-        <Image
-          source={require('../../assets/images/logo.png')}
-          style={styles.logo}
-          resizeMode="contain"
-        />
+        <Image source={logo} style={styles.logo} resizeMode="contain" />
         <Text style={styles.title}>Welcome to Formulus</Text>
         <Text style={styles.subtitle}>
           Configure your server to get started
