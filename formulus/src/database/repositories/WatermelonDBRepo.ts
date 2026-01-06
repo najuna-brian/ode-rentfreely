@@ -69,7 +69,8 @@ export class WatermelonDBRepo implements LocalRepoInterface {
           author = user?.username ?? '';
         }
       } catch {}
-      const deviceId: string = input.deviceId ?? (await clientIdService.getClientId());
+      const deviceId: string =
+        input.deviceId ?? (await clientIdService.getClientId());
 
       // Stringify geolocation for storage
       const stringifiedGeolocation = geolocation
