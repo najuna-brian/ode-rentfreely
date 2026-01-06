@@ -813,7 +813,7 @@ class SynkronusApi {
         client_id: await clientIdService.getClientId(),
         records: localChanges.map(ObservationMapper.toApi),
         transmission_id: transmissionId,
-      };
+      } as any;
 
       console.debug(
         `Pushing ${localChanges.length} observations with transmission ID: ${transmissionId}`,

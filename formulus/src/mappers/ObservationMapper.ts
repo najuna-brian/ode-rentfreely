@@ -30,12 +30,14 @@ export class ObservationMapper {
       syncedAt: apiObs.synced_at ? new Date(apiObs.synced_at) : null,
       deleted: apiObs.deleted || false,
       geolocation: apiObs.geolocation || null,
+      author: (apiObs as any).author ?? null,
+      deviceId: (apiObs as any).device_id ?? null,
     };
   }
 
   // Domain -> API
   static toApi(domainObs: DomainObservation): ApiObservation {
-    return {
+    const payload: any = {
       observation_id: domainObs.observationId,
       form_type: domainObs.formType,
       form_version: domainObs.formVersion,
@@ -46,6 +48,9 @@ export class ObservationMapper {
       deleted: domainObs.deleted,
       geolocation: domainObs.geolocation,
     };
+    if (domainObs.author) payload.author = domainObs.author;
+    if (domainObs.deviceId) payload.device_id = domainObs.deviceId;
+    return payload as ApiObservation;
   }
 
   // Domain -> DB Model
@@ -90,6 +95,8 @@ export class ObservationMapper {
       syncedAt: model.syncedAt,
       deleted: model.deleted,
       geolocation,
+      author: (model as any).author ?? null,
+      deviceId: (model as any).deviceId ?? null,
     };
   }
 }
