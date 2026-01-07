@@ -1113,11 +1113,11 @@ import MyCustomQuestionRenderer, {
 // 2. Add to customRenderers array
 const customRenderers = [
   ...materialRenderers,
-  {tester: photoQuestionTester, renderer: PhotoQuestionRenderer},
-  {tester: qrcodeQuestionTester, renderer: QrcodeQuestionRenderer},
-  {tester: myCustomQuestionTester, renderer: MyCustomQuestionRenderer}, // Add this line
-  {tester: swipeLayoutTester, renderer: SwipeLayoutRenderer},
-  {tester: finalizeTester, renderer: FinalizeRenderer},
+  { tester: photoQuestionTester, renderer: PhotoQuestionRenderer },
+  { tester: qrcodeQuestionTester, renderer: QrcodeQuestionRenderer },
+  { tester: myCustomQuestionTester, renderer: MyCustomQuestionRenderer }, // Add this line
+  { tester: swipeLayoutTester, renderer: SwipeLayoutRenderer },
+  { tester: finalizeTester, renderer: FinalizeRenderer },
 ];
 ```
 

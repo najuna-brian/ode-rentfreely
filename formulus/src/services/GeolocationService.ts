@@ -1,10 +1,13 @@
 import Geolocation from 'react-native-geolocation-service';
-import {ObservationGeolocation, GeolocationConfig} from '../types/Geolocation';
+import {
+  ObservationGeolocation,
+  GeolocationConfig,
+} from '../types/Geolocation';
 import {
   ensureLocationPermission,
   hasLocationPermission,
 } from './LocationPermissions';
-import {RESULTS} from 'react-native-permissions';
+import { RESULTS } from 'react-native-permissions';
 
 /**
  * Service for on-demand geolocation capture for observations

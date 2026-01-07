@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -8,16 +8,16 @@ import {
   ActivityIndicator,
   Alert,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {useForms} from '../hooks/useForms';
-import {FormCard, EmptyState} from '../components/common';
-import {openFormplayerFromNative} from '../webview/FormulusMessageHandlers';
-import {useFocusEffect} from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useForms } from '../hooks/useForms';
+import { FormCard, EmptyState } from '../components/common';
+import { openFormplayerFromNative } from '../webview/FormulusMessageHandlers';
+import { useFocusEffect } from '@react-navigation/native';
 import colors from '../theme/colors';
-import {FormSpec} from '../services';
+import { FormSpec } from '../services';
 
 const FormsScreen: React.FC = () => {
-  const {forms, loading, error, refresh, getObservationCount} = useForms();
+  const { forms, loading, error, refresh, getObservationCount } = useForms();
   const [refreshing, setRefreshing] = useState<boolean>(false);
 
   useFocusEffect(
@@ -50,7 +50,7 @@ const FormsScreen: React.FC = () => {
     }
   };
 
-  const renderForm = ({item}: {item: FormSpec}) => {
+  const renderForm = ({ item }: { item: FormSpec }) => {
     const observationCount = getObservationCount(item.id);
     return (
       <FormCard

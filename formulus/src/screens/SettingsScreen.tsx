@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useMemo} from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -11,22 +11,22 @@ import {
   Alert,
   AlertButton,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {useNavigation} from '@react-navigation/native';
-import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import * as Keychain from 'react-native-keychain';
-import {login} from '../api/synkronus/Auth';
-import {serverConfigService} from '../services/ServerConfigService';
+import { login } from '../api/synkronus/Auth';
+import { serverConfigService } from '../services/ServerConfigService';
 import QRScannerModal, {
   ScannerModalResults,
 } from '../components/QRScannerModal';
-import {QRSettingsService} from '../services/QRSettingsService';
-import {MainTabParamList} from '../types/NavigationTypes';
-import {colors} from '../theme/colors';
+import { QRSettingsService } from '../services/QRSettingsService';
+import { MainTabParamList } from '../types/NavigationTypes';
+import { colors } from '../theme/colors';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {ToastService} from '../services/ToastService';
-import {serverSwitchService} from '../services/ServerSwitchService';
-import {syncService} from '../services/SyncService';
+import { ToastService } from '../services/ToastService';
+import { serverSwitchService } from '../services/ServerSwitchService';
+import { syncService } from '../services/SyncService';
 import Logo from '../../assets/images/logo.png';
 
 type SettingsScreenNavigationProp = BottomTabNavigationProp<
@@ -168,7 +168,9 @@ const SettingsScreen = () => {
                 },
               ];
 
-          Alert.alert('Switch server?', message, buttons, {cancelable: false});
+          Alert.alert('Switch server?', message, buttons, {
+            cancelable: false,
+          });
         });
       } catch (error) {
         console.error('Failed to prepare server switch:', error);

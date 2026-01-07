@@ -1,9 +1,9 @@
-import {synkronusApi} from '../api/synkronus';
+import { synkronusApi } from '../api/synkronus';
 import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {SyncProgress} from '../contexts/SyncContext';
-import {notificationService} from './NotificationService';
-import {FormService} from './FormService';
+import { SyncProgress } from '../contexts/SyncContext';
+import { notificationService } from './NotificationService';
+import { FormService } from './FormService';
 import {autoLogin, isUnauthorizedError} from '../api/synkronus/Auth';
 type SyncStatusCallback = (status: string) => void;
 type SyncProgressDetailCallback = (progress: SyncProgress) => void;

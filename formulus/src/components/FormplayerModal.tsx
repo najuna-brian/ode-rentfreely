@@ -26,12 +26,12 @@ import {
   resolveFormOperationByType,
   setActiveFormplayerModal,
 } from '../webview/FormulusMessageHandlers';
-import {FormCompletionResult} from '../webview/FormulusInterfaceDefinition';
+import { FormCompletionResult } from '../webview/FormulusInterfaceDefinition';
 
-import {databaseService} from '../database';
-import {colors} from '../theme/colors';
-import {FormSpec} from '../services'; // FormService will be imported directly
-import {ExtensionService} from '../services/ExtensionService';
+import { databaseService } from '../database';
+import { colors } from '../theme/colors';
+import { FormSpec } from '../services'; // FormService will be imported directly
+import { ExtensionService } from '../services/ExtensionService';
 import RNFS from 'react-native-fs';
 
 interface FormplayerModalProps {
@@ -54,7 +54,7 @@ export interface FormplayerModalHandle {
 }
 
 const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
-  ({visible, onClose}, ref) => {
+  ({ visible, onClose }, ref) => {
     const webViewRef = useRef<CustomAppWebViewHandle>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const colorScheme = useColorScheme();
@@ -313,7 +313,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
         formType: string;
         finalData: Record<string, unknown>;
       }): Promise<string> => {
-        const {formType, finalData} = data;
+        const { formType, finalData } = data;
         console.log('FormplayerModal: handleSubmission called', {
           formType,
           finalData,
@@ -422,7 +422,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
     useEffect(() => {
       if (visible) {
         // Register this modal as the active one for handling submissions
-        setActiveFormplayerModal({handleSubmission});
+        setActiveFormplayerModal({ handleSubmission });
       } else {
         // Unregister when modal is closed
         setActiveFormplayerModal(null);
@@ -438,7 +438,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
       }
     }, [visible, handleSubmission]);
 
-    useImperativeHandle(ref, () => ({initializeForm, handleSubmission}));
+    useImperativeHandle(ref, () => ({ initializeForm, handleSubmission }));
 
     return (
       <Modal
@@ -545,7 +545,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
     shadowColor: colors.neutral.black,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,

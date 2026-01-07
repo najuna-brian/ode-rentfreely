@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -9,16 +9,16 @@ import {
   Alert,
   RefreshControl,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {FormService, FormSpec} from '../services';
-import {Observation} from '../database/models/Observation';
-import {openFormplayerFromNative} from '../webview/FormulusMessageHandlers';
-import {ObservationCard, EmptyState} from '../components/common';
-import {useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {MainAppStackParamList} from '../types/NavigationTypes';
-import {colors} from '../theme/colors';
+import { FormService, FormSpec } from '../services';
+import { Observation } from '../database/models/Observation';
+import { openFormplayerFromNative } from '../webview/FormulusMessageHandlers';
+import { ObservationCard, EmptyState } from '../components/common';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MainAppStackParamList } from '../types/NavigationTypes';
+import { colors } from '../theme/colors';
 
 type FormManagementScreenNavigationProp = StackNavigationProp<
   MainAppStackParamList,
@@ -169,7 +169,7 @@ const FormManagementScreen = () => {
         'Confirm Delete',
         'Are you sure you want to delete this observation?',
         [
-          {text: 'Cancel', style: 'cancel'},
+          { text: 'Cancel', style: 'cancel' },
           {
             text: 'Delete',
             style: 'destructive',
@@ -199,7 +199,7 @@ const FormManagementScreen = () => {
         'Reset Database',
         'Are you sure you want to delete ALL observations? This action cannot be undone.',
         [
-          {text: 'Cancel', style: 'cancel'},
+          { text: 'Cancel', style: 'cancel' },
           {
             text: 'Reset Database',
             style: 'destructive',
@@ -246,7 +246,7 @@ const FormManagementScreen = () => {
   };
 
   // Render a form spec item
-  const renderFormSpecItem = ({item}: {item: FormSpec}) => {
+  const renderFormSpecItem = ({ item }: { item: FormSpec }) => {
     const formObservations = observations[item.id] || [];
     const isExpanded = expandedFormId === item.id;
 
@@ -415,7 +415,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     overflow: 'hidden',
     shadowColor: colors.neutral.black,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,

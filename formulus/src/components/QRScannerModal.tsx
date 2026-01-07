@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Modal,
   View,
@@ -15,8 +15,8 @@ import {
   useCameraPermission,
   CodeType,
 } from 'react-native-vision-camera';
-import {colors} from '../theme/colors';
-const {width} = Dimensions.get('window');
+import { colors } from '../theme/colors';
+const { width } = Dimensions.get('window');
 
 export interface ScannerModalResults {
   fieldId: string | undefined;
@@ -45,7 +45,7 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
 }) => {
   const [isScanning, setIsScanning] = useState(true);
   const [scannedData, setScannedData] = useState<string | null>(null);
-  const {hasPermission, requestPermission} = useCameraPermission();
+  const { hasPermission, requestPermission } = useCameraPermission();
   const devices = useCameraDevices();
   const device = devices.find(d => d.position === 'back');
   const resultSentRef = useRef(false);

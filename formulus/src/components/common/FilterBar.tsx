@@ -7,10 +7,10 @@ import {
   TextInput,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {SortOption, FilterOption} from './FilterBar.types';
-import {colors} from '../../theme/colors';
+import { SortOption, FilterOption } from './FilterBar.types';
+import { colors } from '../../theme/colors';
 
-export type {SortOption, FilterOption};
+export type { SortOption, FilterOption };
 
 interface FilterBarProps {
   searchQuery: string;
@@ -31,17 +31,17 @@ const FilterBar: React.FC<FilterBarProps> = ({
   onFilterChange,
   showFilter = false,
 }) => {
-  const sortOptions: {value: SortOption; label: string}[] = [
-    {value: 'date-desc', label: 'Newest'},
-    {value: 'date-asc', label: 'Oldest'},
-    {value: 'form-type', label: 'Form Type'},
-    {value: 'sync-status', label: 'Sync Status'},
+  const sortOptions: { value: SortOption; label: string }[] = [
+    { value: 'date-desc', label: 'Newest' },
+    { value: 'date-asc', label: 'Oldest' },
+    { value: 'form-type', label: 'Form Type' },
+    { value: 'sync-status', label: 'Sync Status' },
   ];
 
-  const filterOptions: {value: FilterOption; label: string}[] = [
-    {value: 'all', label: 'All'},
-    {value: 'synced', label: 'Synced'},
-    {value: 'pending', label: 'Pending'},
+  const filterOptions: { value: FilterOption; label: string }[] = [
+    { value: 'all', label: 'All' },
+    { value: 'synced', label: 'Synced' },
+    { value: 'pending', label: 'Pending' },
   ];
 
   return (

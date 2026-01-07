@@ -1,14 +1,14 @@
-import React, {useEffect, useState} from 'react';
-import {BackHandler, Platform} from 'react-native';
-import {createStackNavigator} from '@react-navigation/stack';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import React, { useEffect, useState } from 'react';
+import { BackHandler, Platform } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import MainTabNavigator from './MainTabNavigator';
 import WelcomeScreen from '../screens/WelcomeScreen';
 import FormManagementScreen from '../screens/FormManagementScreen';
 import ObservationDetailScreen from '../screens/ObservationDetailScreen';
-import {MainAppStackParamList} from '../types/NavigationTypes';
-import {serverConfigService} from '../services/ServerConfigService';
-import {colors} from '../theme/colors';
+import { MainAppStackParamList } from '../types/NavigationTypes';
+import { serverConfigService } from '../services/ServerConfigService';
+import { colors } from '../theme/colors';
 
 const Stack = createStackNavigator<MainAppStackParamList>();
 
@@ -32,7 +32,6 @@ const MainAppNavigator: React.FC = () => {
     }
 
     const onBackPress = () => {
-      // @ts-expect-error: navigation type is generic here, but getState exists at runtime
       const state = navigation.getState?.();
 
       // Only handle back when we're in a stack with more than one route and
@@ -46,7 +45,6 @@ const MainAppNavigator: React.FC = () => {
         typeof state.index === 'number' &&
         state.index > 0
       ) {
-        // @ts-expect-error: goBack exists at runtime
         navigation.goBack();
         return true;
       }
@@ -82,30 +80,30 @@ const MainAppNavigator: React.FC = () => {
   return (
     <Stack.Navigator
       screenOptions={{
-        headerStyle: {backgroundColor: colors.neutral.white},
+        headerStyle: { backgroundColor: colors.neutral.white },
         headerTintColor: colors.neutral.black,
-        headerTitleStyle: {color: colors.neutral.black},
+        headerTitleStyle: { color: colors.neutral.black },
       }}
       initialRouteName={isConfigured ? 'MainApp' : 'Welcome'}>
       <Stack.Screen
         name="Welcome"
         component={WelcomeScreen}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="MainApp"
         component={MainTabNavigator}
-        options={{headerShown: false}}
+        options={{ headerShown: false }}
       />
       <Stack.Screen
         name="FormManagement"
         component={FormManagementScreen}
-        options={{title: 'Form Management'}}
+        options={{ title: 'Form Management' }}
       />
       <Stack.Screen
         name="ObservationDetail"
         component={ObservationDetailScreen}
-        options={{title: 'Observation Details'}}
+        options={{ title: 'Observation Details' }}
       />
     </Stack.Navigator>
   );

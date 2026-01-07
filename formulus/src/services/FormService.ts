@@ -1,4 +1,4 @@
-import {databaseService} from '../database/DatabaseService';
+import { databaseService } from '../database/DatabaseService';
 import {
   Observation,
   NewObservationInput,
@@ -384,14 +384,14 @@ export class FormService {
       // Create a test observation with person form type
       const testId1 = await localRepo.saveObservation({
         formType: 'person',
-        data: {test: 'data1'},
+        data: { test: 'data1' },
       });
       console.log('Created test observation 1:', testId1);
 
       // Create another test observation with a different form type
       const testId2 = await localRepo.saveObservation({
         formType: 'test_form',
-        data: {test: 'data2'},
+        data: { test: 'data2' },
       });
       console.log('Created test observation 2:', testId2);
 

@@ -1,18 +1,18 @@
-import React, {useEffect, useState} from 'react';
-import {NavigationContainer, DefaultTheme} from '@react-navigation/native';
-import {StatusBar} from 'react-native';
-import {SafeAreaProvider} from 'react-native-safe-area-context';
+import React, { useEffect, useState } from 'react';
+import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
+import { StatusBar } from 'react-native';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import 'react-native-url-polyfill/auto';
-import {FormService} from './src/services/FormService';
-import {SyncProvider} from './src/contexts/SyncContext';
-import {appEvents, Listener} from './src/webview/FormulusMessageHandlers.ts';
+import { FormService } from './src/services/FormService';
+import { SyncProvider } from './src/contexts/SyncContext';
+import { appEvents, Listener } from './src/webview/FormulusMessageHandlers.ts';
 import FormplayerModal, {
   FormplayerModalHandle,
 } from './src/components/FormplayerModal';
 import QRScannerModal from './src/components/QRScannerModal';
 import SignatureCaptureModal from './src/components/SignatureCaptureModal';
 import MainAppNavigator from './src/navigation/MainAppNavigator';
-import {FormInitData} from './src/webview/FormulusInterfaceDefinition.ts';
+import { FormInitData } from './src/webview/FormulusInterfaceDefinition.ts';
 
 const LightNavigationTheme = {
   ...DefaultTheme,
@@ -79,7 +79,8 @@ function App(): React.JSX.Element {
         return;
       }
 
-      const {formType, observationId, params, savedData, operationId} = config;
+      const { formType, observationId, params, savedData, operationId } =
+        config;
       formplayerVisibleRef.current = true;
       setFormplayerVisible(true);
 

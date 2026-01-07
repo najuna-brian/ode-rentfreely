@@ -20,7 +20,7 @@ export class ServerConfigService {
       await AsyncStorage.setItem(SERVER_URL_KEY, serverUrl);
       await AsyncStorage.setItem(
         SERVER_URL_STORAGE_KEY,
-        JSON.stringify({serverUrl}),
+        JSON.stringify({ serverUrl }),
       );
     } catch (error) {
       console.error('Failed to save server URL:', error);
@@ -60,18 +60,18 @@ export class ServerConfigService {
 
   async testConnection(
     serverUrl: string,
-  ): Promise<{success: boolean; message: string}> {
+  ): Promise<{ success: boolean; message: string }> {
     if (!serverUrl.trim()) {
-      return {success: false, message: 'Please enter a server URL'};
+      return { success: false, message: 'Please enter a server URL' };
     }
 
     try {
       const url = new URL(serverUrl);
       if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-        return {success: false, message: 'URL must be HTTP or HTTPS'};
+        return { success: false, message: 'URL must be HTTP or HTTPS' };
       }
     } catch {
-      return {success: false, message: 'Please enter a valid URL'};
+      return { success: false, message: 'Please enter a valid URL' };
     }
 
     try {
@@ -90,7 +90,7 @@ export class ServerConfigService {
       clearTimeout(timeoutId);
 
       if (response.ok) {
-        return {success: true, message: 'Connection successful!'};
+        return { success: true, message: 'Connection successful!' };
       } else {
         return {
           success: false,

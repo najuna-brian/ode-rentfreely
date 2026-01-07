@@ -1,4 +1,4 @@
-import {LocalRepoInterface, Observation} from '../LocalRepoInterface';
+import { LocalRepoInterface, Observation } from '../LocalRepoInterface';
 
 /**
  * Mock implementation of LocalRepoInterface for testing
@@ -103,7 +103,7 @@ describe('LocalRepo', () => {
     const testObservation: Partial<Observation> = {
       formType: 'test-form',
       formVersion: '1.0',
-      data: {field1: 'value1', field2: 'value2'},
+      data: { field1: 'value1', field2: 'value2' },
       deleted: false,
     };
 
@@ -142,9 +142,18 @@ describe('LocalRepo', () => {
     const formType2 = 'form-type-2';
 
     // Create test observations
-    await repo.saveObservation({formType: formType1, data: {test: 'data1'}});
-    await repo.saveObservation({formType: formType1, data: {test: 'data2'}});
-    await repo.saveObservation({formType: formType2, data: {test: 'data3'}});
+    await repo.saveObservation({
+      formType: formType1,
+      data: { test: 'data1' },
+    });
+    await repo.saveObservation({
+      formType: formType1,
+      data: { test: 'data2' },
+    });
+    await repo.saveObservation({
+      formType: formType2,
+      data: { test: 'data3' },
+    });
 
     // Act
     const observations = await repo.getObservationsByFormId(formType1);
@@ -160,7 +169,7 @@ describe('LocalRepo', () => {
     const testObservation: Partial<Observation> = {
       formType: 'test-form',
       formVersion: '1.0',
-      data: {field1: 'original'},
+      data: { field1: 'original' },
       deleted: false,
     };
 
@@ -168,7 +177,7 @@ describe('LocalRepo', () => {
 
     // Act
     const updateSuccess = await repo.updateObservation(id, {
-      data: {field1: 'updated'},
+      data: { field1: 'updated' },
     });
 
     // Assert
@@ -188,7 +197,7 @@ describe('LocalRepo', () => {
     // Arrange
     const testObservation: Partial<Observation> = {
       formType: 'test-form',
-      data: {field1: 'value1'},
+      data: { field1: 'value1' },
     };
 
     const id = await repo.saveObservation(testObservation);
@@ -208,7 +217,7 @@ describe('LocalRepo', () => {
     // Arrange
     const testObservation: Partial<Observation> = {
       formType: 'test-form',
-      data: {field1: 'value1'},
+      data: { field1: 'value1' },
     };
 
     const id = await repo.saveObservation(testObservation);

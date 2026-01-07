@@ -1,13 +1,13 @@
-import React, {useEffect, useState, useRef} from 'react';
-import {StyleSheet, View, ActivityIndicator, Platform} from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { StyleSheet, View, ActivityIndicator, Platform } from 'react-native';
 import RNFS from 'react-native-fs';
 import CustomAppWebView, {
   CustomAppWebViewHandle,
 } from '../components/CustomAppWebView';
-import {colors} from '../theme/colors';
+import { colors } from '../theme/colors';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const HomeScreen = ({navigation}: {navigation: any}) => {
+const HomeScreen = ({ navigation }: { navigation: any }) => {
   const [localUri, setLocalUri] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const customAppRef = useRef<CustomAppWebViewHandle>(null);

@@ -1,6 +1,6 @@
 // Type definitions for WebView message handlers
 // Must match the injected interface in FormulusInterfaceDefinition.ts
-import {Observation} from '../database/models/Observation';
+import { Observation } from '../database/models/Observation';
 import {
   FormInitData,
   FormCompletionResult,

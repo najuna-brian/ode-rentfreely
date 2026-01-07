@@ -1,4 +1,4 @@
-import {synkronusApi} from './index';
+import { synkronusApi } from './index';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Keychain from 'react-native-keychain';
 
@@ -70,10 +70,10 @@ export const login = async (
   synkronusApi.clearTokenCache();
 
   const res = await api.login({
-    loginRequest: {username, password},
+    loginRequest: { username, password },
   });
 
-  const {token, refreshToken: refreshTokenValue, expiresAt} = res.data;
+  const { token, refreshToken: refreshTokenValue, expiresAt } = res.data;
 
   await AsyncStorage.setItem('@token', token);
   await AsyncStorage.setItem('@refreshToken', refreshTokenValue);
@@ -139,7 +139,7 @@ export const refreshToken = async () => {
       refreshToken: (await AsyncStorage.getItem('@refreshToken')) ?? '',
     },
   });
-  const {token, refreshToken: refreshTokenValue, expiresAt} = res.data;
+  const { token, refreshToken: refreshTokenValue, expiresAt } = res.data;
   await AsyncStorage.setItem('@token', token);
   await AsyncStorage.setItem('@refreshToken', refreshTokenValue);
   await AsyncStorage.setItem('@tokenExpiresAt', expiresAt.toString());

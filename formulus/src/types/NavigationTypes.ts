@@ -6,12 +6,12 @@ export type MainTabParamList = {
   Settings: undefined;
   About: undefined;
   Help: undefined;
-  More: {openDrawer?: number} | undefined;
+  More: { openDrawer?: number } | undefined;
 };
 
 export type MainAppStackParamList = {
   Welcome: undefined;
   MainApp: undefined;
   FormManagement: undefined;
-  ObservationDetail: {observationId: string};
+  ObservationDetail: { observationId: string };
 };

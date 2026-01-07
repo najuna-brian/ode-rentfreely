@@ -1,4 +1,4 @@
-import React, {useState, useRef} from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Modal,
   View,
@@ -8,9 +8,9 @@ import {
   Alert,
   Dimensions,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import Signature, {SignatureViewRef} from 'react-native-signature-canvas';
-import {colors} from '../theme/colors';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Signature, { SignatureViewRef } from 'react-native-signature-canvas';
+import { colors } from '../theme/colors';
 
 interface SignatureCaptureModalProps {
   visible: boolean;
@@ -27,7 +27,7 @@ const SignatureCaptureModal: React.FC<SignatureCaptureModalProps> = ({
 }) => {
   const [_isCapturing, setIsCapturing] = useState(false);
   const signatureRef = useRef<SignatureViewRef>(null);
-  const {width, height} = Dimensions.get('window');
+  const { width, height } = Dimensions.get('window');
 
   const handleSignatureEnd = () => {
     setIsCapturing(false);
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     elevation: 3,
     shadowColor: colors.neutral.black,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
   },

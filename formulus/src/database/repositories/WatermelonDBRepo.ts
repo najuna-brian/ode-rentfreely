@@ -1,16 +1,16 @@
-import {Database, Q, Collection} from '@nozbe/watermelondb';
-import {ObservationModel} from '../models/ObservationModel';
-import {LocalRepoInterface} from './LocalRepoInterface';
+import { Database, Q, Collection } from '@nozbe/watermelondb';
+import { ObservationModel } from '../models/ObservationModel';
+import { LocalRepoInterface } from './LocalRepoInterface';
 import {
   Observation,
   NewObservationInput,
   UpdateObservationInput,
 } from '../models/Observation';
-import {ObservationMapper} from '../../mappers/ObservationMapper';
-import {geolocationService} from '../../services/GeolocationService';
-import {ToastService} from '../../services/ToastService';
-import {clientIdService} from '../../services/ClientIdService';
-import {getUserInfo} from '../../api/synkronus/Auth';
+import { ObservationMapper } from '../../mappers/ObservationMapper';
+import { geolocationService } from '../../services/GeolocationService';
+import { ToastService } from '../../services/ToastService';
+import { clientIdService } from '../../services/ClientIdService';
+import { getUserInfo } from '../../api/synkronus/Auth';
 
 /**
  * WatermelonDB implementation of the LocalRepoInterface

@@ -2,13 +2,13 @@
 This is where the actual implementation of the methods happens on the React Native side. 
 It handles the messages received from the WebView and executes the corresponding native functionality.
 */
-import {GeolocationService} from '../services/GeolocationService';
-import {WebViewMessageEvent, WebView} from 'react-native-webview';
+import { GeolocationService } from '../services/GeolocationService';
+import { WebViewMessageEvent, WebView } from 'react-native-webview';
 import RNFS from 'react-native-fs';
 import * as Keychain from 'react-native-keychain';
-import {Alert} from 'react-native';
+import { Alert } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
-import NitroSound, {AudioSet} from 'react-native-nitro-sound';
+import NitroSound, { AudioSet } from 'react-native-nitro-sound';
 import {
   pick,
   types,
@@ -20,9 +20,9 @@ import {
   FormCompletionResult,
   FormInfo,
 } from './FormulusInterfaceDefinition';
-import {FormulusMessageHandlers} from './FormulusMessageHandlers.types';
-import {FormService} from '../services/FormService';
-import {Observation, ObservationData} from '../database/models/Observation';
+import { FormulusMessageHandlers } from './FormulusMessageHandlers.types';
+import { FormService } from '../services/FormService';
+import { Observation, ObservationData } from '../database/models/Observation';
 
 export type HandlerArgs = {
   data: unknown;
@@ -229,10 +229,10 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
       formType: string;
       finalData: Record<string, unknown>;
     }) => {
-      const {formType, finalData} = data;
+      const { formType, finalData } = data;
       console.log(
         'FormulusMessageHandlers: onSubmitObservation handler invoked.',
-        {formType, finalData},
+        { formType, finalData },
       );
 
       // Use the active FormplayerModal's handleSubmission method if available
@@ -958,7 +958,7 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
     ) => {
       console.log(
         'FormulusMessageHandlers: onGetObservations handler invoked.',
-        {formType, isDraft, includeDeleted},
+        { formType, isDraft, includeDeleted },
       );
       if (typeof formType !== 'string') {
         console.debug(
@@ -977,7 +977,7 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
         data.observationId ?? null,
       );
     },
-    onFormplayerInitialized: (data: {formType?: string; status?: string}) => {
+    onFormplayerInitialized: (data: { formType?: string; status?: string }) => {
       console.log(
         'FormulusMessageHandlers: onFormplayerInitialized handler invoked.',
         data,

@@ -3,9 +3,9 @@
  */
 
 import React from 'react';
-import {render} from '@testing-library/react-native';
-import {View} from 'react-native';
-import {jest, describe, test, expect} from '@jest/globals';
+import { render } from '@testing-library/react-native';
+import { View } from 'react-native';
+import { jest, describe, test, expect } from '@jest/globals';
 
 // Mock the App component instead of trying to render the real one
 // This avoids issues with native modules and database initialization
@@ -24,7 +24,7 @@ describe('App', () => {
   });
 
   test('renders correctly with mocked implementation', () => {
-    const {getByTestId} = render(<App />);
+    const { getByTestId } = render(<App />);
     // Our mock returns null, so we shouldn't find any elements
     expect(getByTestId('mocked-app')).toBeTruthy();
   });

@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,12 +8,12 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Observation} from '../database/models/Observation';
-import {FormService} from '../services/FormService';
-import {openFormplayerFromNative} from '../webview/FormulusMessageHandlers';
-import {useNavigation} from '@react-navigation/native';
+import { Observation } from '../database/models/Observation';
+import { FormService } from '../services/FormService';
+import { openFormplayerFromNative } from '../webview/FormulusMessageHandlers';
+import { useNavigation } from '@react-navigation/native';
 import colors from '../theme/colors';
 
 interface ObservationDetailScreenProps {
@@ -27,7 +27,7 @@ interface ObservationDetailScreenProps {
 const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
   route,
 }) => {
-  const {observationId} = route.params;
+  const { observationId } = route.params;
   const navigation = useNavigation();
   const [observation, setObservation] = useState<Observation | null>(null);
   const [formName, setFormName] = useState<string>('');
@@ -107,7 +107,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
       'Delete Observation',
       'Are you sure you want to delete this observation? This action cannot be undone.',
       [
-        {text: 'Cancel', style: 'cancel'},
+        { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
@@ -132,7 +132,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
       return (
         <View
           key={key}
-          style={[styles.fieldContainer, {paddingLeft: level * 16}]}>
+          style={[styles.fieldContainer, { paddingLeft: level * 16 }]}>
           <Text style={styles.fieldKey}>{key}:</Text>
           <Text style={styles.fieldValue}>null</Text>
         </View>
@@ -143,7 +143,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
       return (
         <View
           key={key}
-          style={[styles.fieldContainer, {paddingLeft: level * 16}]}>
+          style={[styles.fieldContainer, { paddingLeft: level * 16 }]}>
           <Text style={styles.fieldKey}>{key}:</Text>
           {Object.entries(value).map(([k, v]) =>
             renderDataField(k, v, level + 1),
@@ -156,7 +156,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
       return (
         <View
           key={key}
-          style={[styles.fieldContainer, {paddingLeft: level * 16}]}>
+          style={[styles.fieldContainer, { paddingLeft: level * 16 }]}>
           <Text style={styles.fieldKey}>{key}:</Text>
           {value.map((item, index) => (
             <View key={index} style={styles.arrayItem}>
@@ -174,7 +174,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
     return (
       <View
         key={key}
-        style={[styles.fieldContainer, {paddingLeft: level * 16}]}>
+        style={[styles.fieldContainer, { paddingLeft: level * 16 }]}>
         <Text style={styles.fieldKey}>{key}:</Text>
         <Text style={styles.fieldValue}>{String(value)}</Text>
       </View>

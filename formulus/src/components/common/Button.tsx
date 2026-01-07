@@ -7,7 +7,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import {colors} from '../../theme/colors';
+import { colors } from '../../theme/colors';
 
 export interface ButtonProps {
   title: string;
@@ -61,7 +61,7 @@ const Button: React.FC<ButtonProps> = ({
       testID={testID}
       accessibilityLabel={accessibilityLabel || title}
       accessibilityRole="button"
-      accessibilityState={{disabled: disabled || loading}}>
+      accessibilityState={{ disabled: disabled || loading }}>
       {loading ? (
         <ActivityIndicator
           size="small"

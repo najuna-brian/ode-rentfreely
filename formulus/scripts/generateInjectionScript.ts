@@ -55,7 +55,7 @@ function generateInjectionScript(interfaceFilePath: string): string {
     {
       name: 'openFormplayer',
       parameters: [
-        {name: 'formId', type: 'string', doc: 'The ID of the form to open'},
+        { name: 'formId', type: 'string', doc: 'The ID of the form to open' },
         {
           name: 'params',
           type: 'Record<string, any>',
@@ -578,7 +578,7 @@ if (require.main === module) {
     const outputDir = path.dirname(injectionScriptPath);
     if (!fs.existsSync(outputDir)) {
       console.log(`Creating directory: ${outputDir}`);
-      fs.mkdirSync(outputDir, {recursive: true});
+      fs.mkdirSync(outputDir, { recursive: true });
     }
 
     // Generate and write the injection script

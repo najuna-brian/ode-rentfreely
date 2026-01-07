@@ -1,4 +1,4 @@
-import React, {useEffect, useState, useCallback} from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import {
   View,
   Text,
@@ -10,15 +10,15 @@ import {
   Animated,
   Easing,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {formatRelativeTime} from '../utils/dateUtils';
-import {syncService} from '../services/SyncService';
-import {useSyncContext} from '../contexts/SyncContext';
+import { formatRelativeTime } from '../utils/dateUtils';
+import { syncService } from '../services/SyncService';
+import { useSyncContext } from '../contexts/SyncContext';
 import RNFS from 'react-native-fs';
-import {databaseService} from '../database/DatabaseService';
-import {getUserInfo} from '../api/synkronus/Auth';
+import { databaseService } from '../database/DatabaseService';
+import { getUserInfo } from '../api/synkronus/Auth';
 import colors from '../theme/colors';
 
 const SyncScreen = () => {
@@ -36,7 +36,7 @@ const SyncScreen = () => {
   const [pendingUploads, setPendingUploads] = useState<{
     count: number;
     sizeMB: number;
-  }>({count: 0, sizeMB: 0});
+  }>({ count: 0, sizeMB: 0 });
   const [pendingObservations, setPendingObservations] = useState<number>(0);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [appBundleVersion, setAppBundleVersion] = useState<string>('0');
@@ -58,10 +58,10 @@ const SyncScreen = () => {
       );
       const sizeMB = totalSizeBytes / (1024 * 1024);
 
-      setPendingUploads({count, sizeMB});
+      setPendingUploads({ count, sizeMB });
     } catch (error) {
       console.error('Failed to get pending uploads info:', error);
-      setPendingUploads({count: 0, sizeMB: 0});
+      setPendingUploads({ count: 0, sizeMB: 0 });
     }
   }, []);
 
@@ -91,9 +91,12 @@ const SyncScreen = () => {
       // Add timeout to prevent infinite hanging (30 minutes max)
       const syncPromise = syncService.syncObservations(true);
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(() => {
-          reject(new Error('Sync operation timed out after 30 minutes'));
-        }, 30 * 60 * 1000);
+        setTimeout(
+          () => {
+            reject(new Error('Sync operation timed out after 30 minutes'));
+          },
+          30 * 60 * 1000,
+        );
       });
 
       const finalVersion = await Promise.race([syncPromise, timeoutPromise]);
@@ -200,7 +203,7 @@ const SyncScreen = () => {
       const currentVersion = (await AsyncStorage.getItem('@appVersion')) || '0';
       setAppBundleVersion(currentVersion);
       try {
-        const {synkronusApi} = await import('../api/synkronus/index');
+        const { synkronusApi } = await import('../api/synkronus/index');
         const manifest = await synkronusApi.getManifest();
         setServerBundleVersion(manifest.version);
       } catch {
@@ -276,7 +279,7 @@ const SyncScreen = () => {
       return;
     }
 
-    const {current, total} = syncState.progress;
+    const { current, total } = syncState.progress;
     const percent =
       total && total > 0
         ? Math.max(0, Math.min(100, (current / total) * 100))
@@ -355,7 +358,7 @@ const SyncScreen = () => {
               />
               <Text style={styles.statusCardTitle}>Status</Text>
             </View>
-            <Text style={[styles.statusCardValue, {color: statusColor}]}>
+            <Text style={[styles.statusCardValue, { color: statusColor }]}>
               {status}
             </Text>
             {!syncState.isActive &&
@@ -603,7 +606,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 16,
     shadowColor: colors.neutral.black,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
@@ -640,7 +643,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     shadowColor: colors.neutral.black,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
@@ -676,7 +679,7 @@ const styles = StyleSheet.create({
     padding: 16,
     marginBottom: 16,
     shadowColor: colors.neutral.black,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
@@ -835,7 +838,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 12,
     shadowColor: colors.neutral.black,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,

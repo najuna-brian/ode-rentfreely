@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Observation, ObservationData} from './models/Observation';
-import {geolocationService} from '../services/GeolocationService';
-import {ToastService} from '../services/ToastService';
+import { Observation, ObservationData } from './models/Observation';
+import { geolocationService } from '../services/GeolocationService';
+import { ToastService } from '../services/ToastService';
 
 /**
  * Repository interface for form observations

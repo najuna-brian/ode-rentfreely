@@ -1,6 +1,6 @@
 #!/usr/bin/env ts-node
 
-import {Buffer} from 'buffer';
+import { Buffer } from 'buffer';
 
 // Polyfill Buffer for Node.js environment
 if (typeof global !== 'undefined' && !global.Buffer) {

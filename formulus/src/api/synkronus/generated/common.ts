@@ -12,10 +12,10 @@
  * Do not edit the class manually.
  */
 
-import type {Configuration} from './configuration';
-import type {RequestArgs} from './base';
-import type {AxiosInstance, AxiosResponse} from 'axios';
-import {RequiredError} from './base';
+import type { Configuration } from './configuration';
+import type { RequestArgs } from './base';
+import type { AxiosInstance, AxiosResponse } from 'axios';
+import { RequiredError } from './base';
 
 /**
  *
@@ -194,7 +194,7 @@ export const createRequestFunction = function (
     const axiosRequestArgs = {
       ...axiosArgs.options,
       url:
-        (axios.defaults.baseURL ? '' : configuration?.basePath ?? basePath) +
+        (axios.defaults.baseURL ? '' : (configuration?.basePath ?? basePath)) +
         axiosArgs.url,
     };
     return axios.request<T, R>(axiosRequestArgs);

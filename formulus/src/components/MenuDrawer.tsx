@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,10 +7,13 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {getUserInfo, UserInfo, UserRole} from '../api/synkronus/Auth';
-import {colors} from '../theme/colors';
+import { getUserInfo, UserInfo, UserRole } from '../api/synkronus/Auth';
+import { colors } from '../theme/colors';
 
 interface MenuItem {
   icon: string;
@@ -113,7 +116,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
             onPress={onClose}
           />
         )}
-        <View style={[styles.drawer, {bottom: bottomPadding}]}>
+        <View style={[styles.drawer, { bottom: bottomPadding }]}>
           <SafeAreaView
             style={styles.safeArea}
             edges={['top', 'left', 'right']}>
@@ -212,7 +215,7 @@ const styles = StyleSheet.create({
     maxWidth: 320,
     backgroundColor: colors.neutral.white,
     shadowColor: colors.neutral.black,
-    shadowOffset: {width: -2, height: 0},
+    shadowOffset: { width: -2, height: 0 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 8,

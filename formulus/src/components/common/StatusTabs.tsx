@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import colors from '../../theme/colors';
 
 export interface StatusTab {
@@ -34,7 +34,7 @@ const StatusTabs: React.FC<StatusTabsProps> = ({
               <View
                 style={[
                   styles.dot,
-                  {backgroundColor: tab.iconColor || colors.neutral[500]},
+                  { backgroundColor: tab.iconColor || colors.neutral[500] },
                 ]}
               />
             )}

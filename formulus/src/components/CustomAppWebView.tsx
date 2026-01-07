@@ -7,14 +7,14 @@ import React, {
   useMemo,
   SyntheticEvent,
 } from 'react';
-import {View, ActivityIndicator, AppState, StyleSheet} from 'react-native';
-import {WebView} from 'react-native-webview';
-import {useIsFocused} from '@react-navigation/native';
-import {Platform} from 'react-native';
-import {readFileAssets} from 'react-native-fs';
-import {FormulusWebViewMessageManager} from '../webview/FormulusWebViewHandler';
-import {FormInitData} from '../webview/FormulusInterfaceDefinition';
-import {colors} from '../theme/colors';
+import { View, ActivityIndicator, AppState, StyleSheet } from 'react-native';
+import { WebView } from 'react-native-webview';
+import { useIsFocused } from '@react-navigation/native';
+import { Platform } from 'react-native';
+import { readFileAssets } from 'react-native-fs';
+import { FormulusWebViewMessageManager } from '../webview/FormulusWebViewHandler';
+import { FormInitData } from '../webview/FormulusInterfaceDefinition';
+import { colors } from '../theme/colors';
 
 export interface CustomAppWebViewHandle {
   reload: () => void;
@@ -77,7 +77,7 @@ const consoleLogScript = `
 const CustomAppWebView = forwardRef<
   CustomAppWebViewHandle,
   CustomAppWebViewProps
->(({appUrl, appName, onLoadEndProp}, ref) => {
+>(({ appUrl, appName, onLoadEndProp }, ref) => {
   const webViewRef = useRef<WebView | null>(null);
   const hasLoadedOnceRef = useRef(false);
 
@@ -183,7 +183,7 @@ const CustomAppWebView = forwardRef<
   );
 
   const handleError = (syntheticEvent: SyntheticEvent) => {
-    const {nativeEvent} = syntheticEvent;
+    const { nativeEvent } = syntheticEvent;
     console.error('WebView error:', nativeEvent);
   };
 
@@ -261,7 +261,7 @@ const CustomAppWebView = forwardRef<
   return (
     <WebView
       ref={webViewRef}
-      source={{uri: appUrl}}
+      source={{ uri: appUrl }}
       onMessage={messageManager.handleWebViewMessage}
       onError={handleError}
       onLoadStart={() =>
@@ -296,7 +296,7 @@ const CustomAppWebView = forwardRef<
         }
       }}
       onHttpError={syntheticEvent => {
-        const {nativeEvent} = syntheticEvent;
+        const { nativeEvent } = syntheticEvent;
         console.error('CustomWebView HTTP error:', nativeEvent);
       }}
       injectedJavaScriptBeforeContentLoaded={injectionScript}

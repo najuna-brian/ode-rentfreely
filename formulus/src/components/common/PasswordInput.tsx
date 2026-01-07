@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   TextInput,
   Text,
@@ -10,7 +10,7 @@ import {
   AccessibilityState,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {colors} from '../../theme/colors';
+import { colors } from '../../theme/colors';
 
 export interface PasswordInputProps extends Omit<
   TextInputProps,
@@ -67,7 +67,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
             error && styles.inputError,
             textInputProps.multiline && styles.inputMultiline,
             style,
-            {paddingRight}, // Ensure icon space is always available
+            { paddingRight }, // Ensure icon space is always available
           ]}
           secureTextEntry={!isPasswordVisible}
           placeholderTextColor={
@@ -81,7 +81,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
             'Password input'
           }
           accessibilityRole="text"
-          accessibilityState={{invalid: !!error} as AccessibilityState}
+          accessibilityState={{ invalid: !!error } as AccessibilityState}
         />
         <TouchableOpacity
           style={styles.eyeButton}
@@ -91,7 +91,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
           accessibilityHint={
             isPasswordVisible ? 'Tap to hide password' : 'Tap to show password'
           }
-          hitSlop={{top: 10, bottom: 10, left: 10, right: 10}}>
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Icon
             name={isPasswordVisible ? 'eye-off' : 'eye'}
             size={22}

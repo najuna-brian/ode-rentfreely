@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -67,9 +67,9 @@ const FormTypeSelector: React.FC<FormTypeSelectorProps> = ({
             </View>
 
             <FlatList
-              data={[{id: null, name: placeholder}, ...options]}
+              data={[{ id: null, name: placeholder }, ...options]}
               keyExtractor={item => item.id || 'all'}
-              renderItem={({item}) => (
+              renderItem={({ item }) => (
                 <TouchableOpacity
                   style={[
                     styles.optionItem,
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     maxHeight: '70%',
     shadowColor: colors.neutral.black,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 5,

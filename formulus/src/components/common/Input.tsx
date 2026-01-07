@@ -8,7 +8,7 @@ import {
   ViewStyle,
   AccessibilityState,
 } from 'react-native';
-import {colors} from '../../theme/colors';
+import { colors } from '../../theme/colors';
 
 export interface InputProps extends TextInputProps {
   label?: string;
@@ -35,7 +35,7 @@ const Input: React.FC<InputProps> = ({
         testID={testID}
         accessibilityLabel={label || textInputProps.placeholder || 'Text input'}
         accessibilityRole="text"
-        accessibilityState={{invalid: !!error} as AccessibilityState}
+        accessibilityState={{ invalid: !!error } as AccessibilityState}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>

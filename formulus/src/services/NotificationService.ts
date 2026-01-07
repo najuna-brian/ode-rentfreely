@@ -3,7 +3,7 @@ import notifee, {
   AndroidStyle,
   AndroidAction,
 } from '@notifee/react-native';
-import {SyncProgress} from '../contexts/SyncContext';
+import { SyncProgress } from '../contexts/SyncContext';
 
 class NotificationService {
   private syncNotificationId = 'sync_progress';

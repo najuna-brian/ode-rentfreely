@@ -1,4 +1,4 @@
-import {ToastAndroid, Platform, Alert} from 'react-native';
+import { ToastAndroid, Platform, Alert } from 'react-native';
 
 /**
  * Cross-platform toast notification service

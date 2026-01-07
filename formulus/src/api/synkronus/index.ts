@@ -6,14 +6,14 @@ import {
   DefaultApiSyncPushRequest,
   SyncPushRequest,
 } from './generated';
-import {Observation} from '../../database/models/Observation';
-import {ObservationMapper} from '../../mappers/ObservationMapper';
+import { Observation } from '../../database/models/Observation';
+import { ObservationMapper } from '../../mappers/ObservationMapper';
 import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getApiAuthToken} from './Auth';
-import {databaseService} from '../../database/DatabaseService';
+import { getApiAuthToken } from './Auth';
+import { databaseService } from '../../database/DatabaseService';
 import randomId from '@nozbe/watermelondb/utils/common/randomId';
-import {clientIdService} from '../../services/ClientIdService';
+import { clientIdService } from '../../services/ClientIdService';
 
 interface DownloadResult {
   success: boolean;
@@ -31,7 +31,7 @@ class SynkronusApi {
     const rawSettings = await AsyncStorage.getItem('@settings');
     if (!rawSettings) throw new Error('Missing app settings');
 
-    const {serverUrl} = JSON.parse(rawSettings);
+    const { serverUrl } = JSON.parse(rawSettings);
 
     // If config exists but serverUrl changed, clear cache
     if (this.config && this.config.basePath !== serverUrl) {
@@ -474,7 +474,7 @@ class SynkronusApi {
     }
     const authToken =
       this.fastGetToken_cachedToken ?? (await this.fastGetToken());
-    const downloadHeaders: {[key: string]: string} = {};
+    const downloadHeaders: { [key: string]: string } = {};
     downloadHeaders.Authorization = `Bearer ${authToken}`;
 
     console.debug(`Downloading from: ${url}`);
@@ -597,7 +597,7 @@ class SynkronusApi {
         console.debug(
           `Uploading attachment: ${attachmentId} (${fileStats.size} bytes)`,
         );
-        await api.uploadAttachment({attachmentId, file});
+        await api.uploadAttachment({ attachmentId, file });
 
         // Remove file from pending_upload directory (upload complete)
         // Note: File already exists in main attachments directory from when it was first saved
@@ -692,7 +692,7 @@ class SynkronusApi {
    */
   async attachmentExists(
     attachmentId: string,
-  ): Promise<{available: boolean; pendingUpload: boolean}> {
+  ): Promise<{ available: boolean; pendingUpload: boolean }> {
     const mainPath = `${RNFS.DocumentDirectoryPath}/attachments/${attachmentId}`;
     const pendingUploadPath = `${RNFS.DocumentDirectoryPath}/attachments/pending_upload/${attachmentId}`;
 
@@ -701,7 +701,7 @@ class SynkronusApi {
       RNFS.exists(pendingUploadPath),
     ]);
 
-    return {available, pendingUpload};
+    return { available, pendingUpload };
   }
 
   /**

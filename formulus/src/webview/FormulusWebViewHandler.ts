@@ -6,9 +6,9 @@
  * the Formulus interface and provides callbacks for specific message types.
  */
 
-import {WebViewMessageEvent, WebView} from 'react-native-webview';
-import {createFormulusMessageHandlers} from './FormulusMessageHandlers';
-import {FormInitData} from './FormulusInterfaceDefinition';
+import { WebViewMessageEvent, WebView } from 'react-native-webview';
+import { createFormulusMessageHandlers } from './FormulusMessageHandlers';
+import { FormInitData } from './FormulusInterfaceDefinition';
 
 /**
  * FormulusWebViewMessageManager class
@@ -177,7 +177,7 @@ export class FormulusWebViewMessageManager {
   public handleWebViewMessage = (event: WebViewMessageEvent): void => {
     try {
       const eventData = JSON.parse(event.nativeEvent.data);
-      const {type, messageId, ...payload} = eventData;
+      const { type, messageId, ...payload } = eventData;
 
       if (!type) {
         console.warn(
@@ -214,7 +214,7 @@ export class FormulusWebViewMessageManager {
       } else if (type === 'console') {
         // Keep existing handler for type === 'console' as fallback
         // Handle console messages from WebView if type is exactly 'console' and level is in payload
-        const {level, args} = payload;
+        const { level, args } = payload;
         if (
           level &&
           args &&
