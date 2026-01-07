@@ -14,7 +14,7 @@ export default tseslint.config(
       '**/android/**',
       '**/ios/**',
       '**/coverage/**',
-      'assets/webview/FormulusInjectionScript.js',
+      'assets/webview/**',
       'src/api/synkronus/generated/**',
       '**/__tests__/**',
     ],
