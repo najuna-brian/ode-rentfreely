@@ -97,15 +97,10 @@ export class ServerConfigService {
           message: `Server responded with status ${response.status}`,
         };
       }
-    } catch (error: any) {
-      if (error.name === 'AbortError') {
-        return {
-          success: false,
-          message: 'Connection timeout. Check your network and server.',
-        };
-      }
+    } catch (error) {
+      console.error('Unknown error occured', error);
 
-      const errorMessage = error.message || 'Unknown error';
+      const errorMessage = 'Unknown error';
       if (
         errorMessage.includes('Network request failed') ||
         errorMessage.includes('Failed to fetch')

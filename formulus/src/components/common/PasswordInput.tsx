@@ -7,12 +7,15 @@ import {
   TextInputProps,
   ViewStyle,
   TouchableOpacity,
+  AccessibilityState,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {colors} from '../../theme/colors';
 
-export interface PasswordInputProps
-  extends Omit<TextInputProps, 'secureTextEntry'> {
+export interface PasswordInputProps extends Omit<
+  TextInputProps,
+  'secureTextEntry'
+> {
   label?: string;
   error?: string;
   containerStyle?: ViewStyle;
@@ -78,7 +81,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
             'Password input'
           }
           accessibilityRole="text"
-          accessibilityState={{invalid: !!error}}
+          accessibilityState={{invalid: !!error} as AccessibilityState}
         />
         <TouchableOpacity
           style={styles.eyeButton}

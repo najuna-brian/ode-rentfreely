@@ -62,11 +62,7 @@ const FormTypeSelector: React.FC<FormTypeSelectorProps> = ({
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Select Form Type</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Icon
-                  name="close"
-                  size={24}
-                  color={colors.neutral[800]}
-                />
+                <Icon name="close" size={24} color={colors.neutral[800]} />
               </TouchableOpacity>
             </View>
 
@@ -130,7 +126,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: colors.ui.background,
     justifyContent: 'center',
     alignItems: 'center',
   },

@@ -14,8 +14,9 @@ export interface FormSpec {
   name: string;
   description: string;
   schemaVersion: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   schema: any;
-  uiSchema: any;
+  uiSchema: unknown;
 }
 
 /**
@@ -58,7 +59,7 @@ export class FormService {
       return null;
     }
     console.log('Loading form spec:', formDir.path);
-    let schema: any;
+    let schema: unknown;
     try {
       const filePath = formDir.path + '/schema.json';
       const fileContent = await RNFS.readFile(filePath, 'utf8');
@@ -71,7 +72,7 @@ export class FormService {
       );
       return null;
     }
-    let uiSchema: any;
+    let uiSchema: unknown;
     try {
       const uiSchemaPath = formDir.path + '/ui.json';
       const uiSchemaContent = await RNFS.readFile(uiSchemaPath, 'utf8');
@@ -277,7 +278,7 @@ export class FormService {
    */
   public async addNewObservation(
     formType: string,
-    data: Record<string, any>,
+    data: Record<string, unknown>,
   ): Promise<string> {
     const input: NewObservationInput = {
       formType,
@@ -305,7 +306,7 @@ export class FormService {
    */
   public async updateObservation(
     observationId: string,
-    data: Record<string, any>,
+    data: Record<string, unknown>,
   ): Promise<string> {
     const input: UpdateObservationInput = {
       observationId: observationId,
@@ -338,6 +339,7 @@ export class FormService {
     try {
       // Get all observations across all form types
       const allFormSpecs = this.getFormSpecs();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       let allObservations: any[] = [];
 
       for (const formSpec of allFormSpecs) {

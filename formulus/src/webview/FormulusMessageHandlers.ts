@@ -33,7 +33,7 @@ export type HandlerArgs = {
 export type Handler = (args: HandlerArgs) => void | Promise<void>;
 
 // Simple event emitter for cross-component communication
-type Listener = (...args: unknown[]) => void;
+export type Listener = (...args: unknown[]) => void;
 
 class SimpleEventEmitter {
   private listeners: Record<string, Listener[]> = {};
@@ -143,6 +143,32 @@ export const resolveFormOperation = (
   if (operation) {
     operation.resolve(result);
     pendingFormOperations.delete(operationId);
+  }
+};
+
+// Helper to resolve operation by form type (fallback when operationId is not available)
+export const resolveFormOperationByType = (
+  formType: string,
+  result: FormCompletionResult,
+) => {
+  // Find the most recent operation for this form type
+  let mostRecentOperation: string | null = null;
+  let mostRecentTime = 0;
+
+  for (const [operationId, operation] of pendingFormOperations.entries()) {
+    if (
+      operation.formType === formType &&
+      operation.startTime > mostRecentTime
+    ) {
+      mostRecentOperation = operationId;
+      mostRecentTime = operation.startTime;
+    }
+  }
+
+  if (mostRecentOperation) {
+    resolveFormOperation(mostRecentOperation, result);
+  } else {
+    console.warn(`No pending operation found for form type: ${formType}`);
   }
 };
 

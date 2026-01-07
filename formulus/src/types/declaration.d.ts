@@ -30,3 +30,10 @@ declare namespace NodeJS {
     clear: () => void;
   }
 }
+
+// Extend the global interface to include the Formulus interface
+declare global {
+  const formulus: FormulusInterface | undefined;
+  const onFormInit: FormulusCallbacks['onFormInit'];
+  const onReceiveFocus: FormulusCallbacks['onReceiveFocus'];
+}

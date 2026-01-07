@@ -325,10 +325,7 @@ const FormManagementScreen = () => {
     return (
       <SafeAreaView style={styles.container}>
         <View style={styles.loadingContainer}>
-          <ActivityIndicator
-            size="large"
-            color={colors.semantic.info.ios}
-          />
+          <ActivityIndicator size="large" color={colors.semantic.info.ios} />
           <Text style={styles.loadingText}>Loading forms...</Text>
         </View>
       </SafeAreaView>

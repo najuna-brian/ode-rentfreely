@@ -14,6 +14,7 @@ import {FormCard, EmptyState} from '../components/common';
 import {openFormplayerFromNative} from '../webview/FormulusMessageHandlers';
 import {useFocusEffect} from '@react-navigation/native';
 import colors from '../theme/colors';
+import {FormSpec} from '../services';
 
 const FormsScreen: React.FC = () => {
   const {forms, loading, error, refresh, getObservationCount} = useForms();
@@ -49,7 +50,7 @@ const FormsScreen: React.FC = () => {
     }
   };
 
-  const renderForm = ({item}: {item: any}) => {
+  const renderForm = ({item}: {item: FormSpec}) => {
     const observationCount = getObservationCount(item.id);
     return (
       <FormCard

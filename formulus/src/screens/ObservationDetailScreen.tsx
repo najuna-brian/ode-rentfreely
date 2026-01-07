@@ -127,7 +127,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
     );
   };
 
-  const renderDataField = (key: string, value: any, level: number = 0) => {
+  const renderDataField = (key: string, value: unknown, level: number = 0) => {
     if (value === null || value === undefined) {
       return (
         <View

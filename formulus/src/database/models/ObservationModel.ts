@@ -23,7 +23,7 @@ export class ObservationModel extends Model {
   /**
    * Get the parsed data object
    */
-  getParsedData(): any {
+  getParsedData() {
     try {
       return JSON.parse(this.data);
     } catch (error) {

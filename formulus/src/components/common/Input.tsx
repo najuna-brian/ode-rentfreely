@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TextInputProps,
   ViewStyle,
+  AccessibilityState,
 } from 'react-native';
 import {colors} from '../../theme/colors';
 
@@ -34,7 +35,7 @@ const Input: React.FC<InputProps> = ({
         testID={testID}
         accessibilityLabel={label || textInputProps.placeholder || 'Text input'}
         accessibilityRole="text"
-        accessibilityState={{invalid: !!error}}
+        accessibilityState={{invalid: !!error} as AccessibilityState}
       />
       {error && <Text style={styles.errorText}>{error}</Text>}
     </View>

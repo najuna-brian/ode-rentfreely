@@ -269,9 +269,9 @@ export class SyncService {
 
       console.log('Returning final version:', finalVersion);
       return finalVersion;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Sync failed', error);
-      const errorMessage = error.message || 'Unknown error occurred';
+      const errorMessage = 'Unknown error occurred';
       this.updateStatus(`Sync failed: ${errorMessage}`);
 
       // Don't let notification service block error handling

@@ -10,6 +10,7 @@ export interface UserInfo {
 }
 
 const decodeBase64 = (input: string): string => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const atobFn = (globalThis as any).atob as
     | ((data: string) => string)
     | undefined;
@@ -53,7 +54,7 @@ function decodeJwtPayload(token: string) {
     const payload = parts[1];
     const decoded = decodeBase64(payload.replace(/-/g, '+').replace(/_/g, '/'));
     return JSON.parse(decoded);
-  } catch(error: unknown) {
+  } catch (error: unknown) {
     console.error('Error decoding JWT payload:', error);
     return null;
   }
