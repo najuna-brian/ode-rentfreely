@@ -281,13 +281,9 @@ const FinalizeRenderer = ({
 
   return (
     <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Typography variant="h5" gutterBottom>
-        Review and Finalize
-      </Typography>
-
       {hasErrors ? (
         <>
-          <Typography variant="subtitle1" color="error" gutterBottom>
+          <Typography variant="h5" color="error" gutterBottom>
             Please fix the following errors before finalizing:
           </Typography>
           <Paper sx={{ mb: 3, p: 2 }}>
@@ -311,9 +307,7 @@ const FinalizeRenderer = ({
                     textTransform: 'none',
                     py: 1.5,
                     px: 2,
-                    width: { xs: '100%', sm: 'auto' },
-                    minWidth: 'auto',
-                    maxWidth: { xs: '100%', sm: 'calc(100% - 16px)', md: 'none' },
+                    width: '100%',
                     borderColor: 'error.main',
                     whiteSpace: 'normal',
                     wordBreak: 'break-word',
@@ -348,8 +342,8 @@ const FinalizeRenderer = ({
       {/* Summary Section */}
       {summaryItems.length > 0 && (
         <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', mb: 3 }}>
-          <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 1 }}>
-            Form Summary
+          <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
+            FORM SUMMARY
           </Typography>
           <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2 }}>
             Review all your entered data below. Click on any field to edit it.
