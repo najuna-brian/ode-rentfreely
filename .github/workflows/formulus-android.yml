@@ -41,10 +41,18 @@ jobs:
             formulus/package.json
             formulus-formplayer/package-lock.json
             formulus-formplayer/package.json
+            packages/tokens/package-lock.json
+            packages/tokens/package.json
 
       - name: Install npm dependencies (formulus)
         working-directory: formulus
         run: npm ci
+
+      - name: Install and build @ode/tokens
+        working-directory: packages/tokens
+        run: |
+          npm install
+          npm run build
 
       - name: Install npm dependencies (formplayer)
         working-directory: formulus-formplayer
