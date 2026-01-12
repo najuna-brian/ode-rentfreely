@@ -40,7 +40,7 @@ import { shellMaterialRenderers } from './material-wrappers';
 import ErrorBoundary from './ErrorBoundary';
 import { draftService } from './DraftService';
 import DraftSelector from './DraftSelector';
-import { loadExtensions } from './extensionLoader';
+import { loadExtensions } from './ExtensionsLoader';
 
 // Only import development dependencies in development mode
 let webViewMock: any = null;

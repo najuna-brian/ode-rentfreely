@@ -11,7 +11,7 @@ module.exports = function override(config, env) {
   config.ignoreWarnings = [
     ...(config.ignoreWarnings || []),
     {
-      module: /extensionLoader\.ts$/,
+      module: /ExtensionsLoader\.ts$/,
       message: /Critical dependency: the request of a dependency is an expression/,
     },
   ];
