@@ -112,11 +112,6 @@ describe('Auth - Auto-Login', () => {
       password: 'testpass',
     };
 
-    const mockUserInfo = {
-      username: 'testuser',
-      role: 'read-write' as const,
-    };
-
     test('should successfully auto-login with stored credentials', async () => {
       // Mock Keychain to return credentials
       (Keychain.getGenericPassword as jest.Mock).mockResolvedValue(

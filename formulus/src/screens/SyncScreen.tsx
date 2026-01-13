@@ -73,7 +73,7 @@ const SyncScreen = () => {
       return;
     }
 
-    let syncError: string | undefined = undefined;
+    let syncError: string | undefined;
 
     try {
       console.log('Starting sync...');
