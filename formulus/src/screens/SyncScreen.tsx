@@ -11,7 +11,7 @@ import {
   Easing,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from "@react-native-vector-icons/material-design-icons";
+import Icon from '@react-native-vector-icons/material-design-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { formatRelativeTime } from '../utils/dateUtils';
 import { syncService } from '../services/SyncService';

@@ -10,7 +10,7 @@ import {
   RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from "@react-native-vector-icons/material-design-icons";
+import Icon from '@react-native-vector-icons/material-design-icons';
 import { FormService, FormSpec } from '../services';
 import { Observation } from '../database/models/Observation';
 import { openFormplayerFromNative } from '../webview/FormulusMessageHandlers';

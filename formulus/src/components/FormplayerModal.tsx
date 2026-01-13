@@ -20,7 +20,7 @@ import {
 import CustomAppWebView, {
   CustomAppWebViewHandle,
 } from '../components/CustomAppWebView';
-import Icon from "@react-native-vector-icons/material-icons";
+import Icon from '@react-native-vector-icons/material-icons';
 import {
   resolveFormOperation,
   resolveFormOperationByType,
