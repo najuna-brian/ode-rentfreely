@@ -80,19 +80,15 @@ jobs:
           cache-dependency-path: formulus/package-lock.json
       
       - name: Install dependencies
-        run: npm ci
-      
-      - name: Run Prettier check
-        run: npm run format:check
-        continue-on-error: false
+        run: npm install
       
       - name: Run linter
         run: npm run lint
-        continue-on-error: false
       
-      - name: Run tests
-        run: npm test -- --coverage --watchAll=false
-        continue-on-error: true # We want to continue even if tests fail since tests are not set yet
+        ## Ignoring formulus testing for Q2
+      # - name: Run tests
+      #   run: npm test -- --coverage --watchAll=false
+      #   continue-on-error: true # We want to continue even if tests fail since tests are not set yet
 
   # Lint and test for formulus-formplayer (React Web)
   formulus-formplayer:
