@@ -2,7 +2,6 @@ import {
   Observation,
   NewObservationInput,
   UpdateObservationInput,
-  ObservationData,
 } from '../models/Observation';
 /**
  * Interface for local data repository operations
@@ -72,7 +71,7 @@ export interface LocalRepoInterface {
    * @param pushChanges Function to push local changes to the server
    */
   synchronize?(
-    pullChanges: () => Promise<ObservationData[]>,
+    pullChanges: () => Promise<Observation[]>,
     pushChanges: (observations: Observation[]) => Promise<void>,
   ): Promise<void>;
 }

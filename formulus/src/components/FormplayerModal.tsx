@@ -26,7 +26,10 @@ import {
   resolveFormOperationByType,
   setActiveFormplayerModal,
 } from '../webview/FormulusMessageHandlers';
-import { FormCompletionResult } from '../webview/FormulusInterfaceDefinition';
+import {
+  FormCompletionResult,
+  FormInitData,
+} from '../webview/FormulusInterfaceDefinition';
 
 import { databaseService } from '../database';
 import { colors } from '../theme/colors';
@@ -223,7 +226,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
       };
 
       // Load extensions for this form
-      let extensions: any;
+      let extensions = undefined;
       try {
         const customAppPath = RNFS.DocumentDirectoryPath + '/app';
         const extensionService = ExtensionService.getInstance();
@@ -249,7 +252,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
                 };
                 return acc;
               },
-              {} as Record<string, any>,
+              {} as Record<string, unknown>,
             ),
             renderers: Object.entries(mergedExtensions.renderers).reduce(
               (acc, [key, renderer]) => {
@@ -262,7 +265,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
                 };
                 return acc;
               },
-              {} as Record<string, any>,
+              {} as Record<string, unknown>,
             ),
             // Base path for loading modules (file:// URL for WebView)
             basePath:
@@ -284,7 +287,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
         formSchema: formType.schema,
         uiSchema: formType.uiSchema,
         extensions,
-      };
+      } as FormInitData;
 
       console.log('Initializing form with:', formInitData);
 

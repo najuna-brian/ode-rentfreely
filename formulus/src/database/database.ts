@@ -37,8 +37,8 @@ const migrations = schemaMigrations({
           type: 'add_columns',
           table: 'observations',
           columns: [
-            {name: 'author', type: 'string'},
-            {name: 'device_id', type: 'string'},
+            { name: 'author', type: 'string' },
+            { name: 'device_id', type: 'string' },
           ],
         },
       ],

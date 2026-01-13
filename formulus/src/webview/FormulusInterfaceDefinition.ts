@@ -15,7 +15,7 @@
  * Extension metadata for custom app extensions
  */
 export interface ExtensionMetadata {
-  definitions?: Record<string, any>;
+  definitions?: Record<string, unknown>;
   functions?: Record<
     string,
     {
