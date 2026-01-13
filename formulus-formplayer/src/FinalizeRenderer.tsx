@@ -6,6 +6,7 @@ import { ControlProps } from '@jsonforms/core';
 import { ErrorObject } from 'ajv';
 import { useFormContext } from './App';
 import EditIcon from '@mui/icons-material/Edit';
+import { displayAdate } from './adateUtils';
 
 interface SummaryItem {
   label: string;
@@ -91,6 +92,8 @@ const FinalizeRenderer = ({
           return new Date(value).toLocaleString();
         case 'time':
           return value;
+        case 'adate':
+          return displayAdate(value);
       }
     }
 
