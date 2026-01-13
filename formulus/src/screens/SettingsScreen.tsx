@@ -23,7 +23,7 @@ import QRScannerModal, {
 import { QRSettingsService } from '../services/QRSettingsService';
 import { MainTabParamList } from '../types/NavigationTypes';
 import { colors } from '../theme/colors';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from "@react-native-vector-icons/material-design-icons";
 import { ToastService } from '../services/ToastService';
 import { serverSwitchService } from '../services/ServerSwitchService';
 import { syncService } from '../services/SyncService';

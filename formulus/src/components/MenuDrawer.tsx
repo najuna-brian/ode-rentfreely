@@ -11,12 +11,12 @@ import {
   SafeAreaView,
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from '@react-native-vector-icons/material-design-icons';
 import { getUserInfo, UserInfo, UserRole } from '../api/synkronus/Auth';
 import { colors } from '../theme/colors';
 
 interface MenuItem {
-  icon: string;
+  icon: React.ComponentProps<typeof Icon>['name'];
   label: string;
   screen: string;
   minRole?: UserRole; // Minimum role required to see this item

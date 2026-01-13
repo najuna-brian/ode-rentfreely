@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   AccessibilityState,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from "@react-native-vector-icons/material-design-icons";
 import { colors } from '../../theme/colors';
 
 export interface PasswordInputProps extends Omit<

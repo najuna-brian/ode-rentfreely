@@ -9,7 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from "@react-native-vector-icons/material-design-icons";
 import { Observation } from '../database/models/Observation';
 import { FormService } from '../services/FormService';
 import { openFormplayerFromNative } from '../webview/FormulusMessageHandlers';

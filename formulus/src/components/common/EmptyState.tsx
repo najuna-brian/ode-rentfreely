@@ -1,10 +1,10 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from '@react-native-vector-icons/material-design-icons';
 import colors from '../../theme/colors';
 
 interface EmptyStateProps {
-  icon?: string;
+  icon?: React.ComponentProps<typeof Icon>['name'];
   title: string;
   message: string;
   actionLabel?: string;
