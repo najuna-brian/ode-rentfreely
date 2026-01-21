@@ -1,4 +1,10 @@
-import {Configuration, DefaultApi, AppBundleManifest} from './generated';
+import {
+  Configuration,
+  DefaultApi,
+  AppBundleManifest,
+  DefaultApiSyncPushRequest,
+  SyncPushRequest,
+} from './generated';
 import {Observation} from '../../database/models/Observation';
 import {ObservationMapper} from '../../mappers/ObservationMapper';
 import RNFS from 'react-native-fs';
@@ -362,6 +368,9 @@ class SynkronusApi {
 
   public clearTokenCache(): void {
     this.fastGetToken_cachedToken = null;
+    // Clear API instance to force recreation with new token after auto-login
+    this.api = null;
+    this.config = null;
   }
 
   private async downloadRawFiles(
@@ -809,16 +818,20 @@ class SynkronusApi {
       }
 
       // 3. Push observations to server
-      const syncPushRequest = {
+      const syncPushRequest: SyncPushRequest = {
         client_id: await clientIdService.getClientId(),
         records: localChanges.map(ObservationMapper.toApi),
         transmission_id: transmissionId,
       };
 
+      const request: DefaultApiSyncPushRequest = {
+        syncPushRequest,
+      };
+
       console.debug(
         `Pushing ${localChanges.length} observations with transmission ID: ${transmissionId}`,
       );
-      const res = await api.syncPush({syncPushRequest});
+      const res = await api.syncPush(request);
       console.debug(
         `Successfully pushed ${localChanges.length} observations. Server version: ${res.data.current_version}`,
       );
