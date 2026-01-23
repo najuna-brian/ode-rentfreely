@@ -28,7 +28,7 @@ jest.mock(
       getLocalRepo: jest.fn(),
     },
   }),
-  {virtual: true},
+  { virtual: true },
 );
 jest.mock(
   '../../services/ClientIdService',
@@ -37,7 +37,7 @@ jest.mock(
       getClientId: jest.fn().mockResolvedValue('test-client-id'),
     },
   }),
-  {virtual: true},
+  { virtual: true },
 );
 jest.mock('../index', () => ({
   synkronusApi: {
@@ -46,11 +46,11 @@ jest.mock('../index', () => ({
   },
 }));
 
-import {jest, describe, test, expect, beforeEach} from '@jest/globals';
+import { jest, describe, test, expect, beforeEach } from '@jest/globals';
 import * as Keychain from 'react-native-keychain';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {autoLogin, isUnauthorizedError} from '../Auth';
-import {synkronusApi} from '../index';
+import { autoLogin, isUnauthorizedError } from '../Auth';
+import { synkronusApi } from '../index';
 
 describe('Auth - Auto-Login', () => {
   beforeEach(() => {
@@ -60,43 +60,43 @@ describe('Auth - Auto-Login', () => {
   describe('isUnauthorizedError', () => {
     test('should detect Axios 401 error', () => {
       const error = {
-        response: {status: 401},
+        response: { status: 401 },
       };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
     test('should detect direct status 401', () => {
-      const error = {status: 401};
+      const error = { status: 401 };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
     test('should detect statusCode 401', () => {
-      const error = {statusCode: 401};
+      const error = { statusCode: 401 };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
     test('should detect ProblemDetail format 401', () => {
-      const error = {data: {status: 401}};
+      const error = { data: { status: 401 } };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
     test('should detect 401 in error message', () => {
-      const error = {message: 'Request failed with status code 401'};
+      const error = { message: 'Request failed with status code 401' };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
     test('should detect "unauthorized" in error message', () => {
-      const error = {message: 'Unauthorized access'};
+      const error = { message: 'Unauthorized access' };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
     test('should detect UNAUTHORIZED error code', () => {
-      const error = {code: 'UNAUTHORIZED'};
+      const error = { code: 'UNAUTHORIZED' };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
     test('should return false for non-401 errors', () => {
-      const error = {response: {status: 404}};
+      const error = { response: { status: 404 } };
       expect(isUnauthorizedError(error)).toBe(false);
     });
 
@@ -122,7 +122,7 @@ describe('Auth - Auto-Login', () => {
       (AsyncStorage.getItem as jest.Mock).mockImplementation((key: string) => {
         if (key === '@settings') {
           return Promise.resolve(
-            JSON.stringify({serverUrl: 'https://test.server'}),
+            JSON.stringify({ serverUrl: 'https://test.server' }),
           );
         }
         return Promise.resolve(null);

@@ -4,7 +4,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SyncProgress } from '../contexts/SyncContext';
 import { notificationService } from './NotificationService';
 import { FormService } from './FormService';
-import {autoLogin, isUnauthorizedError} from '../api/synkronus/Auth';
+import {
+  autoLogin,
+  isUnauthorizedError,
+  HttpError,
+} from '../api/synkronus/Auth';
 type SyncStatusCallback = (status: string) => void;
 type SyncProgressDetailCallback = (progress: SyncProgress) => void;
 
@@ -81,7 +85,7 @@ export class SyncService {
       // Reset retry count on successful operation
       this.autoLoginRetryCount = 0;
       return await operation();
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Check if this is a 401 Unauthorized error
       if (isUnauthorizedError(error)) {
         // Prevent infinite retry loops
@@ -120,7 +124,7 @@ export class SyncService {
               // Reset retry count on successful retry
               this.autoLoginRetryCount = 0;
               return result;
-            } catch (retryError: any) {
+            } catch (retryError: unknown) {
               // If retry also fails with 401, don't retry again
               if (isUnauthorizedError(retryError)) {
                 throw new Error(
@@ -134,13 +138,14 @@ export class SyncService {
               'No stored credentials found. Please login manually in Settings.',
             );
           }
-        } catch (autoLoginError: any) {
-          console.error('Auto-login failed:', autoLoginError);
+        } catch (autoLoginError: unknown) {
+          const loginError = autoLoginError as HttpError;
+          console.error('Auto-login failed:', loginError);
           // Reset retry count on failure
           this.autoLoginRetryCount = 0;
           throw new Error(
             `Authentication failed: ${
-              autoLoginError.message || 'Please login manually in Settings.'
+              loginError.message || 'Please login manually in Settings.'
             }`,
           );
         }

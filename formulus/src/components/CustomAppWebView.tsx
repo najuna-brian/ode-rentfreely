@@ -90,7 +90,7 @@ const CustomAppWebView = forwardRef<
     const loadScript = async () => {
       try {
         let script = '';
-  
+
         if (Platform.OS === 'android') {
           // Path A: Use the Android-only asset reader
           script = await readFileAssets(INJECTION_SCRIPT_PATH);
@@ -98,16 +98,15 @@ const CustomAppWebView = forwardRef<
           const iosPath = `${MainBundlePath}/${INJECTION_SCRIPT_PATH}`;
           script = await readFile(iosPath, 'utf8');
         }
-  
+
         // Combine and set state
         const fullScript = consoleLogScript + '\n' + script;
         setInjectionScript(fullScript);
         setIsScriptReady(true);
-        
       } catch (err) {
         // Logic for if the file is missing entirely
         console.error('Failed to load injection script with error:', err);
-        // setIsScriptReady(true); 
+        // setIsScriptReady(true);
       }
     };
     loadScript();

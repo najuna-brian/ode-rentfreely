@@ -9,6 +9,21 @@ export interface UserInfo {
   role: UserRole;
 }
 
+/**
+ * Represents various HTTP error formats from Axios, fetch, and other HTTP clients.
+ */
+export interface HttpError extends Error {
+  response?: {
+    status?: number;
+    data?: { status?: number };
+  };
+  status?: number;
+  statusCode?: number;
+  body?: { status?: number };
+  data?: { status?: number };
+  code?: string | number;
+}
+
 const decodeBase64 = (input: string): string => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const atobFn = (globalThis as any).atob as
@@ -165,11 +180,12 @@ export const autoLogin = async (): Promise<UserInfo | null> => {
     const userInfo = await login(credentials.username, credentials.password);
     console.log('✅ Auto-login successful - token refreshed');
     return userInfo;
-  } catch (error: any) {
-    console.error('Auto-login failed:', error);
+  } catch (error: unknown) {
+    const httpError = error as HttpError;
+    console.error('Auto-login failed:', httpError);
     throw new Error(
       `Auto-login failed: ${
-        error?.message || 'Unknown error'
+        httpError?.message || 'Unknown error'
       }. Please login manually.`,
     );
   }
@@ -179,28 +195,31 @@ export const autoLogin = async (): Promise<UserInfo | null> => {
  * Checks if an error is a 401 Unauthorized error.
  * Handles various error formats from Axios, fetch, and other HTTP clients.
  */
-export const isUnauthorizedError = (error: any): boolean => {
+export const isUnauthorizedError = (error: unknown): boolean => {
   if (!error) return false;
 
+  const httpError = error as HttpError;
+
   // Axios errors: error.response.status
-  if (error.response?.status === 401) return true;
+  if (httpError.response?.status === 401) return true;
 
   // Direct status properties
-  if (error.status === 401 || error.statusCode === 401) return true;
+  if (httpError.status === 401 || httpError.statusCode === 401) return true;
 
   // ProblemDetail format (from OpenAPI spec)
-  if (error.body?.status === 401 || error.data?.status === 401) return true;
+  if (httpError.body?.status === 401 || httpError.data?.status === 401)
+    return true;
 
   // Check error message for 401 or unauthorized
-  if (typeof error.message === 'string') {
-    const msg = error.message.toLowerCase();
+  if (typeof httpError.message === 'string') {
+    const msg = httpError.message.toLowerCase();
     if (msg.includes('401') || msg.includes('unauthorized')) {
       return true;
     }
   }
 
   // Check error code
-  if (error.code === 'UNAUTHORIZED' || error.code === 401) return true;
+  if (httpError.code === 'UNAUTHORIZED' || httpError.code === 401) return true;
 
   return false;
 };
