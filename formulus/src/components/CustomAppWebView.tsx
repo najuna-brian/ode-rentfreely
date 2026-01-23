@@ -11,7 +11,7 @@ import { View, ActivityIndicator, AppState, StyleSheet } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { useIsFocused } from '@react-navigation/native';
 import { Platform } from 'react-native';
-import { readFileAssets } from 'react-native-fs';
+import { readFileAssets, MainBundlePath, readFile } from 'react-native-fs';
 import { FormulusWebViewMessageManager } from '../webview/FormulusWebViewHandler';
 import { FormInitData } from '../webview/FormulusInterfaceDefinition';
 import { colors } from '../theme/colors';
@@ -89,20 +89,25 @@ const CustomAppWebView = forwardRef<
   useEffect(() => {
     const loadScript = async () => {
       try {
-        const script = await readFileAssets(INJECTION_SCRIPT_PATH);
-        const fullScript =
-          consoleLogScript +
-          '\n' +
-          script +
-          '\n(function() {console.debug("Injection scripts initialized");}())';
-        injectionScriptRef.current = fullScript;
+        let script = '';
+  
+        if (Platform.OS === 'android') {
+          // Path A: Use the Android-only asset reader
+          script = await readFileAssets(INJECTION_SCRIPT_PATH);
+        } else {
+          const iosPath = `${MainBundlePath}/${INJECTION_SCRIPT_PATH}`;
+          script = await readFile(iosPath, 'utf8');
+        }
+  
+        // Combine and set state
+        const fullScript = consoleLogScript + '\n' + script;
         setInjectionScript(fullScript);
         setIsScriptReady(true);
+        
       } catch (err) {
-        injectionScriptRef.current = consoleLogScript;
-        setInjectionScript(consoleLogScript);
-        setIsScriptReady(true);
-        console.warn('Failed to load injection script:', err);
+        // Logic for if the file is missing entirely
+        console.error('Failed to load injection script with error:', err);
+        // setIsScriptReady(true); 
       }
     };
     loadScript();
@@ -184,7 +189,12 @@ const CustomAppWebView = forwardRef<
 
   const handleError = (syntheticEvent: SyntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
-    console.error('WebView error:', nativeEvent);
+    console.error(
+      '[CustomAppWebView] WebView error',
+      nativeEvent,
+      'appUrl:',
+      appUrl,
+    );
   };
 
   const isFocused = useIsFocused();
@@ -305,9 +315,7 @@ const CustomAppWebView = forwardRef<
       allowFileAccess={true}
       allowUniversalAccessFromFileURLs={true}
       allowFileAccessFromFileURLs={true}
-      allowingReadAccessToURL={
-        Platform.OS === 'ios' ? 'file:///...' : undefined
-      }
+      allowingReadAccessToURL={Platform.OS === 'ios' ? appUrl : undefined}
       startInLoadingState={true}
       originWhitelist={['*']}
       renderLoading={() => (

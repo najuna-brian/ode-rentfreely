@@ -17,10 +17,13 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
       const filePath = `${RNFS.DocumentDirectoryPath}/app/index.html`;
       const fileExists = await RNFS.exists(filePath);
       if (!fileExists) {
-        const placeholderUri =
-          Platform.OS === 'android'
-            ? 'file:///android_asset/webview/placeholder_app.html'
-            : 'file:///webview/placeholder_app.html';
+        let placeholderUri: string;
+        if (Platform.OS === 'android') {
+          placeholderUri = 'file:///android_asset/webview/placeholder_app.html';
+        } else {
+          // On iOS, assets linked via react-native.config.js are placed in the main bundle
+          placeholderUri = `file://${RNFS.MainBundlePath}/placeholder_app.html`;
+        }
         setLocalUri(placeholderUri);
       } else {
         setLocalUri(`file://${filePath}`);
