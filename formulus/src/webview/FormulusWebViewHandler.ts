@@ -202,18 +202,30 @@ export class FormulusWebViewMessageManager {
       } else if (type.startsWith('console.')) {
         const logLevel = type.substring('console.'.length) as keyof Console;
         // Ensure logArgs is always a valid array
-        const logArgs = Array.isArray(payload.args) ? payload.args : (payload.args !== undefined ? [payload.args] : [payload]);
-        
+        const logArgs = Array.isArray(payload.args)
+          ? payload.args
+          : payload.args !== undefined
+            ? [payload.args]
+            : [payload];
+
         try {
           const consoleMethod = console[logLevel];
           if (typeof consoleMethod === 'function') {
             // Use Function.prototype.call to ensure proper binding
-            consoleMethod.call(console, `${this.logPrefix} [WebView]`, ...logArgs);
+            consoleMethod.call(
+              console,
+              `${this.logPrefix} [WebView]`,
+              ...logArgs,
+            );
           } else {
             // Fallback if the extracted level is not a valid console method
-            console.log.call(console, `${this.logPrefix} [WebView]`, ...logArgs);
+            console.log.call(
+              console,
+              `${this.logPrefix} [WebView]`,
+              ...logArgs,
+            );
           }
-        } catch (error) {
+        } catch {
           // If logging fails, silently ignore to prevent cascading errors
           // This can happen if console methods are not properly available
         }

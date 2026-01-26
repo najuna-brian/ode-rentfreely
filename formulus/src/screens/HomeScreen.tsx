@@ -18,7 +18,7 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
       console.log('[HomeScreen] Checking for custom app at:', filePath);
       const fileExists = await RNFS.exists(filePath);
       console.log('[HomeScreen] Custom app exists:', fileExists);
-      
+
       if (!fileExists) {
         let placeholderUri: string;
         if (Platform.OS === 'android') {
