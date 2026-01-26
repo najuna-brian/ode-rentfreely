@@ -2,23 +2,32 @@ const fs = require('fs');
 const path = require('path');
 
 const buildDir = path.join(__dirname, '..', 'build');
-const targetDir = path.join(__dirname, '..', '..', 'formulus', 'android', 'app', 'src', 'main', 'assets', 'formplayer_dist');
 
-if (!fs.existsSync(targetDir)) {
-  fs.mkdirSync(targetDir, { recursive: true });
-  console.log('✓ Created formplayer_dist directory');
+// Android target directory
+const androidTargetDir = path.join(__dirname, '..', '..', 'formulus', 'android', 'app', 'src', 'main', 'assets', 'formplayer_dist');
+
+// iOS target directory - place in ios/Formulus/formplayer_dist so it can be added to Xcode as a folder reference
+const iosTargetDir = path.join(__dirname, '..', '..', 'formulus', 'ios', 'formplayer_dist');
+
+function cleanDirectory(targetDir) {
+  if (fs.existsSync(targetDir)) {
+    const files = fs.readdirSync(targetDir);
+    for (const file of files) {
+      const filePath = path.join(targetDir, file);
+      const stat = fs.statSync(filePath);
+      if (stat.isDirectory()) {
+        fs.rmSync(filePath, { recursive: true, force: true });
+      } else {
+        fs.unlinkSync(filePath);
+      }
+    }
+  }
 }
 
-if (fs.existsSync(targetDir)) {
-  const files = fs.readdirSync(targetDir);
-  for (const file of files) {
-    const filePath = path.join(targetDir, file);
-    const stat = fs.statSync(filePath);
-    if (stat.isDirectory()) {
-      fs.rmSync(filePath, { recursive: true, force: true });
-    } else {
-      fs.unlinkSync(filePath);
-    }
+function ensureDirectory(targetDir, name) {
+  if (!fs.existsSync(targetDir)) {
+    fs.mkdirSync(targetDir, { recursive: true });
+    console.log(`✓ Created ${name} directory`);
   }
 }
 
@@ -43,5 +52,17 @@ if (!fs.existsSync(buildDir)) {
 }
 
 console.log('📦 Copying formplayer build to React Native assets...');
-copyRecursive(buildDir, targetDir);
-console.log('✓ Successfully copied to', targetDir);
+
+// Copy to Android
+ensureDirectory(androidTargetDir, 'Android formplayer_dist');
+cleanDirectory(androidTargetDir);
+copyRecursive(buildDir, androidTargetDir);
+console.log('✓ Successfully copied to Android:', androidTargetDir);
+
+// Copy to iOS
+ensureDirectory(iosTargetDir, 'iOS formplayer_dist');
+cleanDirectory(iosTargetDir);
+copyRecursive(buildDir, iosTargetDir);
+console.log('✓ Successfully copied to iOS:', iosTargetDir);
+
+console.log('✅ Formplayer assets copied to both Android and iOS');

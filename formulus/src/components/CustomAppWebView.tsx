@@ -38,7 +38,31 @@ const INJECTION_SCRIPT_PATH =
 
 const consoleLogScript = `
     (function() {
-      //window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.log', args: ['Initializing console log transport']}));
+      // Helper function to serialize arguments, including Error objects
+      function serializeArgs(args) {
+        return Array.from(args).map(arg => {
+          // Handle Error objects specially
+          if (arg instanceof Error) {
+            return {
+              __isError: true,
+              name: arg.name,
+              message: arg.message,
+              stack: arg.stack
+            };
+          }
+          // Handle other objects
+          if (typeof arg === 'object' && arg !== null) {
+            try {
+              // Try to stringify, but catch circular references
+              JSON.stringify(arg);
+              return arg;
+            } catch (e) {
+              return String(arg);
+            }
+          }
+          return arg;
+        });
+      }
 
       // Store original console methods
       const originalConsole = {
@@ -52,23 +76,23 @@ const consoleLogScript = `
       // Override console methods to forward logs to React Native
       console.log = function() { 
         originalConsole.log.apply(console, arguments);
-        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.log', args: Array.from(arguments)}));
+        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.log', args: serializeArgs(arguments)}));
       };
       console.warn = function() { 
         originalConsole.warn.apply(console, arguments);
-        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.warn', args: Array.from(arguments)}));
+        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.warn', args: serializeArgs(arguments)}));
       };
       console.error = function() { 
         originalConsole.error.apply(console, arguments);
-        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.error', args: Array.from(arguments)}));
+        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.error', args: serializeArgs(arguments)}));
       };
       console.info = function() { 
         originalConsole.info.apply(console, arguments);
-        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.info', args: Array.from(arguments)}));
+        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.info', args: serializeArgs(arguments)}));
       };
       console.debug = function() { 
         originalConsole.debug.apply(console, arguments);
-        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.debug', args: Array.from(arguments)}));
+        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.debug', args: serializeArgs(arguments)}));
       };
       console.debug("Log transport initialized");
     })();
@@ -314,7 +338,16 @@ const CustomAppWebView = forwardRef<
       allowFileAccess={true}
       allowUniversalAccessFromFileURLs={true}
       allowFileAccessFromFileURLs={true}
-      allowingReadAccessToURL={Platform.OS === 'ios' ? appUrl : undefined}
+      // iOS requires read access to the directory containing the file, not just the file itself
+      // For custom apps from DocumentDirectoryPath, allow access to the app directory
+      // For bundled assets (MainBundlePath), allow access to the bundle root
+      allowingReadAccessToURL={
+        Platform.OS === 'ios'
+          ? appUrl.includes(MainBundlePath)
+            ? `file://${MainBundlePath}`
+            : appUrl.substring(0, appUrl.lastIndexOf('/'))
+          : undefined
+      }
       startInLoadingState={true}
       originWhitelist={['*']}
       renderLoading={() => (

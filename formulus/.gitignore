@@ -36,6 +36,11 @@ local.properties
 !debug.keystore
 .kotlin/
 
+# Formplayer dist (generated assets copied from formulus-formplayer build)
+android/app/src/main/assets/formplayer_dist/
+android/app/src/main/assets/webview/
+ios/formplayer_dist/
+
 # node.js
 #
 node_modules/

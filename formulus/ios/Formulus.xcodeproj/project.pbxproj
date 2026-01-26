@@ -11,10 +11,11 @@
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		26E6854810A440EEBBB569C8 /* formulus-load.js in Resources */ = {isa = PBXBuildFile; fileRef = 19DC13F6A6224E0BB450C5CB /* formulus-load.js */; };
 		5712BE31E8EF41C6A41D91E3 /* placeholder_app.html in Resources */ = {isa = PBXBuildFile; fileRef = 771907CB95B14EB19B4CB206 /* placeholder_app.html */; };
-		6BC4EA5CAE5DA50B322BE6FD /* libPods-Formulus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 327690C962609B252D459A15 /* libPods-Formulus.a */; };
 		761780ED2CA45674006654EE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 761780EC2CA45674006654EE /* AppDelegate.swift */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		92DE80C6F6664AA2AF375F73 /* formplayer_dist in Resources */ = {isa = PBXBuildFile; fileRef = EBDD571F89894B28B8C91913 /* formplayer_dist */; };
 		A403F6B5C831432092D6432A /* formulus-api.js in Resources */ = {isa = PBXBuildFile; fileRef = 672207178378430481699308 /* formulus-api.js */; };
+		D1F3D891BD4E91B83D93379D /* libPods-Formulus.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 35A5068D571FAAC91153000D /* libPods-Formulus.a */; };
 		E2D4C3847B9CFE032014F121 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
@@ -23,15 +24,16 @@
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Formulus/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Formulus/Info.plist; sourceTree = "<group>"; };
 		13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = PrivacyInfo.xcprivacy; path = Formulus/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
-		19DC13F6A6224E0BB450C5CB /* formulus-load.js */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "formulus-load.js"; path = "../assets/webview/formulus-load.js"; sourceTree = "<group>"; };
-		21A77E02CC7A52AAC56162A6 /* Pods-Formulus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Formulus.release.xcconfig"; path = "Target Support Files/Pods-Formulus/Pods-Formulus.release.xcconfig"; sourceTree = "<group>"; };
-		327690C962609B252D459A15 /* libPods-Formulus.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Formulus.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		672207178378430481699308 /* formulus-api.js */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "formulus-api.js"; path = "../assets/webview/formulus-api.js"; sourceTree = "<group>"; };
+		19DC13F6A6224E0BB450C5CB /* formulus-load.js */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "formulus-load.js"; path = "../assets/webview/formulus-load.js"; sourceTree = "<group>"; };
+		35A5068D571FAAC91153000D /* libPods-Formulus.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Formulus.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4BC86BCC31A36E17B33DBE8D /* Pods-Formulus.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Formulus.release.xcconfig"; path = "Target Support Files/Pods-Formulus/Pods-Formulus.release.xcconfig"; sourceTree = "<group>"; };
+		672207178378430481699308 /* formulus-api.js */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "formulus-api.js"; path = "../assets/webview/formulus-api.js"; sourceTree = "<group>"; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = Formulus/AppDelegate.swift; sourceTree = "<group>"; };
-		771907CB95B14EB19B4CB206 /* placeholder_app.html */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = placeholder_app.html; path = ../assets/webview/placeholder_app.html; sourceTree = "<group>"; };
+		771907CB95B14EB19B4CB206 /* placeholder_app.html */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = placeholder_app.html; path = ../assets/webview/placeholder_app.html; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Formulus/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		B9003E8457E34C9983C8BD62 /* FormulusInjectionScript.js */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = FormulusInjectionScript.js; path = ../assets/webview/FormulusInjectionScript.js; sourceTree = "<group>"; };
-		D2CC2391C71BE9743F2F90EE /* Pods-Formulus.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Formulus.debug.xcconfig"; path = "Target Support Files/Pods-Formulus/Pods-Formulus.debug.xcconfig"; sourceTree = "<group>"; };
+		B069022F6C1C274ADFA7DCBD /* Pods-Formulus.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Formulus.debug.xcconfig"; path = "Target Support Files/Pods-Formulus/Pods-Formulus.debug.xcconfig"; sourceTree = "<group>"; };
+		B9003E8457E34C9983C8BD62 /* FormulusInjectionScript.js */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FormulusInjectionScript.js; path = ../assets/webview/FormulusInjectionScript.js; sourceTree = "<group>"; };
+		EBDD571F89894B28B8C91913 /* formplayer_dist */ = {isa = PBXFileReference; lastKnownFileType = folder; path = formplayer_dist; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -40,7 +42,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6BC4EA5CAE5DA50B322BE6FD /* libPods-Formulus.a in Frameworks */,
+				D1F3D891BD4E91B83D93379D /* libPods-Formulus.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -55,6 +57,7 @@
 				13B07FB61A68108700A75B9A /* Info.plist */,
 				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */,
+				EBDD571F89894B28B8C91913 /* formplayer_dist */,
 			);
 			name = Formulus;
 			sourceTree = "<group>";
@@ -63,7 +66,7 @@
 			isa = PBXGroup;
 			children = (
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
-				327690C962609B252D459A15 /* libPods-Formulus.a */,
+				35A5068D571FAAC91153000D /* libPods-Formulus.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -101,8 +104,8 @@
 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
 			isa = PBXGroup;
 			children = (
-				D2CC2391C71BE9743F2F90EE /* Pods-Formulus.debug.xcconfig */,
-				21A77E02CC7A52AAC56162A6 /* Pods-Formulus.release.xcconfig */,
+				B069022F6C1C274ADFA7DCBD /* Pods-Formulus.debug.xcconfig */,
+				4BC86BCC31A36E17B33DBE8D /* Pods-Formulus.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -116,7 +119,6 @@
 				771907CB95B14EB19B4CB206 /* placeholder_app.html */,
 			);
 			name = Resources;
-			path = "";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -126,13 +128,13 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 13B07F931A680F5B00A75B9A /* Build configuration list for PBXNativeTarget "Formulus" */;
 			buildPhases = (
-				DD556530910A401D5A1E3BDE /* [CP] Check Pods Manifest.lock */,
+				121E35556841FAE58C85CA3E /* [CP] Check Pods Manifest.lock */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
-				430D4B1FBB1E8ED8F2B377CC /* [CP] Embed Pods Frameworks */,
-				34FFD4F8B8C632AED9D9F27D /* [CP] Copy Pods Resources */,
+				563235D0618B399E9E2C5576 /* [CP] Embed Pods Frameworks */,
+				FFE8138CF617206B3248B8EF /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -186,6 +188,7 @@
 				1193EE707CAC4D60AE9E8B77 /* FormulusInjectionScript.js in Resources */,
 				26E6854810A440EEBBB569C8 /* formulus-load.js in Resources */,
 				5712BE31E8EF41C6A41D91E3 /* placeholder_app.html in Resources */,
+				92DE80C6F6664AA2AF375F73 /* formplayer_dist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -208,41 +211,7 @@
 			shellPath = /bin/sh;
 			shellScript = "set -e\n\nWITH_ENVIRONMENT=\"$REACT_NATIVE_PATH/scripts/xcode/with-environment.sh\"\nREACT_NATIVE_XCODE=\"$REACT_NATIVE_PATH/scripts/react-native-xcode.sh\"\n\n/bin/sh -c \"$WITH_ENVIRONMENT $REACT_NATIVE_XCODE\"\n";
 		};
-		34FFD4F8B8C632AED9D9F27D /* [CP] Copy Pods Resources */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Formulus/Pods-Formulus-resources-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Copy Pods Resources";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Formulus/Pods-Formulus-resources-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Formulus/Pods-Formulus-resources.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		430D4B1FBB1E8ED8F2B377CC /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Formulus/Pods-Formulus-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-Formulus/Pods-Formulus-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Formulus/Pods-Formulus-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		DD556530910A401D5A1E3BDE /* [CP] Check Pods Manifest.lock */ = {
+		121E35556841FAE58C85CA3E /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -264,6 +233,48 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		563235D0618B399E9E2C5576 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Formulus/Pods-Formulus-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Formulus/Pods-Formulus-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Formulus/Pods-Formulus-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		FFE8138CF617206B3248B8EF /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Formulus/Pods-Formulus-resources-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-Formulus/Pods-Formulus-resources-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Formulus/Pods-Formulus-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -280,11 +291,12 @@
 /* Begin XCBuildConfiguration section */
 		13B07F941A680F5B00A75B9A /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = D2CC2391C71BE9743F2F90EE /* Pods-Formulus.debug.xcconfig */;
+			baseConfigurationReference = B069022F6C1C274ADFA7DCBD /* Pods-Formulus.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZZ9482ZVMJ;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Formulus/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
@@ -313,11 +325,12 @@
 		};
 		13B07F951A680F5B00A75B9A /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 21A77E02CC7A52AAC56162A6 /* Pods-Formulus.release.xcconfig */;
+			baseConfigurationReference = 4BC86BCC31A36E17B33DBE8D /* Pods-Formulus.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ZZ9482ZVMJ;
 				INFOPLIST_FILE = Formulus/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.1;
 				LD_RUNPATH_SEARCH_PATHS = (

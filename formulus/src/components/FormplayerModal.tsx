@@ -88,7 +88,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
     const formplayerUri =
       Platform.OS === 'android'
         ? 'file:///android_asset/formplayer_dist/index.html'
-        : 'file:///formplayer_dist/index.html'; // Add iOS path
+        : `file://${RNFS.MainBundlePath}/formplayer_dist/index.html`;
 
     // Create a debounced close handler to prevent multiple rapid close attempts
     const performClose = useCallback(() => {
