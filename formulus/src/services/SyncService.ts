@@ -297,7 +297,10 @@ export class SyncService {
         'check for updates',
       );
       const currentVersion = (await AsyncStorage.getItem('@appVersion')) || '0';
-      const updateAvailable = force || manifest.version !== currentVersion;
+      // Only report an update when the version actually differs.
+      // The "force" flag controls whether we *perform* a fresh network check,
+      // not whether we force the result to "update available".
+      const updateAvailable = manifest.version !== currentVersion;
 
       if (updateAvailable) {
         this.updateStatus(`${this.getStatus()} (Update available)`);
