@@ -4,10 +4,28 @@ const path = require('path');
 const buildDir = path.join(__dirname, '..', 'build');
 
 // Android target directory
-const androidTargetDir = path.join(__dirname, '..', '..', 'formulus', 'android', 'app', 'src', 'main', 'assets', 'formplayer_dist');
+const androidTargetDir = path.join(
+  __dirname,
+  '..',
+  '..',
+  'formulus',
+  'android',
+  'app',
+  'src',
+  'main',
+  'assets',
+  'formplayer_dist',
+);
 
 // iOS target directory - place in ios/Formulus/formplayer_dist so it can be added to Xcode as a folder reference
-const iosTargetDir = path.join(__dirname, '..', '..', 'formulus', 'ios', 'formplayer_dist');
+const iosTargetDir = path.join(
+  __dirname,
+  '..',
+  '..',
+  'formulus',
+  'ios',
+  'formplayer_dist',
+);
 
 function cleanDirectory(targetDir) {
   if (fs.existsSync(targetDir)) {
@@ -47,7 +65,9 @@ function copyRecursive(src, dest) {
 }
 
 if (!fs.existsSync(buildDir)) {
-  console.error('❌ Build directory does not exist. Run "npm run build" first.');
+  console.error(
+    '❌ Build directory does not exist. Run "npm run build" first.',
+  );
   process.exit(1);
 }
 

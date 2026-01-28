@@ -33,10 +33,11 @@ export default defineConfig([
         'error',
         {
           varsIgnorePattern: '^_',
+          argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
         },
       ],
     },
   },
   prettierConfig,
 ]);
-

@@ -3,18 +3,17 @@ import tseslint from 'typescript-eslint';
 import reactPlugin from 'eslint-plugin-react';
 import hooksPlugin from 'eslint-plugin-react-hooks';
 import prettierConfig from 'eslint-config-prettier';
-import prettierPlugin from 'eslint-plugin-prettier';
 import globals from 'globals';
+import { defineConfig, globalIgnores } from 'eslint/config';
 
-export default tseslint.config(
-  {
-    ignores: [
-      '**/node_modules/**',
-      '**/build/**',
-      '**/coverage/**',
-      '**/__tests__/**',
-    ],
-  },
+export default defineConfig([
+  globalIgnores([
+    '**/node_modules/**',
+    '**/build/**',
+    '**/coverage/**',
+    '**/__tests__/**',
+    '**/scripts/**',
+  ]),
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
@@ -22,7 +21,6 @@ export default tseslint.config(
     plugins: {
       react: reactPlugin,
       'react-hooks': hooksPlugin,
-      prettier: prettierPlugin,
     },
     languageOptions: {
       globals: {
@@ -38,14 +36,16 @@ export default tseslint.config(
     rules: {
       ...hooksPlugin.configs.recommended.rules,
       'react/react-in-jsx-scope': 'off',
-      'prettier/prettier': 'error',
+      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
           varsIgnorePattern: '^_',
+          argsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
         },
       ],
     },
   },
   prettierConfig,
-);
+]);

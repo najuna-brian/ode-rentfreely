@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import React, {
   useCallback,
   useState,
@@ -9,47 +10,72 @@ import React, {
 } from 'react';
 import './App.css';
 import { JsonForms } from '@jsonforms/react';
-import { materialRenderers, materialCells } from '@jsonforms/material-renderers';
+import {
+  materialRenderers,
+  materialCells,
+} from '@jsonforms/material-renderers';
 import { JsonSchema7, JsonFormsRendererRegistryEntry } from '@jsonforms/core';
-import { Alert, Snackbar, CircularProgress, Box, Typography, ThemeProvider } from '@mui/material';
-import { createTheme, getThemeOptions } from './theme';
+import {
+  Alert,
+  Snackbar,
+  CircularProgress,
+  Box,
+  Typography,
+  ThemeProvider,
+} from '@mui/material';
+import { createTheme, getThemeOptions } from './theme/theme';
 import Ajv from 'ajv';
 import addErrors from 'ajv-errors';
 import addFormats from 'ajv-formats';
 
 // Import the FormulusInterface client
-import FormulusClient from './FormulusInterface';
-import { FormInitData } from './FormulusInterfaceDefinition';
+import FormulusClient from './services/FormulusInterface';
+import { FormInitData } from './types/FormulusInterfaceDefinition';
 
 import SwipeLayoutRenderer, {
   swipeLayoutTester,
   groupAsSwipeLayoutTester,
-} from './SwipeLayoutRenderer';
-import { finalizeRenderer, finalizeTester } from './FinalizeRenderer';
-import PhotoQuestionRenderer, { photoQuestionTester } from './PhotoQuestionRenderer';
-import QrcodeQuestionRenderer, { qrcodeQuestionTester } from './QrcodeQuestionRenderer';
-import SignatureQuestionRenderer, { signatureQuestionTester } from './SignatureQuestionRenderer';
-import FileQuestionRenderer, { fileQuestionTester } from './FileQuestionRenderer';
-import AudioQuestionRenderer, { audioQuestionTester } from './AudioQuestionRenderer';
-import GPSQuestionRenderer, { gpsQuestionTester } from './GPSQuestionRenderer';
-import VideoQuestionRenderer, { videoQuestionTester } from './VideoQuestionRenderer';
-import HtmlLabelRenderer, { htmlLabelTester } from './HtmlLabelRenderer';
-import AdateQuestionRenderer, { adateQuestionTester } from './AdateQuestionRenderer';
-import { shellMaterialRenderers } from './material-wrappers';
+} from './renderers/SwipeLayoutRenderer';
+import { finalizeRenderer, finalizeTester } from './renderers/FinalizeRenderer';
+import PhotoQuestionRenderer, {
+  photoQuestionTester,
+} from './renderers/PhotoQuestionRenderer';
+import SignatureQuestionRenderer, {
+  signatureQuestionTester,
+} from './renderers/SignatureQuestionRenderer';
+import FileQuestionRenderer, {
+  fileQuestionTester,
+} from './renderers/FileQuestionRenderer';
+import AudioQuestionRenderer, {
+  audioQuestionTester,
+} from './renderers/AudioQuestionRenderer';
+import GPSQuestionRenderer, {
+  gpsQuestionTester,
+} from './renderers/GPSQuestionRenderer';
+import VideoQuestionRenderer, {
+  videoQuestionTester,
+} from './renderers/VideoQuestionRenderer';
+import HtmlLabelRenderer, {
+  htmlLabelTester,
+} from './renderers/HtmlLabelRenderer';
+import AdateQuestionRenderer, {
+  adateQuestionTester,
+} from './renderers/AdateQuestionRenderer';
+import { shellMaterialRenderers } from './theme/material-wrappers';
 
-import ErrorBoundary from './ErrorBoundary';
-import { draftService } from './DraftService';
-import DraftSelector from './DraftSelector';
-import { loadExtensions } from './ExtensionsLoader';
+import ErrorBoundary from './components/ErrorBoundary';
+import { draftService } from './services/DraftService';
+import DraftSelector from './components/DraftSelector';
+import { loadExtensions } from './services/ExtensionsLoader';
 
-// Only import development dependencies in development mode
-let webViewMock: any = null;
-let DevTestbed: any = null;
+// Import development dependencies (Vite will tree-shake these in production)
+import { webViewMock } from './mocks/webview-mock';
+import DevTestbed from './mocks/DevTestbed';
 
-if (process.env.NODE_ENV === 'development') {
-  const webViewMockModule = require('./webview-mock');
-  webViewMock = webViewMockModule.webViewMock;
-  DevTestbed = require('./DevTestbed').default;
+// Initialize the mock in development mode (synchronously)
+if (import.meta.env.DEV) {
+  console.log('[App] Initializing WebView mock for development');
+  webViewMock.init();
 }
 
 // Define interfaces for our form data structure
@@ -90,7 +116,9 @@ const ensureSwipeLayoutRoot = (uiSchema: FormUISchema | null): FormUISchema => {
     uiSchema.type === 'HorizontalLayout' ||
     uiSchema.elements
   ) {
-    console.log(`Root UI schema type is "${uiSchema.type}", wrapping in SwipeLayout`);
+    console.log(
+      `Root UI schema type is "${uiSchema.type}", wrapping in SwipeLayout`,
+    );
     return {
       type: 'SwipeLayout',
       elements: [uiSchema],
@@ -114,7 +142,9 @@ const ensureSwipeLayoutRoot = (uiSchema: FormUISchema | null): FormUISchema => {
 };
 
 // Function to process UI schema and ensure Finalize element is present
-const processUISchemaWithFinalize = (uiSchema: FormUISchema | null): FormUISchema => {
+const processUISchemaWithFinalize = (
+  uiSchema: FormUISchema | null,
+): FormUISchema => {
   if (!uiSchema || !uiSchema.elements) {
     // If no UI schema or no elements, create a basic one with just Finalize
     return {
@@ -129,7 +159,7 @@ const processUISchemaWithFinalize = (uiSchema: FormUISchema | null): FormUISchem
 
   // Create a copy of the UI schema to avoid mutating the original
   const processedUISchema = { ...uiSchema };
-  let elements = [...uiSchema.elements];
+  const elements = [...uiSchema.elements];
 
   // Check for existing Finalize elements and remove them
   const existingFinalizeIndices: number[] = [];
@@ -144,7 +174,7 @@ const processUISchemaWithFinalize = (uiSchema: FormUISchema | null): FormUISchem
       `Found ${existingFinalizeIndices.length} existing Finalize element(s) in UI schema. Removing them as they will be automatically added.`,
     );
     // Remove existing Finalize elements (in reverse order to maintain indices)
-    existingFinalizeIndices.reverse().forEach((index) => {
+    existingFinalizeIndices.reverse().forEach(index => {
       elements.splice(index, 1);
     });
   }
@@ -177,7 +207,6 @@ export const customRenderers = [
   { tester: groupAsSwipeLayoutTester, renderer: SwipeLayoutRenderer },
   { tester: finalizeTester, renderer: finalizeRenderer.renderer },
   { tester: photoQuestionTester, renderer: PhotoQuestionRenderer },
-  { tester: qrcodeQuestionTester, renderer: QrcodeQuestionRenderer },
   { tester: signatureQuestionTester, renderer: SignatureQuestionRenderer },
   { tester: fileQuestionTester, renderer: FileQuestionRenderer },
   { tester: audioQuestionTester, renderer: AudioQuestionRenderer },
@@ -189,12 +218,19 @@ export const customRenderers = [
 
 function App() {
   // Initialize WebView mock ONLY in development mode and ONLY if ReactNativeWebView doesn't exist
-  if (process.env.NODE_ENV === 'development' && webViewMock && !window.ReactNativeWebView) {
+  if (
+    process.env.NODE_ENV === 'development' &&
+    webViewMock &&
+    !window.ReactNativeWebView
+  ) {
     console.log(
       'Development mode detected and no ReactNativeWebView found, initializing WebView mock...',
     );
     webViewMock.init();
-    console.log('WebView mock initialized, isActive:', webViewMock.isActiveMock());
+    console.log(
+      'WebView mock initialized, isActive:',
+      webViewMock.isActiveMock(),
+    );
   } /* else if (process.env.NODE_ENV !== 'development') {
     console.log('Production mode detected, NOT initializing WebView mock');
   } else if (window.ReactNativeWebView) {
@@ -213,15 +249,22 @@ function App() {
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [formInitData, setFormInitData] = useState<FormInitData | null>(null);
   const [showDraftSelector, setShowDraftSelector] = useState(false);
-  const [pendingFormInit, setPendingFormInit] = useState<FormInitData | null>(null);
-  const [darkMode, setDarkMode] = useState<boolean>(false);
-  const [extensionRenderers, setExtensionRenderers] = useState<JsonFormsRendererRegistryEntry[]>(
-    [],
+  const [pendingFormInit, setPendingFormInit] = useState<FormInitData | null>(
+    null,
   );
+  const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [extensionRenderers, setExtensionRenderers] = useState<
+    JsonFormsRendererRegistryEntry[]
+  >([]);
   // Store extension functions for potential future use (e.g., validation context injection)
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [extensionFunctions, setExtensionFunctions] = useState<Map<string, Function>>(new Map());
-  const [extensionDefinitions, setExtensionDefinitions] = useState<Record<string, any>>({});
+  const [extensionFunctions, setExtensionFunctions] = useState<
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+    Map<string, Function>
+  >(new Map());
+  const [extensionDefinitions, setExtensionDefinitions] = useState<
+    Record<string, any>
+  >({});
 
   // Reference to the FormulusClient instance and loading state
   const formulusClient = useRef<FormulusClient>(FormulusClient.getInstance());
@@ -273,18 +316,26 @@ function App() {
         }
 
         if (!formSchema) {
-          console.warn('formSchema was not provided. Form rendering might fail or be incomplete.');
-          setLoadError('Form schema is missing. Form rendering might fail or be incomplete.');
+          console.warn(
+            'formSchema was not provided. Form rendering might fail or be incomplete.',
+          );
+          setLoadError(
+            'Form schema is missing. Form rendering might fail or be incomplete.',
+          );
           setSchema({} as FormSchema); // Set to empty schema or handle as per requirements
           // First ensure SwipeLayout root, then process to ensure Finalize element is present
           const swipeLayoutUISchema = ensureSwipeLayoutRoot(null);
-          const processedUISchema = processUISchemaWithFinalize(swipeLayoutUISchema);
+          const processedUISchema =
+            processUISchemaWithFinalize(swipeLayoutUISchema);
           setUISchema(processedUISchema);
         } else {
           setSchema(formSchema as FormSchema);
           // First ensure SwipeLayout root, then process to ensure Finalize element is present
-          const swipeLayoutUISchema = ensureSwipeLayoutRoot(uiSchema as FormUISchema);
-          const processedUISchema = processUISchemaWithFinalize(swipeLayoutUISchema);
+          const swipeLayoutUISchema = ensureSwipeLayoutRoot(
+            uiSchema as FormUISchema,
+          );
+          const processedUISchema =
+            processUISchemaWithFinalize(swipeLayoutUISchema);
           setUISchema(processedUISchema);
         }
 
@@ -293,7 +344,9 @@ function App() {
           setData(savedData as FormData);
         } else {
           const defaultData =
-            params && typeof params === 'object' ? params.defaultData ?? params : {};
+            params && typeof params === 'object'
+              ? (params.defaultData ?? params)
+              : {};
           console.log('Preloading initialization form values:', defaultData);
           setData(defaultData as FormData);
         }
@@ -301,7 +354,10 @@ function App() {
         console.log('Form params (if any, beyond schemas/data):', params);
         setLoadError(null); // Clear any previous load errors
 
-        if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+        if (
+          window.ReactNativeWebView &&
+          window.ReactNativeWebView.postMessage
+        ) {
           window.ReactNativeWebView.postMessage(
             JSON.stringify({
               type: 'formplayerInitialized',
@@ -315,13 +371,22 @@ function App() {
       } catch (error) {
         console.error('Error initializing form:', error);
         const errorMessage =
-          error instanceof Error ? error.message : 'Unknown error during form initialization';
+          error instanceof Error
+            ? error.message
+            : 'Unknown error during form initialization';
         setLoadError(`Error initializing form: ${errorMessage}`);
         setIsLoading(false);
         isLoadingRef.current = false;
       }
     },
-    [setFormInitData, setSchema, setUISchema, setData, setLoadError, setIsLoading],
+    [
+      setFormInitData,
+      setSchema,
+      setUISchema,
+      setData,
+      setLoadError,
+      setIsLoading,
+    ],
   ); // isLoadingRef is a ref, not needed in deps
 
   // Handler for data received via window.onFormInit
@@ -333,9 +398,14 @@ function App() {
         const { formType: receivedFormType, savedData, formSchema } = initData;
 
         if (!receivedFormType) {
-          console.error('formType is crucial and was not provided in onFormInit. Cannot proceed.');
+          console.error(
+            'formType is crucial and was not provided in onFormInit. Cannot proceed.',
+          );
           setLoadError('Form ID is missing. Cannot initialize form.');
-          if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+          if (
+            window.ReactNativeWebView &&
+            window.ReactNativeWebView.postMessage
+          ) {
             window.ReactNativeWebView.postMessage(
               JSON.stringify({
                 type: 'formplayerError',
@@ -348,7 +418,8 @@ function App() {
         }
 
         // Check if this is a new form (no savedData) and if drafts exist
-        const hasExistingSavedData = savedData && Object.keys(savedData).length > 0;
+        const hasExistingSavedData =
+          savedData && Object.keys(savedData).length > 0;
         if (!hasExistingSavedData) {
           const availableDrafts = draftService.getDraftsForForm(
             receivedFormType,
@@ -372,9 +443,14 @@ function App() {
       } catch (error) {
         console.error('Error processing onFormInit data:', error);
         const errorMessage =
-          error instanceof Error ? error.message : 'Unknown error during form initialization';
+          error instanceof Error
+            ? error.message
+            : 'Unknown error during form initialization';
         setLoadError(`Error processing form data: ${errorMessage}`);
-        if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+        if (
+          window.ReactNativeWebView &&
+          window.ReactNativeWebView.postMessage
+        ) {
           window.ReactNativeWebView.postMessage(
             JSON.stringify({
               type: 'formplayerError',
@@ -405,6 +481,7 @@ function App() {
 
     globalAny.__formplayerOnInitRegistered = true;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsLoading(true);
     isLoadingRef.current = true;
 
@@ -412,7 +489,9 @@ function App() {
     globalAny.onFormInit = handleFormInitByNative;
 
     // Signal to native that the WebView is ready to receive onFormInit
-    console.log('Signaling readiness to native host (formplayerReadyToReceiveInit).');
+    console.log(
+      'Signaling readiness to native host (formplayerReadyToReceiveInit).',
+    );
     if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
       window.ReactNativeWebView.postMessage(
         JSON.stringify({
@@ -420,20 +499,32 @@ function App() {
         }),
       );
     } else {
-      console.warn('ReactNativeWebView.postMessage not available. Cannot signal readiness.');
+      console.warn(
+        'ReactNativeWebView.postMessage not available. Cannot signal readiness.',
+      );
       console.log('Debug - NODE_ENV:', process.env.NODE_ENV);
-      console.log('Debug - webViewMock.isActiveMock():', webViewMock.isActiveMock());
+      console.log(
+        'Debug - webViewMock.isActiveMock():',
+        webViewMock.isActiveMock(),
+      );
       console.log('Debug - isLoadingRef.current:', isLoadingRef.current);
 
       // Potentially set an error or handle standalone mode if WebView context isn't available
       // For example, if running in a standard browser for development
       if (isLoadingRef.current) {
         // Avoid setting error if already handled by timeout or success
-        if (process.env.NODE_ENV === 'development' && webViewMock.isActiveMock()) {
-          console.log('Development mode: WebView mock is active, continuing without error');
+        if (
+          process.env.NODE_ENV === 'development' &&
+          webViewMock.isActiveMock()
+        ) {
+          console.log(
+            'Development mode: WebView mock is active, continuing without error',
+          );
           // Don't set error in development mode when mock is active
         } else {
-          console.log('Setting error message because mock is not active or not in development');
+          console.log(
+            'Setting error message because mock is not active or not in development',
+          );
           setLoadError(
             'Cannot communicate with native host. Formplayer might be running in a standalone browser.',
           );
@@ -453,11 +544,15 @@ function App() {
         );
         setIsLoading(false);
         isLoadingRef.current = false;
-        if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+        if (
+          window.ReactNativeWebView &&
+          window.ReactNativeWebView.postMessage
+        ) {
           window.ReactNativeWebView.postMessage(
             JSON.stringify({
               type: 'error',
-              message: 'Initialization timeout in WebView: onFormInit not called.',
+              message:
+                'Initialization timeout in WebView: onFormInit not called.',
             }),
           );
         }
@@ -509,13 +604,20 @@ function App() {
 
     const handleFinalizeForm = (event: Event) => {
       // Prefer the payload from the FinalizeRenderer if available
-      const customEvent = event as CustomEvent<{ formInitData?: FormInitData; data?: FormData }>;
+      const customEvent = event as CustomEvent<{
+        formInitData?: FormInitData;
+        data?: FormData;
+      }>;
       const payloadFormInit = customEvent.detail?.formInitData || formInitData;
       const payloadData = customEvent.detail?.data || data;
 
       if (!payloadFormInit) {
-        console.error('[App.tsx] Cannot finalize form: formInitData is missing');
-        setSubmitError('Cannot submit form because initialization data is missing.');
+        console.error(
+          '[App.tsx] Cannot finalize form: formInitData is missing',
+        );
+        setSubmitError(
+          'Cannot submit form because initialization data is missing.',
+        );
         return;
       }
 
@@ -531,18 +633,30 @@ function App() {
           setSubmitError(null);
           setShowFinalizeMessage(true);
         })
-        .catch((error) => {
+        .catch(error => {
           console.error('[App.tsx] Error submitting form:', error);
           setSubmitError('Failed to submit form. Please try again.');
         });
     };
 
-    window.addEventListener('navigateToError', handleNavigateToError as EventListener);
-    window.addEventListener('finalizeForm', handleFinalizeForm as EventListener);
+    window.addEventListener(
+      'navigateToError',
+      handleNavigateToError as EventListener,
+    );
+    window.addEventListener(
+      'finalizeForm',
+      handleFinalizeForm as EventListener,
+    );
 
     return () => {
-      window.removeEventListener('navigateToError', handleNavigateToError as EventListener);
-      window.removeEventListener('finalizeForm', handleFinalizeForm as EventListener);
+      window.removeEventListener(
+        'navigateToError',
+        handleNavigateToError as EventListener,
+      );
+      window.removeEventListener(
+        'finalizeForm',
+        handleFinalizeForm as EventListener,
+      );
     };
   }, [data, formInitData, uischema]); // Include all dependencies
 
@@ -659,8 +773,7 @@ function App() {
           alignItems: 'center',
           justifyContent: 'center',
           height: '100dvh',
-        }}
-      >
+        }}>
         <CircularProgress />
         <Typography variant="h6" sx={{ mt: 2 }}>
           Loading form...
@@ -681,8 +794,7 @@ function App() {
           alignItems: 'center',
           justifyContent: 'center',
           height: '100dvh',
-        }}
-      >
+        }}>
         <Typography variant="h6" color="error">
           {loadError || 'Failed to load form'}
         </Typography>
@@ -695,8 +807,7 @@ function App() {
             maxWidth: '80%',
             border: '1px solid',
             borderColor: 'divider',
-          }}
-        >
+          }}>
           <Typography variant="subtitle2" color="text.secondary">
             Debug Information:
           </Typography>
@@ -711,8 +822,7 @@ function App() {
               maxHeight: '200px',
               color: 'text.secondary',
               borderRadius: 1,
-            }}
-          >
+            }}>
             {JSON.stringify(
               {
                 hasSchema: !!schema,
@@ -750,8 +860,7 @@ function App() {
             width: '100%',
             backgroundColor: currentTheme.palette.background.default, // Ensure dark background
             color: currentTheme.palette.text.primary,
-          }}
-        >
+          }}>
           {/* Main app content - 60% width in development mode */}
           <div
             style={{
@@ -761,8 +870,7 @@ function App() {
               boxSizing: 'border-box',
               height: '100%', // Ensure it takes full height
               backgroundColor: 'transparent', // Use theme background
-            }}
-          >
+            }}>
             <ErrorBoundary>
               {loadError ? (
                 <Box
@@ -773,8 +881,7 @@ function App() {
                     borderColor: 'error.main',
                     borderRadius: '4px',
                     color: 'error.dark',
-                  }}
-                >
+                  }}>
                   <Typography variant="h6" color="error">
                     Error Loading Form
                   </Typography>
@@ -803,9 +910,10 @@ function App() {
                   <Snackbar
                     open={showFinalizeMessage}
                     autoHideDuration={6000}
-                    onClose={() => setShowFinalizeMessage(false)}
-                  >
-                    <Alert onClose={() => setShowFinalizeMessage(false)} severity="info">
+                    onClose={() => setShowFinalizeMessage(false)}>
+                    <Alert
+                      onClose={() => setShowFinalizeMessage(false)}
+                      severity="info">
                       Form submitted successfully!
                     </Alert>
                   </Snackbar>
@@ -813,9 +921,10 @@ function App() {
                   <Snackbar
                     open={Boolean(submitError)}
                     autoHideDuration={6000}
-                    onClose={() => setSubmitError(null)}
-                  >
-                    <Alert onClose={() => setSubmitError(null)} severity="error">
+                    onClose={() => setSubmitError(null)}>
+                    <Alert
+                      onClose={() => setSubmitError(null)}
+                      severity="error">
                       {submitError}
                     </Alert>
                   </Snackbar>
@@ -831,8 +940,7 @@ function App() {
                 width: '40%',
                 borderLeft: '2px solid #e0e0e0',
                 backgroundColor: '#fafafa',
-              }}
-            >
+              }}>
               <ErrorBoundary>
                 <DevTestbed isVisible={true} />
               </ErrorBoundary>
