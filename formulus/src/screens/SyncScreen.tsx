@@ -7,6 +7,8 @@ import {
   Alert,
   ScrollView,
   ActivityIndicator,
+  Animated,
+  Easing,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -21,8 +23,14 @@ import colors from '../theme/colors';
 
 const SyncScreen = () => {
   const syncContextValue = useSyncContext();
-  const {syncState, startSync, finishSync, cancelSync, clearError} =
-    syncContextValue;
+  const {
+    syncState,
+    startSync,
+    finishSync,
+    cancelSync,
+    clearError,
+    updateProgress,
+  } = syncContextValue;
   const [lastSync, setLastSync] = useState<string | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState<boolean>(false);
   const [pendingUploads, setPendingUploads] = useState<{
@@ -34,6 +42,7 @@ const SyncScreen = () => {
   const [appBundleVersion, setAppBundleVersion] = useState<string>('0');
   const [serverBundleVersion, setServerBundleVersion] =
     useState<string>('Unknown');
+  const [animatedProgress] = useState(new Animated.Value(0));
 
   const updatePendingUploads = useCallback(async () => {
     try {
@@ -225,7 +234,10 @@ const SyncScreen = () => {
     : colors.semantic.success[500];
 
   useEffect(() => {
-    const unsubscribe = syncService.subscribeToStatusUpdates(() => {});
+    const unsubscribeStatus = syncService.subscribeToStatusUpdates(() => {});
+    const unsubscribeProgress = syncService.subscribeToProgressUpdates(
+      updateProgress,
+    );
 
     const initialize = async () => {
       await syncService.initialize();
@@ -243,9 +255,39 @@ const SyncScreen = () => {
     initialize();
 
     return () => {
-      unsubscribe();
+      unsubscribeStatus();
+      unsubscribeProgress();
     };
-  }, [checkForUpdates, updatePendingUploads, updatePendingObservations]);
+  }, [
+    checkForUpdates,
+    updatePendingUploads,
+    updatePendingObservations,
+    updateProgress,
+  ]);
+
+  // Smoothly animate progress changes so the bar doesn't "twitch"
+  useEffect(() => {
+    if (!syncState.progress || !syncState.isActive) {
+      Animated.timing(animatedProgress, {
+        toValue: 0,
+        duration: 200,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: false,
+      }).start();
+      return;
+    }
+
+    const {current, total} = syncState.progress;
+    const percent =
+      total && total > 0 ? Math.max(0, Math.min(100, (current / total) * 100)) : 0;
+
+    Animated.timing(animatedProgress, {
+      toValue: percent,
+      duration: 250,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+  }, [syncState.progress, syncState.isActive, animatedProgress]);
 
   useEffect(() => {
     if (!syncState.isActive && !syncState.error) {
@@ -411,18 +453,23 @@ const SyncScreen = () => {
               <Icon name="sync" size={20} color={colors.brand.primary[500]} />
               <Text style={styles.progressTitle}>Sync Progress</Text>
             </View>
+            <Text style={styles.progressMode}>
+              {syncState.progress.phase === 'attachments_download'
+                ? 'App bundle update'
+                : 'Data sync'}
+            </Text>
             <Text style={styles.progressDetails}>
               {syncState.progress.details || 'Syncing...'}
             </Text>
             <View style={styles.progressBar}>
-              <View
+              <Animated.View
                 style={[
                   styles.progressFill,
                   {
-                    width: `${
-                      (syncState.progress.current / syncState.progress.total) *
-                      100
-                    }%`,
+                    width: animatedProgress.interpolate({
+                      inputRange: [0, 100],
+                      outputRange: ['0%', '100%'],
+                    }),
                   },
                 ]}
               />
@@ -699,6 +746,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.neutral[600],
     marginBottom: 12,
+  },
+  progressMode: {
+    fontSize: 12,
+    color: colors.neutral[500],
+    marginBottom: 4,
+    fontStyle: 'italic',
   },
   progressBar: {
     height: 8,

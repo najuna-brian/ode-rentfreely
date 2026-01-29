@@ -24,21 +24,34 @@ const MainAppNavigator: React.FC = () => {
     checkConfiguration();
   }, []);
 
-  // Handle Android hardware back button so it navigates back within the app
-  // instead of closing it immediately when there is navigation history.
+  // Handle Android hardware back button in a conservative way:
+  // only intercept when there is actual stack history above the root.
   useEffect(() => {
     if (Platform.OS !== 'android') {
       return;
     }
 
     const onBackPress = () => {
-      // @ts-expect-error: navigation type is generic here, but canGoBack/goBack exist at runtime
-      if (navigation.canGoBack && navigation.canGoBack()) {
-        // @ts-expect-error: see above
+      // @ts-expect-error: navigation type is generic here, but getState exists at runtime
+      const state = navigation.getState?.();
+
+      // Only handle back when we're in a stack with more than one route and
+      // not at the root (index > 0). This avoids interfering with tab presses
+      // and prevents the app from getting into an odd state.
+      if (
+        state &&
+        state.type === 'stack' &&
+        Array.isArray(state.routes) &&
+        state.routes.length > 1 &&
+        typeof state.index === 'number' &&
+        state.index > 0
+      ) {
+        // @ts-expect-error: goBack exists at runtime
         navigation.goBack();
-        return true; // we've handled the back press
+        return true;
       }
-      // Let the OS handle the back press (which may close the app)
+
+      // Let React Navigation / Android handle back normally (may exit app at root)
       return false;
     };
 
