@@ -4,6 +4,14 @@ synkronus/.env
 .idea
 **/.idea
 
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Generated credentials
+**/credentials.txt
+synkronus/credentials.txt
+
 # Android release keys
 formulus/android/keystores/
 *.jks

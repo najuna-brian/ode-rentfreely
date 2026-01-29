@@ -291,6 +291,24 @@ func (s *Service) generateManifest() (*Manifest, error) {
 		// Use forward slashes for consistency across platforms
 		relPath = filepath.ToSlash(relPath)
 
+		// Skip duplicate form specs under app/forms.
+		//
+		// Form definitions already live under "forms/<formType>/...".
+		// The Formulus client:
+		//   - downloads specs from "forms/" (via downloadFormSpecs)
+		//   - downloads web assets from "app/" (via downloadAppFiles)
+		// It never needs "app/forms/*.json". Including them in the manifest
+		// causes the client to request paths like
+		//   app/forms/<formType>/schema.json
+		// which are redundant and, for some bundles, may not be present,
+		// leading to noisy 404s during app bundle updates.
+		//
+		// To keep the manifest clean and avoid spurious download failures,
+		// we simply omit any files under "app/forms/" from the manifest.
+		if strings.HasPrefix(relPath, "app/forms/") {
+			return nil
+		}
+
 		// Get file info
 		fileInfo, err := d.Info()
 		if err != nil {

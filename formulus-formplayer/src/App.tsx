@@ -36,11 +36,14 @@ import VideoQuestionRenderer, { videoQuestionTester } from './VideoQuestionRende
 import HtmlLabelRenderer, { htmlLabelTester } from './HtmlLabelRenderer';
 import AdateQuestionRenderer, { adateQuestionTester } from './AdateQuestionRenderer';
 import { shellMaterialRenderers } from './material-wrappers';
+import DynamicEnumControl, { dynamicEnumTester } from './DynamicEnumControl';
 
 import ErrorBoundary from './ErrorBoundary';
 import { draftService } from './DraftService';
 import DraftSelector from './DraftSelector';
 import { loadExtensions } from './ExtensionsLoader';
+import { getBuiltinExtensions } from './builtinExtensions';
+import { FormEvaluationProvider } from './FormEvaluationContext';
 
 // Only import development dependencies in development mode
 let webViewMock: any = null;
@@ -185,6 +188,8 @@ export const customRenderers = [
   { tester: videoQuestionTester, renderer: VideoQuestionRenderer },
   { tester: htmlLabelTester, renderer: HtmlLabelRenderer },
   { tester: adateQuestionTester, renderer: AdateQuestionRenderer },
+  // Dynamic choice list renderer for x-dynamicEnum fields
+  { tester: dynamicEnumTester, renderer: DynamicEnumControl },
 ];
 
 function App() {
@@ -242,17 +247,46 @@ function App() {
 
         setFormInitData(initData);
 
+        // Debug: log schema details, especially x-dynamicEnum usage
+        try {
+          const properties = (formSchema as any)?.properties || {};
+          const dynamicEnumFields = Object.entries(properties)
+            .filter(([, propSchema]: [string, any]) => !!propSchema?.['x-dynamicEnum'])
+            .map(([key]) => key);
+
+          console.log('[Formplayer] Form init received', {
+            formType: receivedFormType,
+            hasSchema: !!formSchema,
+            hasUISchema: !!uiSchema,
+            propertyKeys: Object.keys(properties),
+            dynamicEnumFields,
+          });
+        } catch (schemaLogError) {
+          console.warn('[Formplayer] Failed to log schema details', schemaLogError);
+        }
+
         // Extract dark mode preference from params
         const isDarkMode = params?.darkMode === true;
         setDarkMode(isDarkMode);
+
+        // Start with built-in extensions (always available)
+        const allFunctions = getBuiltinExtensions();
 
         // Load extensions if provided
         if (extensions) {
           try {
             const extensionResult = await loadExtensions(extensions);
+            
+            // Merge loaded functions with built-ins (loaded functions take precedence)
+            extensionResult.functions.forEach((func, name) => {
+              allFunctions.set(name, func);
+            });
+            
             setExtensionRenderers(extensionResult.renderers);
-            setExtensionFunctions(extensionResult.functions);
+            setExtensionFunctions(allFunctions);
             setExtensionDefinitions(extensionResult.definitions);
+
+            console.log('[Formplayer] Final extension functions:', Array.from(allFunctions.keys()));
 
             // Log errors but don't fail form initialization
             if (extensionResult.errors.length > 0) {
@@ -260,16 +294,17 @@ function App() {
             }
           } catch (error) {
             console.error('Failed to load extensions:', error);
-            // Continue without extensions - not fatal
+            // Still use built-in functions even if loading fails
             setExtensionRenderers([]);
-            setExtensionFunctions(new Map());
+            setExtensionFunctions(allFunctions);
             setExtensionDefinitions({});
           }
         } else {
-          // Clear extensions if none provided
+          // No extensions provided, just use built-ins
           setExtensionRenderers([]);
-          setExtensionFunctions(new Map());
+          setExtensionFunctions(allFunctions);
           setExtensionDefinitions({});
+          console.log('[Formplayer] Using only built-in extensions');
         }
 
         if (!formSchema) {
@@ -684,48 +719,11 @@ function App() {
         }}
       >
         <Typography variant="h6" color="error">
-          {loadError || 'Failed to load form'}
+          Failed to load form
         </Typography>
-        <Box
-          sx={{
-            mt: 2,
-            p: 2,
-            bgcolor: 'background.paper',
-            borderRadius: 1,
-            maxWidth: '80%',
-            border: '1px solid',
-            borderColor: 'divider',
-          }}
-        >
-          <Typography variant="subtitle2" color="text.secondary">
-            Debug Information:
-          </Typography>
-          <Typography
-            variant="body2"
-            component="pre"
-            sx={{
-              mt: 1,
-              p: 1,
-              bgcolor: 'background.default',
-              overflow: 'auto',
-              maxHeight: '200px',
-              color: 'text.secondary',
-              borderRadius: 1,
-            }}
-          >
-            {JSON.stringify(
-              {
-                hasSchema: !!schema,
-                hasUISchema: !!uischema,
-                schemaType: schema?.type,
-                uiSchemaType: uischema?.type,
-                error: loadError,
-              },
-              null,
-              2,
-            )}
-          </Typography>
-        </Box>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          {loadError || 'Please try again or contact support if the problem persists.'}
+        </Typography>
       </Box>
     );
   }
@@ -784,21 +782,23 @@ function App() {
                 </Box>
               ) : (
                 <>
-                  <JsonForms
-                    schema={schema}
-                    uischema={uischema}
-                    data={data}
-                    renderers={[
-                      ...shellMaterialRenderers,
-                      ...materialRenderers,
-                      ...customRenderers,
-                      ...extensionRenderers, // Extension renderers (highest priority)
-                    ]}
-                    cells={materialCells}
-                    onChange={handleDataChange}
-                    validationMode="ValidateAndShow"
-                    ajv={ajv}
-                  />
+                  <FormEvaluationProvider functions={extensionFunctions}>
+                    <JsonForms
+                      schema={schema}
+                      uischema={uischema}
+                      data={data}
+                      renderers={[
+                        ...shellMaterialRenderers,
+                        ...materialRenderers,
+                        ...customRenderers,
+                        ...extensionRenderers, // Extension renderers (highest priority)
+                      ]}
+                      cells={materialCells}
+                      onChange={handleDataChange}
+                      validationMode="ValidateAndShow"
+                      ajv={ajv}
+                    />
+                  </FormEvaluationProvider>
                   {/* Success Snackbar */}
                   <Snackbar
                     open={showFinalizeMessage}

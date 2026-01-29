@@ -120,9 +120,33 @@ class SynkronusApi {
     );
 
     const api = await this.getApi();
-    const filesToDownload = manifest.files.filter(file =>
-      file.path.startsWith(prefix),
-    );
+    const filesToDownload = manifest.files.filter(file => {
+      if (!file.path.startsWith(prefix)) {
+        return false;
+      }
+
+      // IMPORTANT:
+      // We don't need to download duplicate form schema/ui JSON files from "app/forms/*"
+      // because those are already downloaded from "forms/*" via downloadFormSpecs.
+      //
+      // HOWEVER, we DO need ext.json and extension JS/JSX files (helpers, renderers, testers)
+      // because those are client-side only and not duplicated in "forms/*".
+      //
+      // Skip schema.json and ui.json under "app/forms/*/", but allow:
+      // - app/forms/ext.json (root extension config)
+      // - app/forms/extensions/**/*.js (extension code)
+      // - app/forms/extensions/**/*.jsx (extension code)
+      if (file.path.startsWith('app/forms/')) {
+        const fileName = file.path.split('/').pop() || '';
+        const isExtensionFile = file.path.includes('/extensions/') || fileName === 'ext.json';
+        if (!isExtensionFile && (fileName === 'schema.json' || fileName === 'ui.json')) {
+          return false; // Skip duplicate schema/ui files
+        }
+        // Allow ext.json and extension code files
+      }
+
+      return true;
+    });
     const urls = filesToDownload.map(
       file =>
         `${api.basePath}/app-bundle/download/${encodeURIComponent(file.path)}`,

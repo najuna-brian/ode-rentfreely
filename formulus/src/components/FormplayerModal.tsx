@@ -223,6 +223,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
 
       // Load extensions for this form
       let extensions: any;
+      let formSchemaToSend = formType.schema;
       try {
         const customAppPath = RNFS.DocumentDirectoryPath + '/app';
         const extensionService = ExtensionService.getInstance();
@@ -230,6 +231,20 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
           customAppPath,
           formType.id,
         );
+
+        // Ensure getDynamicChoiceList is always available as a fallback
+        if (!mergedExtensions.functions) {
+          mergedExtensions.functions = {};
+        }
+        if (!mergedExtensions.functions.getDynamicChoiceList) {
+          mergedExtensions.functions.getDynamicChoiceList = {
+            name: 'getDynamicChoiceList',
+            // Path is relative to the custom app root that is mounted at
+            // file://<DocumentDirectory>/app in the WebView
+            module: '/extensions/helpers/queryHelpers.js',
+            export: 'getDynamicChoiceList',
+          };
+        }
 
         // Convert to formplayer format
         if (
@@ -241,9 +256,11 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
             definitions: mergedExtensions.definitions,
             functions: Object.entries(mergedExtensions.functions).reduce(
               (acc, [key, func]) => {
+                // Remove leading slash from module path to avoid double-slash in URL
+                const modulePath = (func.module || '').replace(/^\/+/, '');
                 acc[key] = {
                   name: func.name,
-                  module: func.module || '',
+                  module: modulePath,
                   export: func.export,
                 };
                 return acc;
@@ -252,10 +269,12 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
             ),
             renderers: Object.entries(mergedExtensions.renderers).reduce(
               (acc, [key, renderer]) => {
+                // Remove leading slash from module path to avoid double-slash in URL
+                const modulePath = (renderer.module || '').replace(/^\/+/, '');
                 acc[key] = {
                   name: renderer.name,
                   format: renderer.format,
-                  module: renderer.module,
+                  module: modulePath,
                   tester: renderer.tester,
                   renderer: renderer.renderer,
                 };
@@ -264,10 +283,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
               {} as Record<string, any>,
             ),
             // Base path for loading modules (file:// URL for WebView)
-            basePath:
-              Platform.OS === 'android'
-                ? `file:///android_asset/app`
-                : `file://${customAppPath}`,
+            basePath: `file://${customAppPath}`,
           };
         }
       } catch (error) {
@@ -280,12 +296,10 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
         observationId: observationId,
         params: formParams,
         savedData: existingObservationData || {},
-        formSchema: formType.schema,
+        formSchema: formSchemaToSend,
         uiSchema: formType.uiSchema,
         extensions,
       };
-
-      console.log('Initializing form with:', formInitData);
 
       if (!webViewRef.current) {
         console.warn(
