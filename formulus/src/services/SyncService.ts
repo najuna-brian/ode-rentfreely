@@ -290,14 +290,17 @@ export class SyncService {
     }
   }
 
-  public async checkForUpdates(force: boolean = false): Promise<boolean> {
+  public async checkForUpdates(_force: boolean = false): Promise<boolean> {
     try {
       const manifest = await this.withAutoLoginRetry(
         () => synkronusApi.getManifest(),
         'check for updates',
       );
       const currentVersion = (await AsyncStorage.getItem('@appVersion')) || '0';
-      const updateAvailable = force || manifest.version !== currentVersion;
+      // Only report an update when the version actually differs.
+      // The "force" flag controls whether we *perform* a fresh network check,
+      // not whether we force the result to "update available".
+      const updateAvailable = manifest.version !== currentVersion;
 
       if (updateAvailable) {
         this.updateStatus(`${this.getStatus()} (Update available)`);
@@ -318,6 +321,13 @@ export class SyncService {
     this.isSyncing = true;
     this.autoLoginRetryCount = 0; // Reset retry count for new bundle update
     this.updateStatus('Starting app bundle sync...');
+    // Expose progress to the UI so users can see bundle download progress.
+    this.updateProgress({
+      current: 0,
+      total: 100,
+      phase: 'attachments_download',
+      details: 'Preparing app bundle download...',
+    });
 
     try {
       // Get manifest to know what version we're downloading
@@ -339,6 +349,12 @@ export class SyncService {
       const syncTime = new Date().toLocaleTimeString();
       await AsyncStorage.setItem('@lastSync', syncTime);
       this.updateStatus('App bundle sync completed');
+      this.updateProgress({
+        current: 100,
+        total: 100,
+        phase: 'attachments_download',
+        details: 'App bundle sync completed',
+      });
     } catch (error) {
       console.error('App sync failed', error);
       this.updateStatus('App sync failed');
@@ -366,8 +382,17 @@ export class SyncService {
           synkronusApi.downloadFormSpecs(
             manifest,
             RNFS.DocumentDirectoryPath,
-            progress =>
-              this.updateStatus(`Downloading form specs... ${progress}%`),
+            progress => {
+              const normalized = Math.max(0, Math.min(100, progress));
+              this.updateStatus(`Downloading form specs... ${normalized}%`);
+              // Use 0–50% of the overall range for form specs
+              this.updateProgress({
+                current: Math.round((normalized / 100) * 50),
+                total: 100,
+                phase: 'attachments_download',
+                details: `Downloading form specs... ${normalized}%`,
+              });
+            },
           ),
         'download form specs',
       );
@@ -379,8 +404,17 @@ export class SyncService {
           synkronusApi.downloadAppFiles(
             manifest,
             RNFS.DocumentDirectoryPath,
-            progress =>
-              this.updateStatus(`Downloading app files... ${progress}%`),
+            progress => {
+              const normalized = Math.max(0, Math.min(100, progress));
+              this.updateStatus(`Downloading app files... ${normalized}%`);
+              // Use 50–100% of the overall range for app files
+              this.updateProgress({
+                current: 50 + Math.round((normalized / 100) * 50),
+                total: 100,
+                phase: 'attachments_download',
+                details: `Downloading app files... ${normalized}%`,
+              });
+            },
           ),
         'download app files',
       );
