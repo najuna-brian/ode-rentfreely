@@ -384,9 +384,7 @@ export class SyncService {
             RNFS.DocumentDirectoryPath,
             progress => {
               const normalized = Math.max(0, Math.min(100, progress));
-              this.updateStatus(
-                `Downloading form specs... ${normalized}%`,
-              );
+              this.updateStatus(`Downloading form specs... ${normalized}%`);
               // Use 0–50% of the overall range for form specs
               this.updateProgress({
                 current: Math.round((normalized / 100) * 50),
@@ -408,9 +406,7 @@ export class SyncService {
             RNFS.DocumentDirectoryPath,
             progress => {
               const normalized = Math.max(0, Math.min(100, progress));
-              this.updateStatus(
-                `Downloading app files... ${normalized}%`,
-              );
+              this.updateStatus(`Downloading app files... ${normalized}%`);
               // Use 50–100% of the overall range for app files
               this.updateProgress({
                 current: 50 + Math.round((normalized / 100) * 50),

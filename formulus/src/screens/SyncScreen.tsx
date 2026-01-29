@@ -235,9 +235,8 @@ const SyncScreen = () => {
 
   useEffect(() => {
     const unsubscribeStatus = syncService.subscribeToStatusUpdates(() => {});
-    const unsubscribeProgress = syncService.subscribeToProgressUpdates(
-      updateProgress,
-    );
+    const unsubscribeProgress =
+      syncService.subscribeToProgressUpdates(updateProgress);
 
     const initialize = async () => {
       await syncService.initialize();
@@ -279,7 +278,9 @@ const SyncScreen = () => {
 
     const {current, total} = syncState.progress;
     const percent =
-      total && total > 0 ? Math.max(0, Math.min(100, (current / total) * 100)) : 0;
+      total && total > 0
+        ? Math.max(0, Math.min(100, (current / total) * 100))
+        : 0;
 
     Animated.timing(animatedProgress, {
       toValue: percent,
