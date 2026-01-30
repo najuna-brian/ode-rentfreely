@@ -7,6 +7,8 @@ import {
   Alert,
   ScrollView,
   ActivityIndicator,
+  Animated,
+  Easing,
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -21,8 +23,14 @@ import colors from '../theme/colors';
 
 const SyncScreen = () => {
   const syncContextValue = useSyncContext();
-  const {syncState, startSync, finishSync, cancelSync, clearError} =
-    syncContextValue;
+  const {
+    syncState,
+    startSync,
+    finishSync,
+    cancelSync,
+    clearError,
+    updateProgress,
+  } = syncContextValue;
   const [lastSync, setLastSync] = useState<string | null>(null);
   const [updateAvailable, setUpdateAvailable] = useState<boolean>(false);
   const [pendingUploads, setPendingUploads] = useState<{
@@ -34,6 +42,7 @@ const SyncScreen = () => {
   const [appBundleVersion, setAppBundleVersion] = useState<string>('0');
   const [serverBundleVersion, setServerBundleVersion] =
     useState<string>('Unknown');
+  const [animatedProgress] = useState(new Animated.Value(0));
 
   const updatePendingUploads = useCallback(async () => {
     try {
@@ -68,21 +77,57 @@ const SyncScreen = () => {
   }, []);
 
   const handleSync = useCallback(async () => {
-    if (syncState.isActive) return;
+    if (syncState.isActive) {
+      console.log('Sync already active, ignoring request');
+      return;
+    }
+
+    let syncError: string | undefined;
 
     try {
+      console.log('Starting sync...');
       startSync(true);
-      await syncService.syncObservations(true);
-      await updatePendingUploads();
-      await updatePendingObservations();
-      finishSync();
+
+      // Add timeout to prevent infinite hanging (30 minutes max)
+      const syncPromise = syncService.syncObservations(true);
+      const timeoutPromise = new Promise<never>((_, reject) => {
+        setTimeout(() => {
+          reject(new Error('Sync operation timed out after 30 minutes'));
+        }, 30 * 60 * 1000);
+      });
+
+      const finalVersion = await Promise.race([syncPromise, timeoutPromise]);
+      console.log('✅ Sync completed successfully, version:', finalVersion);
+
+      // Update UI state even if these fail
+      try {
+        await updatePendingUploads();
+      } catch (e) {
+        console.warn('Failed to update pending uploads:', e);
+      }
+
+      try {
+        await updatePendingObservations();
+      } catch (e) {
+        console.warn('Failed to update pending observations:', e);
+      }
+
       const syncTime = new Date().toISOString();
       setLastSync(syncTime);
-      await AsyncStorage.setItem('@lastSync', syncTime);
+      try {
+        await AsyncStorage.setItem('@lastSync', syncTime);
+      } catch (e) {
+        console.warn('Failed to save last sync time:', e);
+      }
     } catch (error) {
-      const errorMessage = (error as Error).message;
-      finishSync(errorMessage);
-      Alert.alert('Error', 'Failed to sync!\n' + errorMessage);
+      console.error('❌ Sync error in handleSync:', error);
+      syncError = (error as Error).message || 'Unknown error occurred';
+      Alert.alert('Error', 'Failed to sync!\n' + syncError);
+    } finally {
+      // Always call finishSync to clear loading state
+      console.log('Calling finishSync, error:', syncError);
+      finishSync(syncError);
+      console.log('✅ Sync finished, isActive should be false now');
     }
   }, [
     updatePendingUploads,
@@ -189,7 +234,9 @@ const SyncScreen = () => {
     : colors.semantic.success[500];
 
   useEffect(() => {
-    const unsubscribe = syncService.subscribeToStatusUpdates(() => {});
+    const unsubscribeStatus = syncService.subscribeToStatusUpdates(() => {});
+    const unsubscribeProgress =
+      syncService.subscribeToProgressUpdates(updateProgress);
 
     const initialize = async () => {
       await syncService.initialize();
@@ -207,9 +254,41 @@ const SyncScreen = () => {
     initialize();
 
     return () => {
-      unsubscribe();
+      unsubscribeStatus();
+      unsubscribeProgress();
     };
-  }, [checkForUpdates, updatePendingUploads, updatePendingObservations]);
+  }, [
+    checkForUpdates,
+    updatePendingUploads,
+    updatePendingObservations,
+    updateProgress,
+  ]);
+
+  // Smoothly animate progress changes so the bar doesn't "twitch"
+  useEffect(() => {
+    if (!syncState.progress || !syncState.isActive) {
+      Animated.timing(animatedProgress, {
+        toValue: 0,
+        duration: 200,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: false,
+      }).start();
+      return;
+    }
+
+    const {current, total} = syncState.progress;
+    const percent =
+      total && total > 0
+        ? Math.max(0, Math.min(100, (current / total) * 100))
+        : 0;
+
+    Animated.timing(animatedProgress, {
+      toValue: percent,
+      duration: 250,
+      easing: Easing.out(Easing.cubic),
+      useNativeDriver: false,
+    }).start();
+  }, [syncState.progress, syncState.isActive, animatedProgress]);
 
   useEffect(() => {
     if (!syncState.isActive && !syncState.error) {
@@ -375,18 +454,23 @@ const SyncScreen = () => {
               <Icon name="sync" size={20} color={colors.brand.primary[500]} />
               <Text style={styles.progressTitle}>Sync Progress</Text>
             </View>
+            <Text style={styles.progressMode}>
+              {syncState.progress.phase === 'attachments_download'
+                ? 'App bundle update'
+                : 'Data sync'}
+            </Text>
             <Text style={styles.progressDetails}>
               {syncState.progress.details || 'Syncing...'}
             </Text>
             <View style={styles.progressBar}>
-              <View
+              <Animated.View
                 style={[
                   styles.progressFill,
                   {
-                    width: `${
-                      (syncState.progress.current / syncState.progress.total) *
-                      100
-                    }%`,
+                    width: animatedProgress.interpolate({
+                      inputRange: [0, 100],
+                      outputRange: ['0%', '100%'],
+                    }),
                   },
                 ]}
               />
@@ -663,6 +747,12 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: colors.neutral[600],
     marginBottom: 12,
+  },
+  progressMode: {
+    fontSize: 12,
+    color: colors.neutral[500],
+    marginBottom: 4,
+    fontStyle: 'italic',
   },
   progressBar: {
     height: 8,

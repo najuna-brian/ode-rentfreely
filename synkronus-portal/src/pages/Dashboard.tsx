@@ -1,7 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useAuth } from '../contexts/AuthContext'
+import { useTheme } from '../contexts/ThemeContext'
 import { api } from '../services/api'
 import { Button, Input, Badge } from "@ode/components/react-web";
+import { ThemeSwitcher } from '../components/ThemeSwitcher'
 
 import { 
   HiOutlineChartBar, HiChartBar,
@@ -31,11 +33,17 @@ import {
   HiPlus,
   HiXMark,
   HiHeart,
-  HiDocumentText
+  HiDocumentText,
+  HiChevronDown,
+  HiCircleStack
 } from 'react-icons/hi2'
+import { ColorBrandPrimary500 } from '@ode/tokens/dist/js/tokens'
 import odeLogo from '../assets/ode_logo.png'
-import dashboardBackground from '../assets/dashboard-background.png'
+import dashboardBackgroundDark from '../assets/dashboard-background.png'
+import dashboardBackgroundLight from '../assets/dashboard-background-light.png'
 import './Dashboard.css'
+
+const BRAND_PRIMARY = ColorBrandPrimary500
 
 type TabType = 'overview' | 'app-bundles' | 'users' | 'observations' | 'data-export' | 'system'
 
@@ -106,6 +114,7 @@ interface HealthStatus {
 
 export function Dashboard() {
   const { user, logout } = useAuth()
+  const { resolvedTheme } = useTheme()
   const [activeTab, setActiveTab] = useState<TabType>('overview')
   const [appBundles, setAppBundles] = useState<AppBundleVersion[]>([])
   const [users, setUsers] = useState<User[]>([])
@@ -125,17 +134,73 @@ export function Dashboard() {
   
   // Form states
   const [createUserForm, setCreateUserForm] = useState({ username: '', password: '', role: 'read-only' })
+  const [roleDropdownOpen, setRoleDropdownOpen] = useState(false)
+  const roleDropdownRef = useRef<HTMLDivElement>(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const mobileMenuRef = useRef<HTMLDivElement>(null)
+  const [isScrolled, setIsScrolled] = useState(false)
   
   // Clear form when modal opens/closes
   const handleOpenCreateUserModal = () => {
     setCreateUserForm({ username: '', password: '', role: 'read-only' })
+    setRoleDropdownOpen(false)
     setShowCreateUserModal(true)
   }
   
   const handleCloseCreateUserModal = () => {
     setCreateUserForm({ username: '', password: '', role: 'read-only' })
+    setRoleDropdownOpen(false)
     setShowCreateUserModal(false)
   }
+  
+  const handleRoleSelect = (role: string) => {
+    setCreateUserForm({ ...createUserForm, role })
+    setRoleDropdownOpen(false)
+  }
+  
+  const getRoleDisplayName = (role: string) => {
+    switch (role) {
+      case 'read-only':
+        return 'Read Only'
+      case 'read-write':
+        return 'Read Write'
+      case 'admin':
+        return 'Admin'
+      default:
+        return 'Select Role'
+    }
+  }
+  
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (roleDropdownRef.current && !roleDropdownRef.current.contains(event.target as Node)) {
+        setRoleDropdownOpen(false)
+      }
+      if (mobileMenuRef.current && !mobileMenuRef.current.contains(event.target as Node)) {
+        setMobileMenuOpen(false)
+      }
+    }
+    
+    if (roleDropdownOpen || mobileMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside)
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside)
+      }
+    }
+  }, [roleDropdownOpen, mobileMenuOpen])
+
+  // Handle scroll to make navbar more opaque
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop
+      setIsScrolled(scrollY > 10) // Trigger when scrolled more than 10px
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
   const [resetPasswordForm, setResetPasswordForm] = useState({ username: '', newPassword: '' })
   const [changePasswordForm, setChangePasswordForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
   const [userSearchQuery, setUserSearchQuery] = useState('')
@@ -617,11 +682,11 @@ export function Dashboard() {
     setShowChangePasswordModal(true)
   }
 
+  const dashboardBackground = resolvedTheme === 'light' ? dashboardBackgroundLight : dashboardBackgroundDark
+
   return (
     <div className="dashboard" style={{ '--dashboard-bg-image': `url(${dashboardBackground})` } as React.CSSProperties}>
-      <div className="gold-circle-1"></div>
-      <div className="gold-circle-2"></div>
-      <header className="dashboard-header">
+      <header className={`dashboard-header ${isScrolled ? 'scrolled' : ''}`}>
         <div className="header-content">
           <div className="logo-section">
             <img src={odeLogo} alt="ODE Logo" className="logo-icon" />
@@ -629,16 +694,80 @@ export function Dashboard() {
           </div>
         <div className="user-info">
             <div className="user-details">
-              <span className="welcome-text">Welcome back,</span>
-              <span className="username">{user?.username}</span>
+              <span className="welcome-text">Welcome back:</span>
             </div>
             <Badge variant={user?.role === 'admin' ? 'primary' : 'neutral'}>{user?.role}</Badge>
+          <ThemeSwitcher />
           <Button variant="neutral" onPress={logout} className="logout-button">
               Logout
           </Button>
+          <button 
+            className={`mobile-menu-toggle ${mobileMenuOpen ? 'active' : ''}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              e.preventDefault();
+              // When menu is open (X is active), only close it (don't toggle)
+              if (mobileMenuOpen) {
+                setMobileMenuOpen(false);
+                return; // Exit early to prevent any further execution
+              }
+              // When menu is closed (3 lines), open it
+              setMobileMenuOpen(true);
+            }}
+            onMouseDown={(e) => {
+              // Prevent backdrop click from firing when clicking the button
+              e.stopPropagation();
+            }}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+            aria-expanded={mobileMenuOpen}
+          >
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
+            <span className="hamburger-line"></span>
+          </button>
           </div>
         </div>
       </header>
+      
+      {/* Mobile Menu Backdrop */}
+      {mobileMenuOpen && (
+        <div 
+          className="mobile-menu-backdrop" 
+          onClick={(e) => {
+            // Only close if clicking directly on backdrop (not through navbar)
+            const target = e.target as HTMLElement;
+            if (target.classList.contains('mobile-menu-backdrop')) {
+              setMobileMenuOpen(false);
+            }
+          }}
+        />
+      )}
+      
+      {/* Mobile Menu */}
+      <div className={`mobile-menu ${mobileMenuOpen ? 'open' : ''}`} ref={mobileMenuRef}>
+        <div className="mobile-menu-content">
+          <div className="mobile-menu-header">
+            <div className="mobile-menu-user-info">
+              <span className="mobile-menu-welcome-text">Welcome back:</span>
+              <Badge variant={user?.role === 'admin' ? 'primary' : 'neutral'}>{user?.role}</Badge>
+            </div>
+          </div>
+          <div className="mobile-menu-actions">
+            <div className="mobile-menu-action-item">
+              <span className="mobile-menu-action-label">Theme</span>
+              <div className="mobile-menu-theme-switcher">
+                <ThemeSwitcher />
+              </div>
+            </div>
+            <div className="mobile-menu-action-item mobile-menu-logout-item">
+              <span className="mobile-menu-action-label">Account</span>
+              <button onClick={logout} className="mobile-menu-logout-button">
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
       
       <main className="dashboard-content">
         <nav className="dashboard-tabs">
@@ -649,9 +778,9 @@ export function Dashboard() {
             <svg className="border-fade" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="border-fade-left-0" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#4f7f4e" stopOpacity="0" />
-                  <stop offset="15%" stopColor="#4f7f4e" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#4f7f4e" stopOpacity="1" />
+                  <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
+                  <stop offset="15%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                  <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
                 </linearGradient>
               </defs>
               <rect x="0" y="0" width="100%" height="100%" rx="8" stroke="url(#border-fade-left-0)" />
@@ -668,9 +797,9 @@ export function Dashboard() {
             <svg className="border-fade" preserveAspectRatio="none">
               <defs>
                 <linearGradient id="border-fade-right-0" x1="0%" y1="0%" x2="100%" y2="0%">
-                  <stop offset="0%" stopColor="#4f7f4e" stopOpacity="1" />
-                  <stop offset="85%" stopColor="#4f7f4e" stopOpacity="1" />
-                  <stop offset="100%" stopColor="#4f7f4e" stopOpacity="0" />
+                  <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                  <stop offset="85%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                  <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
                 </linearGradient>
               </defs>
               <rect x="0" y="0" width="100%" height="100%" rx="8" stroke="url(#border-fade-right-0)" />
@@ -688,9 +817,9 @@ export function Dashboard() {
               <svg className="border-fade" preserveAspectRatio="none">
                 <defs>
                   <linearGradient id="border-fade-left-1" x1="0%" y1="0%" x2="100%" y2="0%">
-                    <stop offset="0%" stopColor="#4f7f4e" stopOpacity="0" />
-                    <stop offset="15%" stopColor="#4f7f4e" stopOpacity="1" />
-                    <stop offset="100%" stopColor="#4f7f4e" stopOpacity="1" />
+                    <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
+                    <stop offset="15%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                    <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
                   </linearGradient>
                 </defs>
                 <rect x="0" y="0" width="100%" height="100%" rx="8" stroke="url(#border-fade-left-1)" />
@@ -710,15 +839,15 @@ export function Dashboard() {
                 <linearGradient id={`border-fade-obs-${user?.role === 'admin' ? 'right' : 'left'}`} x1="0%" y1="0%" x2="100%" y2="0%">
                   {user?.role === 'admin' ? (
                     <>
-                      <stop offset="0%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="85%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#4f7f4e" stopOpacity="0" />
+                      <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="85%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
                     </>
                   ) : (
                     <>
-                      <stop offset="0%" stopColor="#4f7f4e" stopOpacity="0" />
-                      <stop offset="15%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#4f7f4e" stopOpacity="1" />
+                      <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
+                      <stop offset="15%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
                     </>
                   )}
                 </linearGradient>
@@ -739,15 +868,15 @@ export function Dashboard() {
                 <linearGradient id={`border-fade-export-${user?.role === 'admin' ? 'left' : 'right'}`} x1="0%" y1="0%" x2="100%" y2="0%">
                   {user?.role === 'admin' ? (
                     <>
-                      <stop offset="0%" stopColor="#4f7f4e" stopOpacity="0" />
-                      <stop offset="15%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#4f7f4e" stopOpacity="1" />
+                      <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
+                      <stop offset="15%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
                     </>
                   ) : (
                     <>
-                      <stop offset="0%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="85%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#4f7f4e" stopOpacity="0" />
+                      <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="85%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
                     </>
                   )}
                 </linearGradient>
@@ -768,15 +897,15 @@ export function Dashboard() {
                 <linearGradient id={`border-fade-system-${user?.role === 'admin' ? 'right' : 'left'}`} x1="0%" y1="0%" x2="100%" y2="0%">
                   {user?.role === 'admin' ? (
                     <>
-                      <stop offset="0%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="85%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#4f7f4e" stopOpacity="0" />
+                      <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="85%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
                     </>
                   ) : (
                     <>
-                      <stop offset="0%" stopColor="#4f7f4e" stopOpacity="0" />
-                      <stop offset="15%" stopColor="#4f7f4e" stopOpacity="1" />
-                      <stop offset="100%" stopColor="#4f7f4e" stopOpacity="1" />
+                      <stop offset="0%" stopColor={BRAND_PRIMARY} stopOpacity="0" />
+                      <stop offset="15%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
+                      <stop offset="100%" stopColor={BRAND_PRIMARY} stopOpacity="1" />
                     </>
                   )}
                 </linearGradient>
@@ -878,6 +1007,7 @@ export function Dashboard() {
                         onPress={handleUploadClick}
                         disabled={loading}
                         loading={loading}
+                        position="right"
                         className="upload-button"
                       >
                         <HiArrowUpTray /> Upload Bundle
@@ -893,7 +1023,7 @@ export function Dashboard() {
                       </label>
                     </>
                   )}
-                  <Button variant="neutral" onPress={loadAppBundles} disabled={loading} className="refresh-button">
+                  <Button variant="neutral" onPress={loadAppBundles} disabled={loading} position="left" className="refresh-button">
                     <HiArrowPath /> Refresh
                   </Button>
                 </div>
@@ -942,6 +1072,7 @@ export function Dashboard() {
                           <Button
                             variant="primary"
                             onPress={() => setShowSwitchConfirm(bundle.version)}
+                            position="left"
                             className="bundle-action-btn activate-btn"
                             accessibilityLabel="Activate this version"
                           >
@@ -951,6 +1082,7 @@ export function Dashboard() {
                         <Button
                           variant="neutral"
                           onPress={() => handleViewChanges(bundle.version)}
+                          position={user?.role === 'admin' && !bundle.isActive ? "right" : "standalone"}
                           className="bundle-action-btn changes-btn"
                           accessibilityLabel="View changes from current version"
                           disabled={bundle.isActive || !activeVersion}
@@ -982,34 +1114,12 @@ export function Dashboard() {
                   <p className="section-subtitle">Manage system users and permissions</p>
                 </div>
                 <div className="section-actions">
-                  <Button variant="primary" onPress={handleOpenCreateUserModal} disabled={loading} className="create-button">
+                  <Button variant="primary" onPress={handleOpenCreateUserModal} disabled={loading} position="right" className="create-button">
                     <HiPlus /> Create User
                   </Button>
-                  <Button variant="neutral" onPress={loadUsers} disabled={loading} className="refresh-button">
+                  <Button variant="neutral" onPress={loadUsers} disabled={loading} position="left" className="refresh-button">
                     <HiArrowPath /> Refresh
                   </Button>
-                </div>
-              </div>
-
-              {/* Search Bar */}
-              <div className="users-search-container">
-                <div className="search-input-wrapper">
-                  <Input
-                    type="text"
-                    placeholder="Search users by username or role..."
-                    value={userSearchQuery}
-                    onChangeText={setUserSearchQuery}
-                    className="search-input"
-                  />
-                  {userSearchQuery && (
-                    <button
-                      onClick={() => setUserSearchQuery('')}
-                      className="search-clear"
-                      title="Clear search"
-                    >
-                      <HiXMark />
-                    </button>
-                  )}
                 </div>
               </div>
 
@@ -1021,6 +1131,43 @@ export function Dashboard() {
                 </div>
               ) : (
                 <div className="users-table-container">
+                  <div className="search-bar">
+                    <div className="search-input-wrapper">
+                      <Input
+                        type="text"
+                        placeholder="Search users by username or role..."
+                        value={userSearchQuery}
+                        onChangeText={setUserSearchQuery}
+                        className="search-input"
+                        style={{ width: '100%', maxWidth: '100%', marginBottom: 0 }}
+                      />
+                      {userSearchQuery && (
+                        <button
+                          type="button"
+                          className="search-clear-icon"
+                          onClick={() => setUserSearchQuery('')}
+                          aria-label="Clear search"
+                        >
+                          <HiXMark />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="search-icon-button"
+                        onClick={() => {
+                          const input = document.querySelector('.users-table-container .search-input input') as HTMLInputElement;
+                          if (input) {
+                            input.focus();
+                          }
+                        }}
+                        aria-label="Search"
+                      >
+                        <HiMagnifyingGlass />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="users-table-section">
+                  <div className="table-container">
                   <table className="users-table">
                     <thead>
                       <tr>
@@ -1070,6 +1217,7 @@ export function Dashboard() {
                                     setResetPasswordForm({ username: u.username, newPassword: '' })
                                     setShowResetPasswordModal(true)
                                   }}
+                                  position="left"
                                   className="table-action-btn reset-password-btn"
                                   accessibilityLabel="Reset Password"
                                 >
@@ -1078,6 +1226,7 @@ export function Dashboard() {
                                 <Button
                                   variant="neutral"
                                   onPress={() => setShowDeleteConfirm(u.username)}
+                                  position="right"
                                   className="table-action-btn delete-btn"
                                   accessibilityLabel="Delete User"
                                 >
@@ -1089,6 +1238,7 @@ export function Dashboard() {
                         ))}
                     </tbody>
                   </table>
+                  </div>
                   {users.filter((u) => {
                     if (!userSearchQuery) return true
                     const query = userSearchQuery.toLowerCase()
@@ -1097,7 +1247,7 @@ export function Dashboard() {
                       u.role.toLowerCase().includes(query)
                     )
                   }).length === 0 && (
-                    <div className="empty-state">
+                    <div className={userSearchQuery ? "user-search-empty" : "empty-state users-empty-state"}>
                       <div className="empty-icon"><HiUsers /></div>
                       <h3>{userSearchQuery ? 'No users found' : 'No Users Found'}</h3>
                       <p>
@@ -1105,8 +1255,19 @@ export function Dashboard() {
                           ? 'Try adjusting your search query'
                           : 'Create your first user to get started'}
                       </p>
+                      {userSearchQuery && (
+                        <Button
+                          variant="neutral"
+                          onPress={() => setUserSearchQuery('')}
+                          className="clear-search-button"
+                          position="standalone"
+                        >
+                          Clear Search
+                        </Button>
+                      )}
                     </div>
                   )}
+                  </div>
                 </div>
               )}
             </div>
@@ -1140,7 +1301,7 @@ export function Dashboard() {
                   <h2>Observations</h2>
                   <p className="section-subtitle">View and search all observations</p>
                 </div>
-                <Button variant="neutral" onPress={loadObservations} disabled={loading} className="refresh-button">
+                <Button variant="neutral" onPress={loadObservations} disabled={loading} position="standalone" className="refresh-button">
                   <HiArrowPath /> Refresh
                 </Button>
               </div>
@@ -1153,25 +1314,42 @@ export function Dashboard() {
               ) : (
                 <div className="observations-table-container">
                   <div className="search-bar">
-                    <Input
-                      type="text"
-                      placeholder="Search by Observation ID, Form Type, Form Version, or Version..."
-                      value={observationSearchQuery}
-                      onChangeText={setObservationSearchQuery}
-                      className="search-input"
-                    />
-                    {observationSearchQuery && (
-                      <Button
-                        variant="neutral"
-                        onPress={() => setObservationSearchQuery('')}
-                        className="clear-search-button"
-                        accessibilityLabel="Clear search"
+                    <div className="search-input-wrapper">
+                      <Input
+                        type="text"
+                        placeholder="Search by Observation ID, Form Type, Form Version, or Version..."
+                        value={observationSearchQuery}
+                        onChangeText={setObservationSearchQuery}
+                        className="search-input"
+                        style={{ width: '100%', maxWidth: '100%', marginBottom: 0 }}
+                      />
+                      {observationSearchQuery && (
+                        <button
+                          type="button"
+                          className="search-clear-icon"
+                          onClick={() => setObservationSearchQuery('')}
+                          aria-label="Clear search"
+                        >
+                          <HiXMark />
+                        </button>
+                      )}
+                      <button
+                        type="button"
+                        className="search-icon-button"
+                        onClick={() => {
+                          const input = document.querySelector('.observations-table-container .search-input input') as HTMLInputElement;
+                          if (input) {
+                            input.focus();
+                          }
+                        }}
+                        aria-label="Search"
                       >
-                        <HiXMark />
-                      </Button>
-                    )}
+                        <HiMagnifyingGlass />
+                      </button>
+                    </div>
                   </div>
 
+                  <div className="observations-table-section">
                   {observations.filter((obs) => {
                     if (!observationSearchQuery) return true
                     const query = observationSearchQuery.toLowerCase()
@@ -1274,20 +1452,23 @@ export function Dashboard() {
                       <p>
                         No observations match your search query: "<strong>{observationSearchQuery}</strong>"
                       </p>
-                      <button
-                        onClick={() => setObservationSearchQuery('')}
-                        className="clear-search-btn"
+                      <Button
+                        variant="neutral"
+                        onPress={() => setObservationSearchQuery('')}
+                        className="clear-search-button"
+                        position="standalone"
                       >
                         Clear Search
-                      </button>
+                      </Button>
                     </div>
                   )}
                   {observations.length === 0 && !loading && !observationSearchQuery && (
-                    <div className="empty-state">
+                    <div className="empty-state observations-empty-state">
                       <div className="empty-icon"><HiClipboardDocumentList /></div>
                       <p>No observations found</p>
                     </div>
                   )}
+                  </div>
                 </div>
               )}
             </div>
@@ -1312,6 +1493,7 @@ export function Dashboard() {
                     onPress={handleExportData}
                     disabled={loading}
                     loading={loading}
+                    position="right"
                     className="export-button"
                   >
                     <HiArrowDownTray /> Export Data
@@ -1328,7 +1510,7 @@ export function Dashboard() {
                   <h2>System Information</h2>
                   <p className="section-subtitle">Server version and build details</p>
                 </div>
-                <Button variant="neutral" onPress={loadSystemInfo} disabled={loading} className="refresh-button">
+                <Button variant="neutral" onPress={loadSystemInfo} disabled={loading} position="standalone" className="refresh-button">
                   <HiArrowPath /> Refresh
                 </Button>
               </div>
@@ -1439,7 +1621,7 @@ export function Dashboard() {
                       )}
                       {systemInfo?.database?.version && (
                         <div className="info-card">
-                          <div className="info-icon"><HiServer /></div>
+                          <div className="info-icon"><HiCircleStack /></div>
                           <div className="info-content">
                             <h3>Database Version</h3>
                             <p className="system-info-text">{systemInfo.database.version}</p>
@@ -1498,7 +1680,7 @@ export function Dashboard() {
       {/* Create User Modal */}
       {showCreateUserModal && (
         <div className="modal-overlay" onClick={handleCloseCreateUserModal}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+          <div className="modal-content modal-create-user" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
               <h2>Create New User</h2>
               <button className="modal-close" onClick={handleCloseCreateUserModal}>×</button>
@@ -1528,23 +1710,51 @@ export function Dashboard() {
               </div>
               <div className="form-group">
                 <label htmlFor="role">Role</label>
-                <select
-                  id="role"
-                  value={createUserForm.role}
-                  onChange={(e) => setCreateUserForm({ ...createUserForm, role: e.target.value })}
-                  required
-                  disabled={loading}
-                >
-                  <option value="read-only">Read Only</option>
-                  <option value="read-write">Read Write</option>
-                  <option value="admin">Admin</option>
-                </select>
+                <div className="role-dropdown-container" ref={roleDropdownRef}>
+                  <button
+                    type="button"
+                    className={`role-select-button ${roleDropdownOpen ? 'open' : ''}`}
+                    onClick={() => setRoleDropdownOpen(!roleDropdownOpen)}
+                    disabled={loading}
+                  >
+                    <span>{getRoleDisplayName(createUserForm.role)}</span>
+                    <HiChevronDown className={`chevron-icon ${roleDropdownOpen ? 'open' : ''}`} />
+                  </button>
+                  {roleDropdownOpen && (
+                    <div className="role-dropdown-menu">
+                      <button
+                        type="button"
+                        className={`role-option ${createUserForm.role === 'read-only' ? 'selected' : ''}`}
+                        onClick={() => handleRoleSelect('read-only')}
+                      >
+                        <span className="role-name">Read Only</span>
+                        <span className="role-description">View-only access</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`role-option ${createUserForm.role === 'read-write' ? 'selected' : ''}`}
+                        onClick={() => handleRoleSelect('read-write')}
+                      >
+                        <span className="role-name">Read Write</span>
+                        <span className="role-description">Can create and edit</span>
+                      </button>
+                      <button
+                        type="button"
+                        className={`role-option ${createUserForm.role === 'admin' ? 'selected' : ''}`}
+                        onClick={() => handleRoleSelect('admin')}
+                      >
+                        <span className="role-name">Admin</span>
+                        <span className="role-description">Full system access</span>
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="modal-actions">
-                <Button variant="neutral" onPress={handleCloseCreateUserModal} disabled={loading}>
+                <Button variant="neutral" onPress={handleCloseCreateUserModal} disabled={loading} position="left">
                   Cancel
                 </Button>
-                <Button variant="primary" onPress={() => handleCreateUser({ preventDefault: () => {} } as React.FormEvent)} disabled={loading} loading={loading}>
+                <Button variant="primary" onPress={() => handleCreateUser({ preventDefault: () => {} } as React.FormEvent)} disabled={loading} loading={loading} position="right">
                   Create User
                 </Button>
               </div>
