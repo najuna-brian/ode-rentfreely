@@ -153,45 +153,6 @@ const FormLayout: React.FC<FormLayoutProps> = ({
         {children}
       </Box>
 
-<<<<<<< HEAD:formulus-formplayer/src/FormLayout.tsx
-      {showNavigation && (previousButton || nextButton) && !isKeyboardVisible && (
-        <Paper
-          elevation={4}
-          sx={(theme) => ({
-            position: 'fixed',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: theme.zIndex.appBar,
-            width: '100%',
-            padding: {
-              xs: theme.spacing(1, 1.5),
-              sm: theme.spacing(1.5, 2),
-              md: theme.spacing(1.5, 2.5),
-            },
-            paddingBottom: {
-              xs: `calc(${theme.spacing(1)} + env(safe-area-inset-bottom, 0px))`,
-              sm: `calc(${theme.spacing(1.5)} + env(safe-area-inset-bottom, 0px))`,
-              md: `calc(${theme.spacing(1.5)} + env(safe-area-inset-bottom, 0px))`,
-            },
-            backgroundColor: 'background.paper',
-            borderTop: 'none',
-            borderColor: 'divider',
-            boxShadow: '0 -4px 12px rgba(0,0,0,0.15)',
-            transition: 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out',
-            boxSizing: 'border-box',
-          })}
-        >
-          <Stack
-            direction="row"
-            spacing={2}
-            justifyContent="center"
-            sx={{
-              '& > *': {
-                flex: { xs: 1, sm: '0 1 auto' },
-                minWidth: { xs: 'auto', sm: '120px', md: '140px' },
-                maxWidth: { md: '200px' },
-=======
       {showNavigation &&
         (previousButton || nextButton) &&
         !isKeyboardVisible && (
@@ -205,18 +166,17 @@ const FormLayout: React.FC<FormLayoutProps> = ({
               zIndex: theme.zIndex.appBar,
               width: '100%',
               padding: {
-                xs: theme.spacing(1.5, 2),
-                sm: theme.spacing(2, 3),
-                md: theme.spacing(2.5, 4),
->>>>>>> ea8d3f7 (feat(formplayer,portal)!: migrate from react-scripts to Vite):formulus-formplayer/src/components/FormLayout.tsx
+                xs: theme.spacing(1, 1.5),
+                sm: theme.spacing(1.5, 2),
+                md: theme.spacing(1.5, 2.5),
               },
               paddingBottom: {
-                xs: `calc(${theme.spacing(1.5)} + env(safe-area-inset-bottom, 0px))`,
-                sm: `calc(${theme.spacing(2)} + env(safe-area-inset-bottom, 0px))`,
-                md: `calc(${theme.spacing(2.5)} + env(safe-area-inset-bottom, 0px))`,
+                xs: `calc(${theme.spacing(1)} + env(safe-area-inset-bottom, 0px))`,
+                sm: `calc(${theme.spacing(1.5)} + env(safe-area-inset-bottom, 0px))`,
+                md: `calc(${theme.spacing(1.5)} + env(safe-area-inset-bottom, 0px))`,
               },
               backgroundColor: 'background.paper',
-              borderTop: '1px solid',
+              borderTop: 'none',
               borderColor: 'divider',
               boxShadow: '0 -4px 12px rgba(0,0,0,0.15)',
               transition:
