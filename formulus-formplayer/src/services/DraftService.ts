@@ -162,7 +162,7 @@ export class DraftService {
       const newDraft: Draft = {
         id: draftId,
         formType,
-        formVersion: formInitData?.formSchema?.version || undefined,
+        formVersion: (formInitData?.formSchema as any)?.version || undefined,
         data,
         createdAt: now,
         updatedAt: now,

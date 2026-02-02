@@ -423,7 +423,7 @@ function App() {
         if (!hasExistingSavedData) {
           const availableDrafts = draftService.getDraftsForForm(
             receivedFormType,
-            formSchema?.version,
+            (formSchema as any)?.version,
           );
           if (availableDrafts.length > 0) {
             console.log(
@@ -755,7 +755,7 @@ function App() {
     return (
       <DraftSelector
         formType={pendingFormInit.formType}
-        formVersion={pendingFormInit.formSchema?.version}
+        formVersion={(pendingFormInit.formSchema as any)?.version}
         onResumeDraft={handleResumeDraft}
         onStartNew={handleStartNewForm}
         fullScreen={true}

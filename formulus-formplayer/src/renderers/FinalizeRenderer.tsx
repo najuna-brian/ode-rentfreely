@@ -136,7 +136,7 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
   // Helper function to find which page/screen a field is on
   const findFieldPageMemo = useMemo(() => {
     return (fieldPath: string): number => {
-      if (!fullUISchema || !fullUISchema.elements) return -1;
+      if (!fullUISchema || !(fullUISchema as any).elements) return -1;
 
       // Normalize the field path (remove #/properties/ prefix and convert / to .)
       const normalizePath = (path: string) => {
@@ -144,13 +144,13 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
       };
 
       const fieldName = normalizePath(fieldPath);
-      const screens = fullUISchema.elements;
+      const screens = (fullUISchema as any).elements;
 
       for (let i = 0; i < screens.length; i++) {
         const screen = screens[i];
         if (screen.type === 'Finalize') continue;
 
-        if ('elements' in screen && screen.elements) {
+        if ('elements' in screen && (screen as any).elements) {
           const hasField = screen.elements.some((el: any) => {
             if (el.scope) {
               const scopePath = normalizePath(el.scope);

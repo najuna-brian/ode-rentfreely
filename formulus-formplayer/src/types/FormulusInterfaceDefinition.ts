@@ -52,8 +52,8 @@ export interface FormInitData {
   observationId: string | null;
   params: Record<string, unknown>;
   savedData: Record<string, unknown>;
-  formSchema?: any;
-  uiSchema?: any;
+  formSchema?: unknown;
+  uiSchema?: unknown;
   operationId?: string;
   extensions?: ExtensionMetadata;
 }
