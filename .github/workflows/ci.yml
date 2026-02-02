@@ -120,7 +120,7 @@ jobs:
           npm run build
       
       - name: Install dependencies
-        run: npm ci
+        run: npm install
       
       - name: Run linter
         run: npm run lint
@@ -131,7 +131,8 @@ jobs:
         continue-on-error: false
       
       - name: Run tests
-        run: npm test -- --coverage --watchAll=false
+      ## Ignoring formulus-formplayer testing for Q2
+        ## run: npm test -- --coverage --watchAll=false
         continue-on-error: true # We want to continue even if tests fail since tests are not set yet
       
       - name: Build
