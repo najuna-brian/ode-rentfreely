@@ -757,7 +757,7 @@ function App() {
             style={{
               width: process.env.NODE_ENV === 'development' ? '60%' : '100%',
               overflow: 'hidden', // Prevent outer scrolling - FormLayout handles scrolling internally
-              padding: '12px',
+              padding: '4px',
               boxSizing: 'border-box',
               height: '100%', // Ensure it takes full height
               backgroundColor: 'transparent', // Use theme background

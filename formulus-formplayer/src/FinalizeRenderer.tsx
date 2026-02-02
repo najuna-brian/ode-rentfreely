@@ -1,15 +1,5 @@
 import React, { useMemo } from 'react';
-import {
-  Box,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  Typography,
-  Paper,
-  Divider,
-  Link,
-} from '@mui/material';
+import { Box, Button, List, ListItem, Typography, Paper, Divider, Link } from '@mui/material';
 import { JsonFormsRendererRegistryEntry } from '@jsonforms/core';
 import { withJsonFormsControlProps, useJsonForms } from '@jsonforms/react';
 import { ControlProps } from '@jsonforms/core';
@@ -294,28 +284,56 @@ const FinalizeRenderer = ({
 
   return (
     <Box sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Typography variant="h5" gutterBottom>
-        Review and Finalize
-      </Typography>
-
       {hasErrors ? (
         <>
-          <Typography variant="subtitle1" color="error" gutterBottom>
+          <Typography variant="h5" color="error" gutterBottom>
             Please fix the following errors before finalizing:
           </Typography>
-          <Paper sx={{ mb: 3 }}>
-            <List>
+          <Paper sx={{ mb: 3, p: 2 }}>
+            <Box
+              sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 1,
+                alignItems: 'center',
+              }}
+            >
               {errors.map((error: ErrorObject, index: number) => (
-                <ListItem
+                <Button
                   key={index}
-                  component="div"
-                  sx={{ cursor: 'pointer' }}
+                  variant="outlined"
+                  color="error"
                   onClick={() => handleErrorClick(error.instancePath)}
+                  sx={{
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    textTransform: 'none',
+                    py: 1.5,
+                    px: 2,
+                    width: '100%',
+                    borderColor: 'error.main',
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    '&:hover': {
+                      borderColor: 'error.dark',
+                      backgroundColor: 'error.light',
+                    },
+                  }}
                 >
-                  <ListItemText primary={formatErrorMessage(error)} />
-                </ListItem>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      textAlign: 'center',
+                      width: '100%',
+                      whiteSpace: 'normal',
+                      wordBreak: 'break-word',
+                    }}
+                  >
+                    {formatErrorMessage(error)}
+                  </Typography>
+                </Button>
               ))}
-            </List>
+            </Box>
           </Paper>
         </>
       ) : (
@@ -327,8 +345,8 @@ const FinalizeRenderer = ({
       {/* Summary Section */}
       {summaryItems.length > 0 && (
         <Box sx={{ flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column', mb: 3 }}>
-          <Typography variant="h6" gutterBottom sx={{ mt: 2, mb: 1 }}>
-            Form Summary
+          <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
+            FORM SUMMARY
           </Typography>
           <Typography variant="body2" color="text.secondary" gutterBottom sx={{ mb: 2 }}>
             Review all your entered data below. Click on any field to edit it.
