@@ -417,6 +417,12 @@ export interface FormulusInterface {
    * @returns {Promise<void>}
    */
   runLocalModel(fieldId: string, modelId: string, input: Record<string, any>): Promise<void>;
+
+  /**
+   * Get information about the currently authenticated user
+   * @returns {Promise<{username: string, displayName?: string}>} User information
+   */
+  getCurrentUser(): Promise<{ username: string; displayName?: string }>;
 }
 
 /**

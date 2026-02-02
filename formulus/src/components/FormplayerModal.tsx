@@ -498,7 +498,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    paddingHorizontal: 8,
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },
@@ -513,7 +514,7 @@ const styles = StyleSheet.create({
     width: 40,
   },
   closeButton: {
-    padding: 8,
+    padding: 4,
   },
   disabledButton: {
     opacity: 0.5,
