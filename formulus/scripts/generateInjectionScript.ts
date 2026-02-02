@@ -55,7 +55,7 @@ function generateInjectionScript(interfaceFilePath: string): string {
     {
       name: 'openFormplayer',
       parameters: [
-        {name: 'formId', type: 'string', doc: 'The ID of the form to open'},
+        { name: 'formId', type: 'string', doc: 'The ID of the form to open' },
         {
           name: 'params',
           type: 'Record<string, any>',
@@ -166,8 +166,8 @@ function generateInjectionScript(interfaceFilePath: string): string {
 
       return `
         // ${method.name}: ${method.parameters
-        .map(p => `${p.name}: ${p.type}`)
-        .join(', ')} => ${method.returnType}
+          .map(p => `${p.name}: ${p.type}`)
+          .join(', ')} => ${method.returnType}
         ${method.name}: function(${params}) {
           ${isVoidReturn ? '' : 'return new Promise((resolve, reject) => {'}
           const messageId = 'msg_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
@@ -398,8 +398,8 @@ const FormulusAPI = {
     // Add the JSDoc comment and method signature
     output += `  ${method.doc}
   ${method.name}: function(${method.parameters
-      .map(p => p.name)
-      .join(', ')}) {},\n\n`;
+    .map(p => p.name)
+    .join(', ')}) {},\n\n`;
   });
 
   // Close the object and add exports
@@ -578,7 +578,7 @@ if (require.main === module) {
     const outputDir = path.dirname(injectionScriptPath);
     if (!fs.existsSync(outputDir)) {
       console.log(`Creating directory: ${outputDir}`);
-      fs.mkdirSync(outputDir, {recursive: true});
+      fs.mkdirSync(outputDir, { recursive: true });
     }
 
     // Generate and write the injection script

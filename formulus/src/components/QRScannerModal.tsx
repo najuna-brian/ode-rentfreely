@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Modal,
   View,
@@ -13,14 +13,28 @@ import {
   useCameraDevices,
   useCodeScanner,
   useCameraPermission,
+  CodeType,
 } from 'react-native-vision-camera';
-const {width} = Dimensions.get('window');
+import { colors } from '../theme/colors';
+const { width } = Dimensions.get('window');
+
+export interface ScannerModalResults {
+  fieldId: string | undefined;
+  status: 'success' | 'cancelled';
+  message?: string;
+  data?: {
+    type: 'qrcode';
+    value: string | undefined;
+    format: CodeType | unknown;
+    timestamp: string;
+  };
+}
 
 interface QRScannerModalProps {
   visible: boolean;
   onClose: () => void;
   fieldId?: string;
-  onResult?: (result: any) => void;
+  onResult?: (result: ScannerModalResults) => void;
 }
 
 const QRScannerModal: React.FC<QRScannerModalProps> = ({
@@ -31,7 +45,7 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
 }) => {
   const [isScanning, setIsScanning] = useState(true);
   const [scannedData, setScannedData] = useState<string | null>(null);
-  const {hasPermission, requestPermission} = useCameraPermission();
+  const { hasPermission, requestPermission } = useCameraPermission();
   const devices = useCameraDevices();
   const device = devices.find(d => d.position === 'back');
   const resultSentRef = useRef(false);
@@ -45,11 +59,15 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
 
   // Reset state when modal opens/closes
   useEffect(() => {
-    if (visible) {
+    if (!visible) {
+      return;
+    }
+    // Defer state updates to avoid synchronous setState in effect
+    Promise.resolve().then(() => {
       setIsScanning(true);
       setScannedData(null);
       resultSentRef.current = false;
-    }
+    });
   }, [visible]);
 
   // Code scanner using built-in functionality
@@ -228,7 +246,7 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'black',
+    backgroundColor: colors.neutral.black,
   },
   camera: {
     flex: 1,
@@ -242,13 +260,13 @@ const styles = StyleSheet.create({
   },
   topOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: colors.ui.background,
     justifyContent: 'center',
     alignItems: 'center',
     paddingTop: 50,
   },
   instructionText: {
-    color: 'white',
+    color: colors.neutral.white,
     fontSize: 18,
     textAlign: 'center',
     marginHorizontal: 20,
@@ -262,14 +280,14 @@ const styles = StyleSheet.create({
     width: 250,
     height: 250,
     borderWidth: 2,
-    borderColor: 'transparent',
-    backgroundColor: 'transparent',
+    borderColor: colors.neutral.transparent,
+    backgroundColor: colors.neutral.transparent,
   },
   corner: {
     position: 'absolute',
     width: 30,
     height: 30,
-    borderColor: '#00ff00',
+    borderColor: colors.semantic.scanner.success,
     borderWidth: 3,
   },
   topLeft: {
@@ -298,7 +316,7 @@ const styles = StyleSheet.create({
   },
   bottomOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    backgroundColor: colors.ui.background,
     justifyContent: 'center',
     alignItems: 'center',
     paddingBottom: 50,
@@ -308,12 +326,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
   },
   resultLabel: {
-    color: 'white',
+    color: colors.neutral.white,
     fontSize: 16,
     marginBottom: 10,
   },
   resultText: {
-    color: '#00ff00',
+    color: colors.semantic.scanner.success,
     fontSize: 14,
     textAlign: 'center',
     marginBottom: 20,
@@ -325,40 +343,40 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   button: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.semantic.info.ios,
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 8,
     marginVertical: 10,
   },
   retryButton: {
-    backgroundColor: '#FF9500',
+    backgroundColor: colors.semantic.warning[500],
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 8,
   },
   confirmButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: colors.semantic.success[500],
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 8,
   },
   cancelButton: {
-    backgroundColor: 'transparent',
+    backgroundColor: colors.neutral.transparent,
     borderWidth: 2,
-    borderColor: 'white',
+    borderColor: colors.neutral.white,
     paddingHorizontal: 30,
     paddingVertical: 15,
     borderRadius: 8,
   },
   buttonText: {
-    color: 'white',
+    color: colors.neutral.white,
     fontSize: 16,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   cancelButtonText: {
-    color: 'white',
+    color: colors.neutral.white,
     fontSize: 16,
     textAlign: 'center',
   },
@@ -369,7 +387,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   permissionText: {
-    color: 'white',
+    color: colors.neutral.white,
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 30,
@@ -381,7 +399,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 40,
   },
   errorText: {
-    color: 'white',
+    color: colors.neutral.white,
     fontSize: 18,
     textAlign: 'center',
     marginBottom: 30,

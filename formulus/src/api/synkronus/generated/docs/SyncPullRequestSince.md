@@ -12,7 +12,7 @@ Optional pagination cursor indicating the last seen change
 ## Example
 
 ```typescript
-import {SyncPullRequestSince} from './api';
+import { SyncPullRequestSince } from './api';
 
 const instance: SyncPullRequestSince = {
   version,

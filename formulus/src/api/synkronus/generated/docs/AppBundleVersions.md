@@ -9,7 +9,7 @@
 ## Example
 
 ```typescript
-import {AppBundleVersions} from './api';
+import { AppBundleVersions } from './api';
 
 const instance: AppBundleVersions = {
   versions,

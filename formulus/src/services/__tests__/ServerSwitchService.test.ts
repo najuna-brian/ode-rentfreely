@@ -1,6 +1,6 @@
 /// <reference types="jest" />
 
-import {describe, it, expect, jest, beforeEach} from '@jest/globals';
+import { describe, it, expect, jest, beforeEach } from '@jest/globals';
 
 const mockDatabase = {
   write: jest.fn(async (cb?: () => Promise<void> | void) => {
@@ -15,7 +15,7 @@ jest.mock('../../database/database', () => ({
   database: mockDatabase,
 }));
 
-const mockLocalRepo = {getPendingChanges: jest.fn()};
+const mockLocalRepo = { getPendingChanges: jest.fn() };
 jest.mock('../../database/DatabaseService', () => ({
   databaseService: {
     getLocalRepo: jest.fn(() => mockLocalRepo),
@@ -56,7 +56,7 @@ jest.mock('../ServerConfigService', () => ({
   serverConfigService: mockServerConfigService,
 }));
 
-const {serverSwitchService} = require('../ServerSwitchService');
+const { serverSwitchService } = require('../ServerSwitchService');
 
 describe('ServerSwitchService', () => {
   beforeEach(() => {

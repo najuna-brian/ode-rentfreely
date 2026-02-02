@@ -3,7 +3,7 @@ import notifee, {
   AndroidStyle,
   AndroidAction,
 } from '@notifee/react-native';
-import {SyncProgress} from '../contexts/SyncContext';
+import { SyncProgress } from '../contexts/SyncContext';
 
 class NotificationService {
   private syncNotificationId = 'sync_progress';
@@ -40,7 +40,7 @@ class NotificationService {
         : 0;
     const phaseText = this.getPhaseText(progress.phase);
 
-    let title = 'Syncing data...';
+    const title = 'Syncing data...';
     let message = `${phaseText}: ${progress.current}/${progress.total}`;
 
     if (progress.details) {

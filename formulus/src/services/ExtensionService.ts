@@ -4,7 +4,7 @@ import RNFS from 'react-native-fs';
  * Extension definition structure
  */
 export interface ExtensionDefinition {
-  definitions?: Record<string, any>; // JSON Schema definitions for $ref
+  definitions?: Record<string, unknown>; // JSON Schema definitions for $ref
   functions?: Record<string, ExtensionFunction>; // Custom functions
   renderers?: Record<string, ExtensionRenderer>; // Custom question type renderers
 }
@@ -47,7 +47,7 @@ export interface ExtensionRenderer {
  * Merged extension result
  */
 export interface MergedExtensions {
-  definitions: Record<string, any>;
+  definitions: Record<string, unknown>;
   functions: Record<string, ExtensionFunction>;
   renderers: Record<string, ExtensionRenderer>;
 }
@@ -134,10 +134,7 @@ export class ExtensionService {
 
       return extension;
     } catch (error) {
-      if ((error as any).code === 'ENOENT') {
-        // File doesn't exist - this is OK
-        return null;
-      }
+      console.error('Unknown error', error);
       console.warn(`Failed to load extension file ${filePath}:`, error);
       return null;
     }
@@ -234,7 +231,7 @@ export class ExtensionService {
    */
   public async discoverExtensions(
     customAppPath: string,
-  ): Promise<Array<{path: string; type: 'app' | 'form'; formName?: string}>> {
+  ): Promise<Array<{ path: string; type: 'app' | 'form'; formName?: string }>> {
     const extensions: Array<{
       path: string;
       type: 'app' | 'form';
@@ -246,7 +243,7 @@ export class ExtensionService {
       const appExtPath = `${customAppPath}/forms/ext.json`;
       const appExtExists = await RNFS.exists(appExtPath);
       if (appExtExists) {
-        extensions.push({path: appExtPath, type: 'app'});
+        extensions.push({ path: appExtPath, type: 'app' });
       }
 
       // Check form-level extensions

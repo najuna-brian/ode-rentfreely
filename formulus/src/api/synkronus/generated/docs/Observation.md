@@ -17,7 +17,7 @@
 ## Example
 
 ```typescript
-import {Observation} from './api';
+import { Observation } from './api';
 
 const instance: Observation = {
   observation_id,

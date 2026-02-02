@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   preset: 'react-native',
   testMatch: ['**/__tests__/**/*.[jt]s?(x)', '**/?(*.)+(spec|test).[jt]s?(x)'],
   // Force Jest to exit after all tests complete

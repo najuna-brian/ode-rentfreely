@@ -13,7 +13,7 @@
 ## Example
 
 ```typescript
-import {AppBundleFile} from './api';
+import { AppBundleFile } from './api';
 
 const instance: AppBundleFile = {
   path,

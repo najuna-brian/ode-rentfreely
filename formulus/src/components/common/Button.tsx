@@ -7,6 +7,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import { colors } from '../../theme/colors';
 
 export interface ButtonProps {
   title: string;
@@ -60,11 +61,15 @@ const Button: React.FC<ButtonProps> = ({
       testID={testID}
       accessibilityLabel={accessibilityLabel || title}
       accessibilityRole="button"
-      accessibilityState={{disabled: disabled || loading}}>
+      accessibilityState={{ disabled: disabled || loading }}>
       {loading ? (
         <ActivityIndicator
           size="small"
-          color={variant === 'primary' ? '#FFFFFF' : '#007AFF'}
+          color={
+            variant === 'primary'
+              ? colors.neutral.white
+              : colors.semantic.info.ios
+          }
         />
       ) : (
         <Text style={textStyles}>{title}</Text>
@@ -81,15 +86,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   button_primary: {
-    backgroundColor: '#007AFF',
+    backgroundColor: colors.semantic.info.ios,
   },
   button_secondary: {
-    backgroundColor: 'transparent',
+    backgroundColor: colors.neutral.transparent,
     borderWidth: 1,
-    borderColor: '#007AFF',
+    borderColor: colors.semantic.info.ios,
   },
   button_tertiary: {
-    backgroundColor: 'transparent',
+    backgroundColor: colors.neutral.transparent,
   },
   button_small: {
     paddingVertical: 8,
@@ -117,13 +122,13 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   text_primary: {
-    color: '#FFFFFF',
+    color: colors.neutral.white,
   },
   text_secondary: {
-    color: '#007AFF',
+    color: colors.semantic.info.ios,
   },
   text_tertiary: {
-    color: '#007AFF',
+    color: colors.semantic.info.ios,
   },
   text_small: {
     fontSize: 14,

@@ -12,10 +12,10 @@
 //  - Represents how data is stored in WatermelonDB
 //  - Handles database-specific concerns (like relationships, indexing)
 
-import {Observation as ApiObservation} from '../api/synkronus/generated';
-import {Observation as DomainObservation} from '../database/models/Observation';
-import {ObservationModel} from '../database/models/ObservationModel';
-import {ObservationGeolocation} from '../types/Geolocation';
+import { Observation as ApiObservation } from '../api/synkronus/generated';
+import { Observation as DomainObservation } from '../database/models/Observation';
+import { ObservationModel } from '../database/models/ObservationModel';
+import { ObservationGeolocation } from '../types/Geolocation';
 
 export class ObservationMapper {
   // API -> Domain

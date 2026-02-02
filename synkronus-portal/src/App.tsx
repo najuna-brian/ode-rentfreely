@@ -1,8 +1,8 @@
-import { AuthProvider } from './contexts/AuthContext'
-import { ThemeProvider } from './contexts/ThemeContext'
-import { ProtectedRoute } from './components/ProtectedRoute'
-import { Dashboard } from './pages/Dashboard'
-import './App.css'
+import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { Dashboard } from './pages/Dashboard';
+import './App.css';
 
 function App() {
   return (
@@ -13,7 +13,7 @@ function App() {
         </ProtectedRoute>
       </AuthProvider>
     </ThemeProvider>
-  )
+  );
 }
 
-export default App
+export default App;

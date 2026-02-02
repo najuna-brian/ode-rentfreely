@@ -1,4 +1,4 @@
-import React, {useState, useMemo} from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -10,9 +10,9 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {useObservations} from '../hooks/useObservations';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from '@react-native-vector-icons/material-design-icons';
+import { useObservations } from '../hooks/useObservations';
 import {
   ObservationCard,
   EmptyState,
@@ -20,12 +20,12 @@ import {
   SyncStatusButtons,
   SyncStatus,
 } from '../components/common';
-import {openFormplayerFromNative} from '../webview/FormulusMessageHandlers';
-import {FormService} from '../services/FormService';
-import {useFocusEffect, useNavigation} from '@react-navigation/native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {MainAppStackParamList} from '../types/NavigationTypes';
-import {Observation} from '../database/models/Observation';
+import { openFormplayerFromNative } from '../webview/FormulusMessageHandlers';
+import { FormService } from '../services/FormService';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MainAppStackParamList } from '../types/NavigationTypes';
+import { Observation } from '../database/models/Observation';
 import colors from '../theme/colors';
 
 type ObservationsScreenNavigationProp = StackNavigationProp<
@@ -46,7 +46,9 @@ const ObservationsScreen: React.FC = () => {
   } = observationsHook;
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [formNames, setFormNames] = useState<Record<string, string>>({});
-  const [formTypes, setFormTypes] = useState<{id: string; name: string}[]>([]);
+  const [formTypes, setFormTypes] = useState<{ id: string; name: string }[]>(
+    [],
+  );
   const [selectedFormType, setSelectedFormType] = useState<string | null>(null);
   const [syncStatus, setSyncStatus] = useState<SyncStatus>('all');
   const [showSearch, setShowSearch] = useState<boolean>(false);
@@ -58,10 +60,10 @@ const ObservationsScreen: React.FC = () => {
           const formService = await FormService.getInstance();
           const formSpecs = formService.getFormSpecs();
           const names: Record<string, string> = {};
-          const types: {id: string; name: string}[] = [];
+          const types: { id: string; name: string }[] = [];
           formSpecs.forEach(form => {
             names[form.id] = form.name;
-            types.push({id: form.id, name: form.name});
+            types.push({ id: form.id, name: form.name });
           });
           setFormNames(names);
           setFormTypes(types);
@@ -135,7 +137,7 @@ const ObservationsScreen: React.FC = () => {
       'Delete Observation',
       'Are you sure you want to delete this observation? This action cannot be undone.',
       [
-        {text: 'Cancel', style: 'cancel'},
+        { text: 'Cancel', style: 'cancel' },
         {
           text: 'Delete',
           style: 'destructive',
@@ -154,7 +156,7 @@ const ObservationsScreen: React.FC = () => {
     );
   };
 
-  const renderObservation = ({item}: {item: Observation}) => {
+  const renderObservation = ({ item }: { item: Observation }) => {
     return (
       <ObservationCard
         observation={item}

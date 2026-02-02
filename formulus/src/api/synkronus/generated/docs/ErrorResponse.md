@@ -9,7 +9,7 @@
 ## Example
 
 ```typescript
-import {ErrorResponse} from './api';
+import { ErrorResponse } from './api';
 
 const instance: ErrorResponse = {
   error,

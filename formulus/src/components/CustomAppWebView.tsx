@@ -5,14 +5,16 @@ import React, {
   forwardRef,
   useImperativeHandle,
   useMemo,
+  SyntheticEvent,
 } from 'react';
-import {View, ActivityIndicator, AppState, StyleSheet} from 'react-native';
-import {WebView} from 'react-native-webview';
-import {useIsFocused} from '@react-navigation/native';
-import {Platform} from 'react-native';
-import {readFileAssets} from 'react-native-fs';
-import {FormulusWebViewMessageManager} from '../webview/FormulusWebViewHandler';
-import {FormInitData} from '../webview/FormulusInterfaceDefinition';
+import { View, ActivityIndicator, AppState, StyleSheet } from 'react-native';
+import { WebView } from 'react-native-webview';
+import { useIsFocused } from '@react-navigation/native';
+import { Platform } from 'react-native';
+import { readFileAssets, MainBundlePath, readFile } from 'react-native-fs';
+import { FormulusWebViewMessageManager } from '../webview/FormulusWebViewHandler';
+import { FormInitData } from '../webview/FormulusInterfaceDefinition';
+import { colors } from '../theme/colors';
 
 export interface CustomAppWebViewHandle {
   reload: () => void;
@@ -20,7 +22,7 @@ export interface CustomAppWebViewHandle {
   goForward: () => void;
   injectJavaScript: (script: string) => void;
   sendFormInit: (formData: FormInitData) => Promise<void>;
-  sendAttachmentData: (attachmentData: any) => Promise<void>;
+  sendAttachmentData: (attachmentData: File) => Promise<void>;
 }
 
 interface CustomAppWebViewProps {
@@ -36,7 +38,31 @@ const INJECTION_SCRIPT_PATH =
 
 const consoleLogScript = `
     (function() {
-      //window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.log', args: ['Initializing console log transport']}));
+      // Helper function to serialize arguments, including Error objects
+      function serializeArgs(args) {
+        return Array.from(args).map(arg => {
+          // Handle Error objects specially
+          if (arg instanceof Error) {
+            return {
+              __isError: true,
+              name: arg.name,
+              message: arg.message,
+              stack: arg.stack
+            };
+          }
+          // Handle other objects
+          if (typeof arg === 'object' && arg !== null) {
+            try {
+              // Try to stringify, but catch circular references
+              JSON.stringify(arg);
+              return arg;
+            } catch (e) {
+              return String(arg);
+            }
+          }
+          return arg;
+        });
+      }
 
       // Store original console methods
       const originalConsole = {
@@ -50,23 +76,23 @@ const consoleLogScript = `
       // Override console methods to forward logs to React Native
       console.log = function() { 
         originalConsole.log.apply(console, arguments);
-        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.log', args: Array.from(arguments)}));
+        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.log', args: serializeArgs(arguments)}));
       };
       console.warn = function() { 
         originalConsole.warn.apply(console, arguments);
-        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.warn', args: Array.from(arguments)}));
+        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.warn', args: serializeArgs(arguments)}));
       };
       console.error = function() { 
         originalConsole.error.apply(console, arguments);
-        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.error', args: Array.from(arguments)}));
+        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.error', args: serializeArgs(arguments)}));
       };
       console.info = function() { 
         originalConsole.info.apply(console, arguments);
-        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.info', args: Array.from(arguments)}));
+        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.info', args: serializeArgs(arguments)}));
       };
       console.debug = function() { 
         originalConsole.debug.apply(console, arguments);
-        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.debug', args: Array.from(arguments)}));
+        window.ReactNativeWebView.postMessage(JSON.stringify({type: 'console.debug', args: serializeArgs(arguments)}));
       };
       console.debug("Log transport initialized");
     })();
@@ -75,7 +101,7 @@ const consoleLogScript = `
 const CustomAppWebView = forwardRef<
   CustomAppWebViewHandle,
   CustomAppWebViewProps
->(({appUrl, appName, onLoadEndProp}, ref) => {
+>(({ appUrl, appName, onLoadEndProp }, ref) => {
   const webViewRef = useRef<WebView | null>(null);
   const hasLoadedOnceRef = useRef(false);
 
@@ -87,20 +113,24 @@ const CustomAppWebView = forwardRef<
   useEffect(() => {
     const loadScript = async () => {
       try {
-        const script = await readFileAssets(INJECTION_SCRIPT_PATH);
-        const fullScript =
-          consoleLogScript +
-          '\n' +
-          script +
-          '\n(function() {console.debug("Injection scripts initialized");}())';
-        injectionScriptRef.current = fullScript;
+        let script = '';
+
+        if (Platform.OS === 'android') {
+          // Path A: Use the Android-only asset reader
+          script = await readFileAssets(INJECTION_SCRIPT_PATH);
+        } else {
+          const iosPath = `${MainBundlePath}/${INJECTION_SCRIPT_PATH}`;
+          script = await readFile(iosPath, 'utf8');
+        }
+
+        // Combine and set state
+        const fullScript = consoleLogScript + '\n' + script;
         setInjectionScript(fullScript);
         setIsScriptReady(true);
       } catch (err) {
-        injectionScriptRef.current = consoleLogScript;
-        setInjectionScript(consoleLogScript);
-        setIsScriptReady(true);
-        console.warn('Failed to load injection script:', err);
+        // Logic for if the file is missing entirely
+        console.error('Failed to load injection script with error:', err);
+        // setIsScriptReady(true);
       }
     };
     loadScript();
@@ -151,7 +181,8 @@ const CustomAppWebView = forwardRef<
           }
           return;
         }
-      } catch (e) {
+      } catch (error: unknown) {
+        console.error('Error parsing event data:', error);
         // If parsing fails, let the original handler deal with it
       }
 
@@ -173,15 +204,20 @@ const CustomAppWebView = forwardRef<
         webViewRef.current?.injectJavaScript(script),
       sendFormInit: (formData: FormInitData) =>
         messageManager.sendFormInit(formData),
-      sendAttachmentData: (attachmentData: any) =>
+      sendAttachmentData: (attachmentData: File) =>
         messageManager.sendAttachmentData(attachmentData),
     }),
     [messageManager],
   );
 
-  const handleError = (syntheticEvent: any) => {
-    const {nativeEvent} = syntheticEvent;
-    console.error('WebView error:', nativeEvent);
+  const handleError = (syntheticEvent: SyntheticEvent) => {
+    const { nativeEvent } = syntheticEvent;
+    console.error(
+      '[CustomAppWebView] WebView error',
+      nativeEvent,
+      'appUrl:',
+      appUrl,
+    );
   };
 
   const isFocused = useIsFocused();
@@ -250,7 +286,7 @@ const CustomAppWebView = forwardRef<
   if (!isScriptReady) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#007AFF" />
+        <ActivityIndicator size="large" color={colors.semantic.info.ios} />
       </View>
     );
   }
@@ -258,7 +294,7 @@ const CustomAppWebView = forwardRef<
   return (
     <WebView
       ref={webViewRef}
-      source={{uri: appUrl}}
+      source={{ uri: appUrl }}
       onMessage={messageManager.handleWebViewMessage}
       onError={handleError}
       onLoadStart={() =>
@@ -293,7 +329,7 @@ const CustomAppWebView = forwardRef<
         }
       }}
       onHttpError={syntheticEvent => {
-        const {nativeEvent} = syntheticEvent;
+        const { nativeEvent } = syntheticEvent;
         console.error('CustomWebView HTTP error:', nativeEvent);
       }}
       injectedJavaScriptBeforeContentLoaded={injectionScript}
@@ -302,14 +338,21 @@ const CustomAppWebView = forwardRef<
       allowFileAccess={true}
       allowUniversalAccessFromFileURLs={true}
       allowFileAccessFromFileURLs={true}
+      // iOS requires read access to the directory containing the file, not just the file itself
+      // For custom apps from DocumentDirectoryPath, allow access to the app directory
+      // For bundled assets (MainBundlePath), allow access to the bundle root
       allowingReadAccessToURL={
-        Platform.OS === 'ios' ? 'file:///...' : undefined
+        Platform.OS === 'ios'
+          ? appUrl.includes(MainBundlePath)
+            ? `file://${MainBundlePath}`
+            : appUrl.substring(0, appUrl.lastIndexOf('/'))
+          : undefined
       }
       startInLoadingState={true}
       originWhitelist={['*']}
       renderLoading={() => (
         <View style={styles.centered}>
-          <ActivityIndicator size="large" color="#007AFF" />
+          <ActivityIndicator size="large" color={colors.semantic.info.ios} />
         </View>
       )}
     />

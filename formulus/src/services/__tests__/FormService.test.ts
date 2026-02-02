@@ -1,33 +1,33 @@
-import {FormService as FormServiceType, FormSpec} from '../FormService';
-import {Observation} from '../../database/repositories/LocalRepoInterface';
+import { FormService as FormServiceType, FormSpec } from '../FormService';
+import { Observation } from '../../database/repositories/LocalRepoInterface';
 
 // Mock JSON schema files
 jest.mock(
   '../../webview/personschema.json',
   () => ({
     type: 'object',
-    properties: {name: {type: 'string'}, age: {type: 'number'}},
+    properties: { name: { type: 'string' }, age: { type: 'number' } },
     required: ['name'],
   }),
-  {virtual: true},
+  { virtual: true },
 );
 
 jest.mock(
   '../../webview/personui.json',
   () => ({
     elements: [
-      {type: 'Control', scope: '#/properties/name'},
-      {type: 'Control', scope: '#/properties/age'},
+      { type: 'Control', scope: '#/properties/name' },
+      { type: 'Control', scope: '#/properties/age' },
     ],
   }),
-  {virtual: true},
+  { virtual: true },
 );
 
 // Mock personData.json for the temporary block in getFormTypes
 jest.mock(
   '../../webview/personData.json',
-  () => ({name: 'Test Person', age: 30}),
-  {virtual: true},
+  () => ({ name: 'Test Person', age: 30 }),
+  { virtual: true },
 );
 
 // Mock databaseService and its LocalRepo
@@ -68,7 +68,7 @@ describe('FormService', () => {
 
     // Ensure getLocalRepo itself is reset if its return value needs to change per test
     // (though here we consistently return the same set of mocks)
-    const {databaseService} = require('../../database');
+    const { databaseService } = require('../../database');
     databaseService.getLocalRepo.mockClear();
   });
 
@@ -93,7 +93,7 @@ describe('FormService', () => {
       expect(personForm?.name).toBe('Person');
       expect(personForm?.schema).toEqual({
         type: 'object',
-        properties: {name: {type: 'string'}, age: {type: 'number'}},
+        properties: { name: { type: 'string' }, age: { type: 'number' } },
         required: ['name'],
       });
     });
@@ -128,8 +128,10 @@ describe('FormService', () => {
       name: 'Test Form',
       description: 'A test form',
       schemaVersion: '1.0',
-      schema: {type: 'object', properties: {field: {type: 'string'}}},
-      uiSchema: {elements: [{type: 'Control', scope: '#/properties/field'}]},
+      schema: { type: 'object', properties: { field: { type: 'string' } } },
+      uiSchema: {
+        elements: [{ type: 'Control', scope: '#/properties/field' }],
+      },
     };
 
     test('should add a new form type', () => {
@@ -150,8 +152,11 @@ describe('FormService', () => {
         name: 'Updated Person Form',
         description: 'Updated description',
         schemaVersion: '1.1',
-        schema: {type: 'object', properties: {newField: {type: 'boolean'}}},
-        uiSchema: {elements: []},
+        schema: {
+          type: 'object',
+          properties: { newField: { type: 'boolean' } },
+        },
+        uiSchema: { elements: [] },
       };
       formServiceInstance.addFormSpec(updatedPersonForm);
       const formSpec = formServiceInstance.getFormSpecById('person');
@@ -188,7 +193,7 @@ describe('FormService', () => {
         () => {
           throw new Error('Mocked schema load failure for removeFormType test');
         },
-        {virtual: true},
+        { virtual: true },
       );
       jest.doMock(
         '../../webview/personui.json',
@@ -197,14 +202,14 @@ describe('FormService', () => {
             'Mocked ui schema load failure for removeFormType test',
           );
         },
-        {virtual: true},
+        { virtual: true },
       );
       jest.doMock(
         '../../webview/personData.json',
         () => {
           throw new Error('Mocked data load failure for removeFormType test');
         },
-        {virtual: true},
+        { virtual: true },
       );
 
       // The `doMock` calls should affect subsequent `require` calls from any module, including FormService's internals,
@@ -248,9 +253,8 @@ describe('FormService', () => {
       ];
       mockGetObservationsByFormId.mockResolvedValue(mockObservations);
 
-      const result = await formServiceInstance.getObservationsByFormType(
-        'person',
-      );
+      const result =
+        await formServiceInstance.getObservationsByFormType('person');
 
       expect(mockGetObservationsByFormId).toHaveBeenCalledWith('person');
       expect(result).toEqual(mockObservations);
@@ -320,7 +324,7 @@ describe('FormService', () => {
     });
 
     test('should throw error if localRepo is not available', async () => {
-      const {databaseService: mockedDBService} = require('../../database');
+      const { databaseService: mockedDBService } = require('../../database');
       mockedDBService.getLocalRepo.mockReturnValue(undefined); // Simulate repo not being available
 
       // Re-initialize formService with the modified mock
@@ -348,11 +352,11 @@ describe('FormService', () => {
 
       expect(mockSaveObservation).toHaveBeenCalledWith({
         formType: 'person',
-        data: {test: 'data1'},
+        data: { test: 'data1' },
       });
       expect(mockSaveObservation).toHaveBeenCalledWith({
         formType: 'test_form',
-        data: {test: 'data2'},
+        data: { test: 'data2' },
       });
       expect(mockSaveObservation).toHaveBeenCalledTimes(2);
 
@@ -388,14 +392,16 @@ describe('FormService', () => {
             'Simulated error: Failed to load personschema.json in constructor',
           );
         },
-        {virtual: true},
+        { virtual: true },
       );
 
       // Other mocks should still be in place or re-mocked if necessary
-      jest.doMock('../../webview/personui.json', () => ({elements: []}), {
+      jest.doMock('../../webview/personui.json', () => ({ elements: [] }), {
         virtual: true,
       });
-      jest.doMock('../../webview/personData.json', () => ({}), {virtual: true});
+      jest.doMock('../../webview/personData.json', () => ({}), {
+        virtual: true,
+      });
       jest.doMock('../../database', () => ({
         databaseService: {
           getLocalRepo: jest.fn(() => ({
@@ -421,22 +427,22 @@ describe('FormService', () => {
         '../../webview/personschema.json',
         () => ({
           type: 'object',
-          properties: {tempName: {type: 'string'}},
+          properties: { tempName: { type: 'string' } },
         }),
-        {virtual: true},
+        { virtual: true },
       );
       // Ensure UI and Data schemas match the new tempName property for consistency in the temporary block
       jest.doMock(
         '../../webview/personui.json',
         () => ({
-          elements: [{type: 'Control', scope: '#/properties/tempName'}],
+          elements: [{ type: 'Control', scope: '#/properties/tempName' }],
         }),
-        {virtual: true},
+        { virtual: true },
       );
       jest.doMock(
         '../../webview/personData.json',
-        () => ({tempName: 'Temp Data'}),
-        {virtual: true},
+        () => ({ tempName: 'Temp Data' }),
+        { virtual: true },
       );
       // The databaseService mock from the describe's beforeEach should still be in effect.
 
@@ -452,7 +458,7 @@ describe('FormService', () => {
       // Schema should match the one mocked above for the temporary block's internal require
       expect(formSpecs[0].schema).toEqual({
         type: 'object',
-        properties: {tempName: {type: 'string'}},
+        properties: { tempName: { type: 'string' } },
       });
       expect(consoleLogSpy).toHaveBeenCalledWith(
         'Temporary form type created:',

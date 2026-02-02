@@ -27,7 +27,7 @@ jest.mock(
       getLocalRepo: jest.fn(),
     },
   }),
-  {virtual: true},
+  { virtual: true },
 );
 jest.mock('../../services/ClientIdService', () => ({
   clientIdService: {
@@ -64,10 +64,10 @@ jest.mock('../FormService', () => ({
   },
 }));
 
-import {jest, describe, test, expect, beforeEach} from '@jest/globals';
-import {SyncService} from '../SyncService';
-import {synkronusApi} from '../../api/synkronus';
-import {autoLogin, isUnauthorizedError} from '../../api/synkronus/Auth';
+import { jest, describe, test, expect, beforeEach } from '@jest/globals';
+import { SyncService } from '../SyncService';
+import { synkronusApi } from '../../api/synkronus';
+import { autoLogin, isUnauthorizedError } from '../../api/synkronus/Auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 describe('SyncService - Auto-Login Integration', () => {
@@ -83,13 +83,16 @@ describe('SyncService - Auto-Login Integration', () => {
 
   describe('withAutoLoginRetry - syncObservations', () => {
     test('should retry syncObservations after auto-login on 401 error', async () => {
-      const mockUserInfo = {username: 'testuser', role: 'read-write' as const};
+      const mockUserInfo = {
+        username: 'testuser',
+        role: 'read-write' as const,
+      };
       const mockFinalVersion = 123;
 
       // First call fails with 401, second succeeds
       (synkronusApi.syncObservations as jest.Mock)
         .mockRejectedValueOnce({
-          response: {status: 401},
+          response: { status: 401 },
           message: 'Unauthorized',
         })
         .mockResolvedValueOnce(mockFinalVersion);
@@ -108,7 +111,7 @@ describe('SyncService - Auto-Login Integration', () => {
     });
 
     test('should throw error if auto-login fails', async () => {
-      const error401 = {response: {status: 401}, message: 'Unauthorized'};
+      const error401 = { response: { status: 401 }, message: 'Unauthorized' };
 
       (synkronusApi.syncObservations as jest.Mock).mockRejectedValue(error401);
       (isUnauthorizedError as jest.Mock).mockReturnValue(true);
@@ -125,7 +128,7 @@ describe('SyncService - Auto-Login Integration', () => {
     });
 
     test('should throw error if no credentials available', async () => {
-      const error401 = {response: {status: 401}, message: 'Unauthorized'};
+      const error401 = { response: { status: 401 }, message: 'Unauthorized' };
 
       (synkronusApi.syncObservations as jest.Mock).mockRejectedValue(error401);
       (isUnauthorizedError as jest.Mock).mockReturnValue(true);
@@ -139,8 +142,11 @@ describe('SyncService - Auto-Login Integration', () => {
     });
 
     test('should prevent infinite retry loops', async () => {
-      const error401 = {response: {status: 401}, message: 'Unauthorized'};
-      const mockUserInfo = {username: 'testuser', role: 'read-write' as const};
+      const error401 = { response: { status: 401 }, message: 'Unauthorized' };
+      const mockUserInfo = {
+        username: 'testuser',
+        role: 'read-write' as const,
+      };
 
       // Both calls fail with 401
       (synkronusApi.syncObservations as jest.Mock).mockRejectedValue(error401);
@@ -158,7 +164,7 @@ describe('SyncService - Auto-Login Integration', () => {
     });
 
     test('should pass through non-401 errors without retry', async () => {
-      const error404 = {response: {status: 404}, message: 'Not Found'};
+      const error404 = { response: { status: 404 }, message: 'Not Found' };
 
       (synkronusApi.syncObservations as jest.Mock).mockRejectedValue(error404);
       (isUnauthorizedError as jest.Mock).mockReturnValue(false);
@@ -174,13 +180,16 @@ describe('SyncService - Auto-Login Integration', () => {
 
   describe('withAutoLoginRetry - updateAppBundle', () => {
     test('should retry getManifest after auto-login on 401 error', async () => {
-      const mockUserInfo = {username: 'testuser', role: 'read-write' as const};
-      const mockManifest = {version: '1.0.0', files: []};
+      const mockUserInfo = {
+        username: 'testuser',
+        role: 'read-write' as const,
+      };
+      const mockManifest = { version: '1.0.0', files: [] };
 
       // First getManifest fails with 401, retry succeeds, then downloadAppBundle calls it again
       (synkronusApi.getManifest as jest.Mock)
         .mockRejectedValueOnce({
-          response: {status: 401},
+          response: { status: 401 },
           message: 'Unauthorized',
         })
         .mockResolvedValue(mockManifest); // All subsequent calls succeed
@@ -204,8 +213,11 @@ describe('SyncService - Auto-Login Integration', () => {
     });
 
     test('should retry downloadFormSpecs after auto-login on 401 error', async () => {
-      const mockUserInfo = {username: 'testuser', role: 'read-write' as const};
-      const mockManifest = {version: '1.0.0', files: []};
+      const mockUserInfo = {
+        username: 'testuser',
+        role: 'read-write' as const,
+      };
+      const mockManifest = { version: '1.0.0', files: [] };
 
       (synkronusApi.getManifest as jest.Mock).mockResolvedValue(mockManifest);
       (synkronusApi.removeAppBundleFiles as jest.Mock).mockResolvedValue(
@@ -215,7 +227,7 @@ describe('SyncService - Auto-Login Integration', () => {
       // downloadFormSpecs fails with 401, then succeeds
       (synkronusApi.downloadFormSpecs as jest.Mock)
         .mockRejectedValueOnce({
-          response: {status: 401},
+          response: { status: 401 },
           message: 'Unauthorized',
         })
         .mockResolvedValueOnce([]);
@@ -235,12 +247,15 @@ describe('SyncService - Auto-Login Integration', () => {
 
   describe('withAutoLoginRetry - checkForUpdates', () => {
     test('should retry getManifest after auto-login on 401 error', async () => {
-      const mockUserInfo = {username: 'testuser', role: 'read-write' as const};
-      const mockManifest = {version: '1.0.0', files: []};
+      const mockUserInfo = {
+        username: 'testuser',
+        role: 'read-write' as const,
+      };
+      const mockManifest = { version: '1.0.0', files: [] };
 
       (synkronusApi.getManifest as jest.Mock)
         .mockRejectedValueOnce({
-          response: {status: 401},
+          response: { status: 401 },
           message: 'Unauthorized',
         })
         .mockResolvedValueOnce(mockManifest);
