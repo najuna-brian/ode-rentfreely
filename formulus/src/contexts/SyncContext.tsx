@@ -36,7 +36,7 @@ interface SyncProviderProps {
   children: ReactNode;
 }
 
-export const SyncProvider: React.FC<SyncProviderProps> = ({children}) => {
+export const SyncProvider: React.FC<SyncProviderProps> = ({ children }) => {
   const [syncState, setSyncState] = useState<SyncState>({
     isActive: false,
     canCancel: false,

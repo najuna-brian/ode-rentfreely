@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback, useMemo} from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
@@ -9,22 +9,25 @@ import {
   Image,
   ScrollView,
   Alert,
-  type AlertButton,
+  AlertButton,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {useNavigation} from '@react-navigation/native';
-import {BottomTabNavigationProp} from '@react-navigation/bottom-tabs';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import * as Keychain from 'react-native-keychain';
-import {login} from '../api/synkronus/Auth';
-import {serverConfigService} from '../services/ServerConfigService';
-import QRScannerModal from '../components/QRScannerModal';
-import {QRSettingsService} from '../services/QRSettingsService';
-import {MainTabParamList} from '../types/NavigationTypes';
-import {colors} from '../theme/colors';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {ToastService} from '../services/ToastService';
-import {serverSwitchService} from '../services/ServerSwitchService';
-import {syncService} from '../services/SyncService';
+import { login } from '../api/synkronus/Auth';
+import { serverConfigService } from '../services/ServerConfigService';
+import QRScannerModal, {
+  ScannerModalResults,
+} from '../components/QRScannerModal';
+import { QRSettingsService } from '../services/QRSettingsService';
+import { MainTabParamList } from '../types/NavigationTypes';
+import { colors } from '../theme/colors';
+import Icon from '@react-native-vector-icons/material-design-icons';
+import { ToastService } from '../services/ToastService';
+import { serverSwitchService } from '../services/ServerSwitchService';
+import { syncService } from '../services/SyncService';
+import Logo from '../../assets/images/logo.png';
 
 type SettingsScreenNavigationProp = BottomTabNavigationProp<
   MainTabParamList,
@@ -42,7 +45,9 @@ const SettingsScreen = () => {
   const [showQRScanner, setShowQRScanner] = useState(false);
 
   useEffect(() => {
-    loadSettings();
+    Promise.resolve().then(() => {
+      loadSettings();
+    });
   }, []);
 
   const handleServerSwitchIfNeeded = useCallback(
@@ -163,7 +168,9 @@ const SettingsScreen = () => {
                 },
               ];
 
-          Alert.alert('Switch server?', message, buttons, {cancelable: false});
+          Alert.alert('Switch server?', message, buttons, {
+            cancelable: false,
+          });
         });
       } catch (error) {
         console.error('Failed to prepare server switch:', error);
@@ -221,10 +228,10 @@ const SettingsScreen = () => {
       await login(trimmedUsername, trimmedPassword);
       ToastService.showShort('Successfully logged in!');
       navigation.navigate('Home');
-    } catch (error: any) {
+    } catch (error) {
       console.error('Login failed:', error);
       const errorMessage =
-        error?.message || 'Failed to login. Please check your credentials.';
+        error && 'Failed to login. Please check your credentials.';
       ToastService.showLong(`Login failed: ${errorMessage}`);
     } finally {
       setIsLoggingIn(false);
@@ -238,7 +245,7 @@ const SettingsScreen = () => {
     navigation,
   ]);
 
-  const handleQRResult = async (result: any) => {
+  const handleQRResult = async (result: ScannerModalResults) => {
     setShowQRScanner(false);
 
     if (result.status === 'cancelled') {
@@ -274,20 +281,19 @@ const SettingsScreen = () => {
             await login(settings.username, settings.password);
             ToastService.showShort('Successfully logged in!');
             navigation.navigate('Home');
-          } catch (error: any) {
+          } catch (error) {
             console.error('Auto-login failed:', error);
             const errorMessage =
-              error?.message ||
-              'Failed to login. Please check your credentials.';
+              error && 'Failed to login. Please check your credentials.';
             ToastService.showLong(`Login failed: ${errorMessage}`);
           }
         } else {
           ToastService.showShort('Settings updated successfully');
         }
-      } catch (error: any) {
+      } catch (error) {
         console.error('Failed to process QR code:', error);
         const errorMessage =
-          error?.message || 'Invalid QR code format. Please try again.';
+          error && 'Invalid QR code format. Please try again.';
         ToastService.showLong(`QR code error: ${errorMessage}`);
       }
     } else {
@@ -313,11 +319,7 @@ const SettingsScreen = () => {
     <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <View style={styles.logoContainer}>
-          <Image
-            source={require('../../assets/images/logo.png')}
-            style={styles.logo}
-            resizeMode="contain"
-          />
+          <Image source={Logo} style={styles.logo} resizeMode="contain" />
           <Text style={styles.brandName}>ODE</Text>
         </View>
         <Text style={styles.version}>v1.0.0</Text>
@@ -479,7 +481,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     fontSize: 16,
     color: colors.neutral[900],
-    backgroundColor: 'transparent',
+    backgroundColor: colors.neutral.transparent,
   },
   qrButton: {
     width: 56,

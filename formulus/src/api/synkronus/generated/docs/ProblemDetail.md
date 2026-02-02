@@ -14,7 +14,7 @@
 ## Example
 
 ```typescript
-import {ProblemDetail} from './api';
+import { ProblemDetail } from './api';
 
 const instance: ProblemDetail = {
   type,

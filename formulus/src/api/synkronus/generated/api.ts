@@ -12,8 +12,8 @@
  * Do not edit the class manually.
  */
 
-import type {Configuration} from './configuration';
-import type {AxiosPromise, AxiosInstance, RawAxiosRequestConfig} from 'axios';
+import type { Configuration } from './configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
@@ -29,7 +29,7 @@ import {
   toPathString,
   createRequestFunction,
 } from './common';
-import type {RequestArgs} from './base';
+import type { RequestArgs } from './base';
 // @ts-ignore
 import {
   BASE_PATH,
@@ -2072,9 +2072,10 @@ export const DefaultApiAxiosParamCreator = function (
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
-      const localVarFormParams = new ((configuration &&
-        configuration.formDataCtor) ||
-        FormData)();
+      const localVarFormParams = new (
+        (configuration && configuration.formDataCtor) ||
+        FormData
+      )();
 
       // authentication bearerAuth required
       // http bearer authentication required
@@ -2446,9 +2447,10 @@ export const DefaultApiAxiosParamCreator = function (
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
-      const localVarFormParams = new ((configuration &&
-        configuration.formDataCtor) ||
-        FormData)();
+      const localVarFormParams = new (
+        (configuration && configuration.formDataCtor) ||
+        FormData
+      )();
 
       // authentication bearerAuth required
       // http bearer authentication required
@@ -2848,9 +2850,8 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         basePath?: string,
       ) => AxiosPromise<SystemVersionInfo>
     > {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getVersion(
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getVersion(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['DefaultApi.getVersion']?.[
@@ -4438,9 +4439,8 @@ export const HealthApiFp = function (configuration?: Configuration) {
         basePath?: string,
       ) => AxiosPromise<GetHealth200Response>
     > {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getHealth(
-        options,
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getHealth(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
         operationServerMap['HealthApi.getHealth']?.[

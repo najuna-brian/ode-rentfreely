@@ -12,7 +12,7 @@
 ## Example
 
 ```typescript
-import {SystemVersionInfo} from './api';
+import { SystemVersionInfo } from './api';
 
 const instance: SystemVersionInfo = {
   server,

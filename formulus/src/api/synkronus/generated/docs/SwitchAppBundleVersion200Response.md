@@ -9,7 +9,7 @@
 ## Example
 
 ```typescript
-import {SwitchAppBundleVersion200Response} from './api';
+import { SwitchAppBundleVersion200Response } from './api';
 
 const instance: SwitchAppBundleVersion200Response = {
   message,

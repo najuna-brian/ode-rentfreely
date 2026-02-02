@@ -9,18 +9,15 @@ Formulus provides a powerful yet easy-to-use JavaScript API, `globalThis.formulu
 Here's a breakdown of the key components involved:
 
 1.  **The API Contract (`FormulusInterfaceDefinition.ts`):**
-
     - **Location (Formulus Host Codebase):** `src/webview/FormulusInterfaceDefinition.ts`
     - **Purpose:** This TypeScript file is the single source of truth that defines all available functions, their parameters, and what they return. It dictates the "shape" of the `globalThis.formulus` API.
 
 2.  **The JSDoc Interface for Web Apps (`formulus-api.js`):**
-
     - **Location (Provided to Web App Developers):** `assets/webview/formulus-api.js`
     - **Purpose:** This file is **auto-generated** from `FormulusInterfaceDefinition.ts`. It provides JSDoc annotations that enable autocompletion and type-hinting in your IDE when you're writing JavaScript for your custom web app. It _describes_ the API but doesn't contain the actual communication logic.
     - **How it helps you:** By referencing this file in your project, you get a much better development experience.
 
 3.  **The Magic: Injection Script (`FormulusInjectionScript.js`):**
-
     - **Location (Formulus Host Codebase, Injected into your WebView):** `assets/webview/FormulusInjectionScript.js`
     - **Purpose:** This is the core script that Formulus automatically injects into your web app when it loads in a `CustomAppWebView`. It's also **auto-generated** from `FormulusInterfaceDefinition.ts`.
     - **What it does:**
@@ -176,7 +173,6 @@ The `globalThis.formulus` API object is injected asynchronously. To handle this 
 The Formulus host can send event-like messages to your web app. You can listen for these by defining functions on the `globalThis.formulusCallbacks` object.
 
 - **`onFormulusReady` (Crucial for Initialization):**
-
   - **Purpose:** The Formulus host calls your `globalThis.formulusCallbacks.onFormulusReady()` function when the `globalThis.formulus` API is fully injected _and_ the Formulus host itself is ready to handle API requests.
   - **Usage:** The `getFormulus()` function internally uses this callback. You can also define your own `onFormulusReady` for app-level initialization logic, and `getFormulus()` will ensure it's still called.
 

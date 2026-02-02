@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,7 @@ import {
   Modal,
   FlatList,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from '@react-native-vector-icons/material-design-icons';
 import colors from '../../theme/colors';
 
 interface FormTypeOption {
@@ -62,14 +62,14 @@ const FormTypeSelector: React.FC<FormTypeSelectorProps> = ({
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Select Form Type</Text>
               <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Icon name="close" size={24} color="#333" />
+                <Icon name="close" size={24} color={colors.neutral[800]} />
               </TouchableOpacity>
             </View>
 
             <FlatList
-              data={[{id: null, name: placeholder}, ...options]}
+              data={[{ id: null, name: placeholder }, ...options]}
               keyExtractor={item => item.id || 'all'}
-              renderItem={({item}) => (
+              renderItem={({ item }) => (
                 <TouchableOpacity
                   style={[
                     styles.optionItem,
@@ -126,7 +126,7 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: colors.ui.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     maxWidth: 400,
     maxHeight: '70%',
     shadowColor: colors.neutral.black,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 5,

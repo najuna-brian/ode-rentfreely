@@ -9,7 +9,7 @@
 ## Example
 
 ```typescript
-import {DeleteUser200Response} from './api';
+import { DeleteUser200Response } from './api';
 
 const instance: DeleteUser200Response = {
   message,

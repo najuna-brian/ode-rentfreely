@@ -1,7 +1,7 @@
-import {useState, useEffect, useCallback, useMemo} from 'react';
-import {FormService} from '../services/FormService';
-import {Observation} from '../database/models/Observation';
-import {SortOption, FilterOption} from '../components/common/FilterBar';
+import { useState, useEffect, useCallback, useMemo } from 'react';
+import { FormService } from '../services/FormService';
+import { Observation } from '../database/models/Observation';
+import { SortOption, FilterOption } from '../components/common/FilterBar';
 
 interface UseObservationsResult {
   observations: Observation[];

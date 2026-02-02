@@ -1,37 +1,44 @@
-const fs = require('fs');
-const path = require('path');
+import { existsSync, mkdirSync, copyFileSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // Get the directory paths
 const scriptsDir = __dirname;
-const formplayerDir = path.join(scriptsDir, '..');
-const formulusDir = path.join(formplayerDir, '..', 'formulus');
+const formplayerDir = join(scriptsDir, '..');
+const formulusDir = join(formplayerDir, '..', 'formulus');
 
 // Source and destination paths
-const source = path.join(
+const source = join(
   formulusDir,
   'src',
   'webview',
   'FormulusInterfaceDefinition.ts',
 );
-const dest = path.join(formplayerDir, 'src', 'FormulusInterfaceDefinition.ts');
+const dest = join(
+  formplayerDir,
+  'src',
+  'types',
+  'FormulusInterfaceDefinition.ts',
+);
 
 try {
   // Check if source file exists
-  if (!fs.existsSync(source)) {
-    console.error(
-      `Error: Source file not found at ${source}`,
-    );
+  if (!existsSync(source)) {
+    console.error(`Error: Source file not found at ${source}`);
     process.exit(1);
   }
 
   // Ensure destination directory exists
-  const destDir = path.dirname(dest);
-  if (!fs.existsSync(destDir)) {
-    fs.mkdirSync(destDir, {recursive: true});
+  const destDir = dirname(dest);
+  if (!existsSync(destDir)) {
+    mkdirSync(destDir, { recursive: true });
   }
 
   // Copy the file
-  fs.copyFileSync(source, dest);
+  copyFileSync(source, dest);
   console.log(
     `✓ Successfully synced FormulusInterfaceDefinition.ts from formulus to formulus-formplayer`,
   );
@@ -39,4 +46,3 @@ try {
   console.error(`Error syncing FormulusInterfaceDefinition.ts:`, error.message);
   process.exit(1);
 }
-

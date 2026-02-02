@@ -1,10 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNFS from 'react-native-fs';
-import {database} from '../database/database';
-import {databaseService} from '../database/DatabaseService';
-import {synkronusApi} from '../api/synkronus';
-import {logout} from '../api/synkronus/Auth';
-import {serverConfigService} from './ServerConfigService';
+import { database } from '../database/database';
+import { databaseService } from '../database/DatabaseService';
+import { synkronusApi } from '../api/synkronus';
+import { logout } from '../api/synkronus/Auth';
+import { serverConfigService } from './ServerConfigService';
 
 /**
  * Handles cleanup when switching Synkronus servers to avoid cross-server data.

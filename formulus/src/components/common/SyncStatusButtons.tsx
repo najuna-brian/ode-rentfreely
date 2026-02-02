@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import colors from '../../theme/colors';
 
 export type SyncStatus = 'all' | 'synced' | 'pending';
@@ -13,10 +13,10 @@ const SyncStatusButtons: React.FC<SyncStatusButtonsProps> = ({
   selectedStatus,
   onStatusChange,
 }) => {
-  const buttons: {id: SyncStatus; label: string}[] = [
-    {id: 'all', label: 'All'},
-    {id: 'synced', label: 'Synced'},
-    {id: 'pending', label: 'Pending'},
+  const buttons: { id: SyncStatus; label: string }[] = [
+    { id: 'all', label: 'All' },
+    { id: 'synced', label: 'Synced' },
+    { id: 'pending', label: 'Pending' },
   ];
 
   return (
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   buttonActive: {
     backgroundColor: colors.neutral.white,
     shadowColor: colors.neutral.black,
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,

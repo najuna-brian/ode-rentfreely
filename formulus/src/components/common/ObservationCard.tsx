@@ -1,7 +1,7 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import {Observation} from '../../database/models/Observation';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import Icon from '@react-native-vector-icons/material-design-icons';
+import { Observation } from '../../database/models/Observation';
 import colors from '../../theme/colors';
 
 interface ObservationCardProps {
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     marginVertical: 6,
     padding: 16,
     shadowColor: colors.neutral.black,
-    shadowOffset: {width: 0, height: 2},
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,

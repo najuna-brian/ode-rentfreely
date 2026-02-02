@@ -2,17 +2,18 @@ import {
   Configuration,
   DefaultApi,
   AppBundleManifest,
+  AttachmentOperation,
   DefaultApiSyncPushRequest,
   SyncPushRequest,
 } from './generated';
-import {Observation} from '../../database/models/Observation';
-import {ObservationMapper} from '../../mappers/ObservationMapper';
+import { Observation } from '../../database/models/Observation';
+import { ObservationMapper } from '../../mappers/ObservationMapper';
 import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {getApiAuthToken} from './Auth';
-import {databaseService} from '../../database/DatabaseService';
+import { getApiAuthToken } from './Auth';
+import { databaseService } from '../../database/DatabaseService';
 import randomId from '@nozbe/watermelondb/utils/common/randomId';
-import {clientIdService} from '../../services/ClientIdService';
+import { clientIdService } from '../../services/ClientIdService';
 
 interface DownloadResult {
   success: boolean;
@@ -30,7 +31,7 @@ class SynkronusApi {
     const rawSettings = await AsyncStorage.getItem('@settings');
     if (!rawSettings) throw new Error('Missing app settings');
 
-    const {serverUrl} = JSON.parse(rawSettings);
+    const { serverUrl } = JSON.parse(rawSettings);
 
     // If config exists but serverUrl changed, clear cache
     if (this.config && this.config.basePath !== serverUrl) {
@@ -55,6 +56,15 @@ class SynkronusApi {
 
     this.api = new DefaultApi(this.config);
     return this.api;
+  }
+
+  async getConfig(): Promise<Configuration> {
+    // Ensure config is loaded by calling getApi first
+    await this.getApi();
+    if (!this.config) {
+      throw new Error('Configuration not initialized');
+    }
+    return this.config;
   }
 
   /**
@@ -119,13 +129,13 @@ class SynkronusApi {
       `Downloading files with prefix "${prefix}" to: ${outputRootDirectory}`,
     );
 
-    const api = await this.getApi();
+    const config = await this.getConfig();
     const filesToDownload = manifest.files.filter(file =>
       file.path.startsWith(prefix),
     );
     const urls = filesToDownload.map(
       file =>
-        `${api.basePath}/app-bundle/download/${encodeURIComponent(file.path)}`,
+        `${config.basePath}/app-bundle/download/${encodeURIComponent(file.path)}`,
     );
     const localFiles = filesToDownload.map(
       file => `${outputRootDirectory}/${file.path}`,
@@ -202,12 +212,8 @@ class SynkronusApi {
       }
 
       // Process operations
-      const downloadOps = operations.filter(
-        (op: any) => op.operation === 'download',
-      );
-      const deleteOps = operations.filter(
-        (op: any) => op.operation === 'delete',
-      );
+      const downloadOps = operations.filter(op => op.operation === 'download');
+      const deleteOps = operations.filter(op => op.operation === 'delete');
 
       console.debug(
         `Processing ${downloadOps.length} downloads, ${deleteOps.length} deletions`,
@@ -227,7 +233,7 @@ class SynkronusApi {
       console.debug(
         `Attachment sync completed at version ${manifest.current_version}`,
       );
-    } catch (error: any) {
+    } catch (error) {
       console.error('Failed to process attachment manifest:', error);
       throw error; // Let the error bubble up so we can fix the root cause
     }
@@ -236,7 +242,9 @@ class SynkronusApi {
   /**
    * Process attachment deletion operations
    */
-  private async processAttachmentDeletions(deleteOps: any[]): Promise<void> {
+  private async processAttachmentDeletions(
+    deleteOps: AttachmentOperation[],
+  ): Promise<void> {
     const attachmentsDirectory = `${RNFS.DocumentDirectoryPath}/attachments`;
 
     for (const op of deleteOps) {
@@ -262,11 +270,15 @@ class SynkronusApi {
   /**
    * Process attachment download operations using manifest URLs
    */
-  private async processAttachmentDownloads(downloadOps: any[]): Promise<void> {
+  private async processAttachmentDownloads(
+    downloadOps: AttachmentOperation[],
+  ): Promise<void> {
     const attachmentsDirectory = `${RNFS.DocumentDirectoryPath}/attachments`;
     await RNFS.mkdir(attachmentsDirectory);
 
-    const urls = downloadOps.map(op => op.download_url);
+    const urls = downloadOps.map(op =>
+      op.download_url ? op.download_url : '',
+    );
     const localPaths = downloadOps.map(
       op => `${attachmentsDirectory}/${op.attachment_id}`,
     );
@@ -312,10 +324,13 @@ class SynkronusApi {
     }
   }
 
-  private extractAttachmentPaths(data: any, attachmentPaths: string[]): void {
+  private extractAttachmentPaths(
+    data: unknown,
+    attachmentPaths: string[],
+  ): void {
     if (!data || typeof data !== 'object') return;
 
-    for (const [_key, value] of Object.entries(data)) {
+    for (const value of Object.values(data)) {
       if (typeof value === 'string') {
         // Check if this looks like an attachment path (GUID-style filename)
         // Based on PhotoQuestionRenderer pattern: GUID-style filenames
@@ -459,7 +474,7 @@ class SynkronusApi {
     }
     const authToken =
       this.fastGetToken_cachedToken ?? (await this.fastGetToken());
-    const downloadHeaders: {[key: string]: string} = {};
+    const downloadHeaders: { [key: string]: string } = {};
     downloadHeaders.Authorization = `Bearer ${authToken}`;
 
     console.debug(`Downloading from: ${url}`);
@@ -510,10 +525,10 @@ class SynkronusApi {
     const downloadDirectory = `${RNFS.DocumentDirectoryPath}/attachments`;
     await RNFS.mkdir(downloadDirectory);
 
-    const api = await this.getApi();
+    const config = await this.getConfig();
     const urls = attachments.map(
       attachment =>
-        `${api.basePath}/attachments/${encodeURIComponent(attachment)}`,
+        `${config.basePath}/attachments/${encodeURIComponent(attachment)}`,
     );
     const localFilePaths = attachments.map(
       attachment => `${downloadDirectory}/${attachment}`,
@@ -576,13 +591,13 @@ class SynkronusApi {
           uri: `file://${pendingFilePath}`,
           type: mimeType,
           name: attachmentId,
-        } as any; // Cast to any to satisfy TypeScript
+        } as unknown as File;
 
         // Upload the file
         console.debug(
           `Uploading attachment: ${attachmentId} (${fileStats.size} bytes)`,
         );
-        await api.uploadAttachment({attachmentId, file});
+        await api.uploadAttachment({ attachmentId, file });
 
         // Remove file from pending_upload directory (upload complete)
         // Note: File already exists in main attachments directory from when it was first saved
@@ -596,11 +611,11 @@ class SynkronusApi {
         });
 
         console.debug(`Successfully uploaded attachment: ${attachmentId}`);
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error(`Failed to upload attachment ${attachmentId}:`, error);
         results.push({
           success: false,
-          message: `Upload failed: ${error.message}`,
+          message: `Upload failed: ${error}`,
           filePath: pendingFilePath,
           bytesWritten: 0,
         });
@@ -677,7 +692,7 @@ class SynkronusApi {
    */
   async attachmentExists(
     attachmentId: string,
-  ): Promise<{available: boolean; pendingUpload: boolean}> {
+  ): Promise<{ available: boolean; pendingUpload: boolean }> {
     const mainPath = `${RNFS.DocumentDirectoryPath}/attachments/${attachmentId}`;
     const pendingUploadPath = `${RNFS.DocumentDirectoryPath}/attachments/pending_upload/${attachmentId}`;
 
@@ -686,7 +701,7 @@ class SynkronusApi {
       RNFS.exists(pendingUploadPath),
     ]);
 
-    return {available, pendingUpload};
+    return { available, pendingUpload };
   }
 
   /**
@@ -864,9 +879,9 @@ class SynkronusApi {
       }
 
       return res.data.current_version;
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Failed to push observations:', error);
-      throw new Error(`Push failed: ${error.message}`);
+      throw new Error(`Push failed: ${error}`);
     }
   }
 

@@ -1,10 +1,10 @@
-import {Database} from '@nozbe/watermelondb';
+import { Database } from '@nozbe/watermelondb';
 import LokiJSAdapter from '@nozbe/watermelondb/adapters/lokijs';
-import {schemas} from '../../schema';
-import {ObservationModel} from '../../models/ObservationModel';
-import {WatermelonDBRepo} from '../WatermelonDBRepo';
-import {Observation} from '../LocalRepoInterface';
-import {Q} from '@nozbe/watermelondb';
+import { schemas } from '../../schema';
+import { ObservationModel } from '../../models/ObservationModel';
+import { WatermelonDBRepo } from '../WatermelonDBRepo';
+import { Observation } from '../LocalRepoInterface';
+import { Q } from '@nozbe/watermelondb';
 
 // Create a test database with in-memory LokiJS adapter
 function createTestDatabase() {
@@ -122,7 +122,7 @@ describe('WatermelonDBRepo', () => {
     const testObservation: Partial<Observation> = {
       formType: 'test-form',
       formVersion: '1.0',
-      data: {field1: 'value1', field2: 'value2'},
+      data: { field1: 'value1', field2: 'value2' },
       deleted: false,
     };
 
@@ -188,15 +188,15 @@ describe('WatermelonDBRepo', () => {
     // Create test observations
     const id1 = await repo.saveObservation({
       formType: formType1,
-      data: {test: 'data1'},
+      data: { test: 'data1' },
     });
     const id2 = await repo.saveObservation({
       formType: formType1,
-      data: {test: 'data2'},
+      data: { test: 'data2' },
     });
     const id3 = await repo.saveObservation({
       formType: formType2,
-      data: {test: 'data3'},
+      data: { test: 'data3' },
     });
 
     console.log('Created observations with IDs:', id1, id2, id3);
@@ -253,7 +253,7 @@ describe('WatermelonDBRepo', () => {
     const testObservation: Partial<Observation> = {
       formType: 'test-form',
       formVersion: '1.0',
-      data: {field1: 'original'},
+      data: { field1: 'original' },
       deleted: false,
     };
 
@@ -272,7 +272,7 @@ describe('WatermelonDBRepo', () => {
 
     // Act
     const updateSuccess = await repo.updateObservation(id, {
-      data: {field1: 'updated'},
+      data: { field1: 'updated' },
     });
 
     // Assert
@@ -315,7 +315,7 @@ describe('WatermelonDBRepo', () => {
     // Arrange
     const testObservation: Partial<Observation> = {
       formType: 'test-form',
-      data: {field1: 'value1'},
+      data: { field1: 'value1' },
     };
 
     const id = await repo.saveObservation(testObservation);
@@ -366,7 +366,7 @@ describe('WatermelonDBRepo', () => {
     // Arrange
     const testObservation: Partial<Observation> = {
       formType: 'test-form',
-      data: {field1: 'value1'},
+      data: { field1: 'value1' },
     };
 
     const id = await repo.saveObservation(testObservation);
@@ -417,7 +417,7 @@ describe('WatermelonDBRepo', () => {
     const testObservation: Partial<Observation> = {
       formType: 'persistence-test',
       formVersion: '1.0',
-      data: {field1: 'persistence-value'},
+      data: { field1: 'persistence-value' },
     };
 
     // Save the observation
@@ -474,12 +474,12 @@ describe('WatermelonDBRepo', () => {
     // Arrange
     const testObservation1: Partial<Observation> = {
       formType: 'test-observation-1',
-      data: {field1: 'test-value-1'},
+      data: { field1: 'test-value-1' },
     };
 
     const testObservation2: Partial<Observation> = {
       formType: 'test-observation-2',
-      data: {field1: 'test-value-2'},
+      data: { field1: 'test-value-2' },
     };
 
     // Act - create observations directly with the repo

@@ -11,7 +11,7 @@
 ## Example
 
 ```typescript
-import {UsersCreatePostRequest} from './api';
+import { UsersCreatePostRequest } from './api';
 
 const instance: UsersCreatePostRequest = {
   username,

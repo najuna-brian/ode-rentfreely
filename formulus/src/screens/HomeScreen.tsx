@@ -1,11 +1,13 @@
-import React, {useEffect, useState, useRef} from 'react';
-import {StyleSheet, View, ActivityIndicator, Platform} from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { StyleSheet, View, ActivityIndicator, Platform } from 'react-native';
 import RNFS from 'react-native-fs';
 import CustomAppWebView, {
   CustomAppWebViewHandle,
 } from '../components/CustomAppWebView';
+import { colors } from '../theme/colors';
 
-const HomeScreen = ({navigation}: any) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const HomeScreen = ({ navigation }: { navigation: any }) => {
   const [localUri, setLocalUri] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const customAppRef = useRef<CustomAppWebViewHandle>(null);
@@ -13,42 +15,58 @@ const HomeScreen = ({navigation}: any) => {
   const checkAndSetAppUri = async () => {
     try {
       const filePath = `${RNFS.DocumentDirectoryPath}/app/index.html`;
+      console.log('[HomeScreen] Checking for custom app at:', filePath);
       const fileExists = await RNFS.exists(filePath);
+      console.log('[HomeScreen] Custom app exists:', fileExists);
+
       if (!fileExists) {
-        const placeholderUri =
-          Platform.OS === 'android'
-            ? 'file:///android_asset/webview/placeholder_app.html'
-            : 'file:///webview/placeholder_app.html';
+        let placeholderUri: string;
+        if (Platform.OS === 'android') {
+          placeholderUri = 'file:///android_asset/webview/placeholder_app.html';
+        } else {
+          // On iOS, assets linked via react-native.config.js are placed in the main bundle
+          placeholderUri = `file://${RNFS.MainBundlePath}/placeholder_app.html`;
+        }
+        console.log('[HomeScreen] Using placeholder URI:', placeholderUri);
         setLocalUri(placeholderUri);
       } else {
-        setLocalUri(`file://${filePath}`);
+        const customAppUri = `file://${filePath}`;
+        console.log('[HomeScreen] Using custom app URI:', customAppUri);
+        setLocalUri(customAppUri);
       }
     } catch (err) {
-      console.warn('Failed to setup app URI:', err);
+      console.warn('[HomeScreen] Failed to setup app URI:', err);
     }
   };
 
   useEffect(() => {
-    checkAndSetAppUri();
+    Promise.resolve().then(() => {
+      checkAndSetAppUri();
+    });
   }, []);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      checkAndSetAppUri();
+      Promise.resolve().then(() => {
+        checkAndSetAppUri();
+      });
     });
     return unsubscribe;
   }, [navigation]);
 
   useEffect(() => {
     if (localUri) {
-      setIsLoading(false);
+      // Defer to avoid synchronous setState in effect
+      Promise.resolve().then(() => {
+        setIsLoading(false);
+      });
     }
   }, [localUri]);
 
   if (!localUri) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="large" color="#4A90E2" />
+        <ActivityIndicator size="large" color={colors.semantic.info.medium} />
       </View>
     );
   }
@@ -58,7 +76,7 @@ const HomeScreen = ({navigation}: any) => {
       {isLoading ? (
         <ActivityIndicator
           size="large"
-          color="#4A90E2"
+          color={colors.semantic.info.medium}
           style={styles.loading}
         />
       ) : (
