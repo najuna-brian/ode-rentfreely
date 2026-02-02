@@ -39,6 +39,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (theme === 'system') {
       const systemTheme = getSystemTheme();
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setResolvedTheme(systemTheme);
 
       // Listen for system theme changes
@@ -76,6 +77,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   );
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (context === undefined) {
