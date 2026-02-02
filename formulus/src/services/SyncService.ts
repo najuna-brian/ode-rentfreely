@@ -295,7 +295,7 @@ export class SyncService {
     }
   }
 
-  public async checkForUpdates(_force: boolean = false): Promise<boolean> {
+  public async checkForUpdates(): Promise<boolean> {
     try {
       const manifest = await this.withAutoLoginRetry(
         () => synkronusApi.getManifest(),
