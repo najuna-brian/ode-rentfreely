@@ -5,7 +5,7 @@
  * Shows available drafts for a form type and allows resuming or deleting them.
  */
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Box,
   Typography,
@@ -22,14 +22,14 @@ import {
   Chip,
   Grid,
   Divider,
-} from '@mui/material';
+} from "@mui/material";
 import {
   Delete as DeleteIcon,
   PlayArrow as ResumeIcon,
   Schedule as ClockIcon,
   Description as FormIcon,
-} from '@mui/icons-material';
-import { draftService, DraftSummary } from '../services/DraftService';
+} from "@mui/icons-material";
+import { draftService, DraftSummary } from "../services/DraftService";
 
 interface DraftSelectorProps {
   /** The form type to show drafts for */
@@ -69,8 +69,8 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
     if (oldDraftCount > 0) {
       setCleanupMessage(
         `${oldDraftCount} draft${
-          oldDraftCount === 1 ? '' : 's'
-        } older than 7 days will be automatically removed.`,
+          oldDraftCount === 1 ? "" : "s"
+        } older than 7 days will be automatically removed.`
       );
     }
   }, [formType, formVersion]);
@@ -104,23 +104,23 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
     if (diffDays > 0) {
-      return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+      return `${diffDays} day${diffDays === 1 ? "" : "s"} ago`;
     } else if (diffHours > 0) {
-      return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+      return `${diffHours} hour${diffHours === 1 ? "" : "s"} ago`;
     } else if (diffMinutes > 0) {
-      return `${diffMinutes} minute${diffMinutes === 1 ? '' : 's'} ago`;
+      return `${diffMinutes} minute${diffMinutes === 1 ? "" : "s"} ago`;
     } else {
-      return 'Just now';
+      return "Just now";
     }
   };
 
-  const getDraftAge = (date: Date): 'recent' | 'old' | 'very-old' => {
+  const getDraftAge = (date: Date): "recent" | "old" | "very-old" => {
     const diffDays = Math.floor(
-      (new Date().getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+      (new Date().getTime() - date.getTime()) / (1000 * 60 * 60 * 24)
     );
-    if (diffDays < 1) return 'recent';
-    if (diffDays < 3) return 'old';
-    return 'very-old';
+    if (diffDays < 1) return "recent";
+    if (diffDays < 3) return "old";
+    return "very-old";
   };
 
   const content = (
@@ -152,28 +152,31 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
             Available Drafts ({drafts.length})
           </Typography>
           <Grid container spacing={2}>
-            {drafts.map(draft => (
+            {drafts.map((draft) => (
               <Grid size={{ xs: 12 }} key={draft.id}>
                 <Card
                   variant="outlined"
                   sx={{
-                    position: 'relative',
-                    '&:hover': {
+                    position: "relative",
+                    "&:hover": {
                       boxShadow: 2,
-                      borderColor: 'primary.main',
+                      borderColor: "primary.main",
                     },
-                  }}>
+                  }}
+                >
                   <CardContent sx={{ pb: 1 }}>
                     <Box
                       sx={{
-                        display: 'flex',
-                        alignItems: 'flex-start',
-                        justifyContent: 'space-between',
-                      }}>
+                        display: "flex",
+                        alignItems: "flex-start",
+                        justifyContent: "space-between",
+                      }}
+                    >
                       <Box sx={{ flex: 1 }}>
                         <Box
-                          sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                          <FormIcon sx={{ mr: 1, color: 'text.secondary' }} />
+                          sx={{ display: "flex", alignItems: "center", mb: 1 }}
+                        >
+                          <FormIcon sx={{ mr: 1, color: "text.secondary" }} />
                           <Typography variant="subtitle1">
                             Draft from {formatDate(draft.updatedAt)}
                           </Typography>
@@ -182,11 +185,11 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
                             label={getDraftAge(draft.updatedAt)}
                             size="small"
                             color={
-                              getDraftAge(draft.updatedAt) === 'recent'
-                                ? 'success'
-                                : getDraftAge(draft.updatedAt) === 'old'
-                                  ? 'warning'
-                                  : 'error'
+                              getDraftAge(draft.updatedAt) === "recent"
+                                ? "success"
+                                : getDraftAge(draft.updatedAt) === "old"
+                                ? "warning"
+                                : "error"
                             }
                             sx={{ ml: 1 }}
                           />
@@ -195,12 +198,13 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
                         <Typography
                           variant="body2"
                           color="text.secondary"
-                          sx={{ mb: 1 }}>
+                          sx={{ mb: 1 }}
+                        >
                           {draft.dataPreview}
                         </Typography>
 
                         <Typography variant="caption" color="text.secondary">
-                          Created: {draft.createdAt.toLocaleDateString()}{' '}
+                          Created: {draft.createdAt.toLocaleDateString()}{" "}
                           {draft.createdAt.toLocaleTimeString()}
                           {draft.observationId && (
                             <> • Editing observation: {draft.observationId}</>
@@ -212,7 +216,8 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
                         onClick={() => handleDeleteDraft(draft.id)}
                         size="small"
                         color="error"
-                        sx={{ ml: 1 }}>
+                        sx={{ ml: 1 }}
+                      >
                         <DeleteIcon />
                       </IconButton>
                     </Box>
@@ -223,7 +228,8 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
                       startIcon={<ResumeIcon />}
                       onClick={() => onResumeDraft(draft.id)}
                       variant="contained"
-                      size="small">
+                      size="small"
+                    >
                       Resume Draft
                     </Button>
                   </CardActions>
@@ -233,7 +239,7 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
           </Grid>
         </Box>
       ) : (
-        <Box sx={{ textAlign: 'center', py: 4, mb: 3 }}>
+        <Box sx={{ textAlign: "center", py: 4, mb: 3 }}>
           <Typography variant="body1" color="text.secondary">
             No recent drafts found for this form.
           </Typography>
@@ -243,7 +249,7 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
       <Divider sx={{ my: 3 }} />
 
       {/* Start new form section */}
-      <Box sx={{ textAlign: 'center' }}>
+      <Box sx={{ textAlign: "center" }}>
         <Typography variant="h6" gutterBottom>
           Start Fresh
         </Typography>
@@ -254,7 +260,8 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
           variant="outlined"
           size="large"
           onClick={onStartNew}
-          sx={{ minWidth: 200 }}>
+          sx={{ minWidth: 200 }}
+        >
           Start New Form
         </Button>
       </Box>
@@ -262,7 +269,8 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
       {/* Delete confirmation dialog */}
       <Dialog
         open={deleteConfirmOpen}
-        onClose={() => setDeleteConfirmOpen(false)}>
+        onClose={() => setDeleteConfirmOpen(false)}
+      >
         <DialogTitle>Delete Draft</DialogTitle>
         <DialogContent>
           <Typography>
@@ -275,7 +283,8 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
           <Button
             onClick={confirmDeleteDraft}
             color="error"
-            variant="contained">
+            variant="contained"
+          >
             Delete
           </Button>
         </DialogActions>
@@ -291,17 +300,19 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
         fullScreen
         PaperProps={{
           sx: {
-            bgcolor: 'background.default',
-            backgroundImage: 'none',
+            bgcolor: "background.default",
+            backgroundImage: "none",
           },
-        }}>
+        }}
+      >
         <DialogTitle>
           <Box
             sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}>
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
             <Typography variant="h6">Select Draft</Typography>
             {onClose && <Button onClick={onClose}>Close</Button>}
           </Box>

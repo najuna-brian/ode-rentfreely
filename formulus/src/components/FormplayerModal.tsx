@@ -5,7 +5,7 @@ import React, {
   useCallback,
   useImperativeHandle,
   forwardRef,
-} from 'react';
+} from "react";
 import {
   StyleSheet,
   View,
@@ -16,26 +16,26 @@ import {
   Alert,
   ActivityIndicator,
   useColorScheme,
-} from 'react-native';
+} from "react-native";
 import CustomAppWebView, {
   CustomAppWebViewHandle,
-} from '../components/CustomAppWebView';
-import Icon from '@react-native-vector-icons/material-icons';
+} from "../components/CustomAppWebView";
+import Icon from "@react-native-vector-icons/material-icons";
 import {
   resolveFormOperation,
   resolveFormOperationByType,
   setActiveFormplayerModal,
-} from '../webview/FormulusMessageHandlers';
+} from "../webview/FormulusMessageHandlers";
 import {
   FormCompletionResult,
   FormInitData,
-} from '../webview/FormulusInterfaceDefinition';
+} from "../webview/FormulusInterfaceDefinition";
 
-import { databaseService } from '../database';
-import { colors } from '../theme/colors';
-import { FormSpec } from '../services'; // FormService will be imported directly
-import { ExtensionService } from '../services/ExtensionService';
-import RNFS from 'react-native-fs';
+import { databaseService } from "../database";
+import { colors } from "../theme/colors";
+import { FormSpec } from "../services"; // FormService will be imported directly
+import { ExtensionService } from "../services/ExtensionService";
+import RNFS from "react-native-fs";
 
 interface FormplayerModalProps {
   visible: boolean;
@@ -48,7 +48,7 @@ export interface FormplayerModalHandle {
     params: Record<string, unknown> | null,
     observationId: string | null,
     existingObservationData: Record<string, unknown> | null,
-    operationId: string | null,
+    operationId: string | null
   ) => void;
   handleSubmission: (data: {
     formType: string;
@@ -74,7 +74,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
       unknown
     > | null>(null);
     const [currentOperationId, setCurrentOperationId] = useState<string | null>(
-      null,
+      null
     );
 
     // Track if form has been successfully submitted to avoid double resolution
@@ -86,8 +86,8 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
 
     // Path to the formplayer dist folder in assets
     const formplayerUri =
-      Platform.OS === 'android'
-        ? 'file:///android_asset/formplayer_dist/index.html'
+      Platform.OS === "android"
+        ? "file:///android_asset/formplayer_dist/index.html"
         : `file://${RNFS.MainBundlePath}/formplayer_dist/index.html`;
 
     // Create a debounced close handler to prevent multiple rapid close attempts
@@ -95,12 +95,12 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
       // Prevent multiple close attempts
       if (isClosing || isSubmitting) {
         console.log(
-          'FormplayerModal: Close attempt blocked - already closing or submitting',
+          "FormplayerModal: Close attempt blocked - already closing or submitting"
         );
         return;
       }
 
-      console.log('FormplayerModal: Starting close process');
+      console.log("FormplayerModal: Starting close process");
       setIsClosing(true);
 
       // Clear any existing timeout
@@ -111,13 +111,13 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
       // Only resolve with cancelled status if form hasn't been successfully submitted AND we have a valid operation
       if (!formSubmitted && currentOperationId) {
         console.log(
-          'FormplayerModal: Resolving operation as cancelled:',
-          currentOperationId,
+          "FormplayerModal: Resolving operation as cancelled:",
+          currentOperationId
         );
         const completionResult: FormCompletionResult = {
-          status: 'cancelled',
-          formType: currentFormType || 'unknown',
-          message: 'Form was closed without submission',
+          status: "cancelled",
+          formType: currentFormType || "unknown",
+          message: "Form was closed without submission",
         };
 
         resolveFormOperation(currentOperationId, completionResult);
@@ -125,19 +125,19 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
         setCurrentOperationId(null);
       } else if (!formSubmitted && currentFormType) {
         console.log(
-          'FormplayerModal: Resolving by form type as cancelled:',
-          currentFormType,
+          "FormplayerModal: Resolving by form type as cancelled:",
+          currentFormType
         );
         const completionResult: FormCompletionResult = {
-          status: 'cancelled',
+          status: "cancelled",
           formType: currentFormType,
-          message: 'Form was closed without submission',
+          message: "Form was closed without submission",
         };
 
         resolveFormOperationByType(currentFormType, completionResult);
       } else {
         console.log(
-          'FormplayerModal: Form was already submitted or no operation to resolve',
+          "FormplayerModal: Form was already submitted or no operation to resolve"
         );
       }
 
@@ -160,27 +160,27 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
     const handleClose = useCallback(() => {
       if (isClosing || isSubmitting) {
         console.log(
-          'FormplayerModal: Close attempt blocked - already closing or submitting',
+          "FormplayerModal: Close attempt blocked - already closing or submitting"
         );
         return;
       }
 
       Alert.alert(
-        'Close form?',
-        'This will close the current form. Any changes made will not be saved, but will be available as a draft next time you open the form.',
+        "Close form?",
+        "This will close the current form. Any changes made will not be saved, but will be available as a draft next time you open the form.",
         [
           {
-            text: 'Cancel',
-            style: 'cancel',
+            text: "Cancel",
+            style: "cancel",
           },
           {
-            text: 'Close form',
-            style: 'destructive',
+            text: "Close form",
+            style: "destructive",
             onPress: () => {
               performClose();
             },
           },
-        ],
+        ]
       );
     }, [isClosing, isSubmitting, performClose]);
 
@@ -197,7 +197,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
 
     // Handle WebView load complete
     const handleWebViewLoad = () => {
-      console.log('FormplayerModal: WebView loaded successfully (onLoadEnd).');
+      console.log("FormplayerModal: WebView loaded successfully (onLoadEnd).");
     };
 
     // Initialize a form with the given form type and optional existing data
@@ -206,7 +206,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
       params: Record<string, unknown> | null,
       observationId: string | null,
       existingObservationData: Record<string, unknown> | null,
-      operationId: string | null,
+      operationId: string | null
     ) => {
       // Set internal state for the current form and observation
       setCurrentFormType(formType.id);
@@ -217,9 +217,9 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
       setFormSubmitted(false); // Reset submission flag for new form
 
       const formParams = {
-        locale: 'en',
-        theme: 'default',
-        darkMode: colorScheme === 'dark',
+        locale: "en",
+        theme: "default",
+        darkMode: colorScheme === "dark",
         //schema: formType.schema,
         //uischema: formType.uiSchema,
         ...params,
@@ -228,11 +228,11 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
       // Load extensions for this form
       let extensions = undefined;
       try {
-        const customAppPath = RNFS.DocumentDirectoryPath + '/app';
+        const customAppPath = RNFS.DocumentDirectoryPath + "/app";
         const extensionService = ExtensionService.getInstance();
         const mergedExtensions = await extensionService.getCustomAppExtensions(
           customAppPath,
-          formType.id,
+          formType.id
         );
 
         // Ensure getDynamicChoiceList is always available as a fallback
@@ -241,11 +241,11 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
         }
         if (!mergedExtensions.functions.getDynamicChoiceList) {
           mergedExtensions.functions.getDynamicChoiceList = {
-            name: 'getDynamicChoiceList',
+            name: "getDynamicChoiceList",
             // Path is relative to the custom app root that is mounted at
             // file://<DocumentDirectory>/app in the WebView
-            module: '/extensions/helpers/queryHelpers.js',
-            export: 'getDynamicChoiceList',
+            module: "/extensions/helpers/queryHelpers.js",
+            export: "getDynamicChoiceList",
           };
         }
 
@@ -260,7 +260,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
             functions: Object.entries(mergedExtensions.functions).reduce(
               (acc, [key, func]) => {
                 // Remove leading slash from module path to avoid double-slash in URL
-                const modulePath = (func.module || '').replace(/^\/+/, '');
+                const modulePath = (func.module || "").replace(/^\/+/, "");
                 acc[key] = {
                   name: func.name,
                   module: modulePath,
@@ -268,12 +268,12 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
                 };
                 return acc;
               },
-              {} as Record<string, unknown>,
+              {} as Record<string, unknown>
             ),
             renderers: Object.entries(mergedExtensions.renderers).reduce(
               (acc, [key, renderer]) => {
                 // Remove leading slash from module path to avoid double-slash in URL
-                const modulePath = (renderer.module || '').replace(/^\/+/, '');
+                const modulePath = (renderer.module || "").replace(/^\/+/, "");
                 acc[key] = {
                   name: renderer.name,
                   format: renderer.format,
@@ -283,7 +283,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
                 };
                 return acc;
               },
-              {} as Record<string, unknown>,
+              {} as Record<string, unknown>
             ),
             // Base path for loading modules (file:// URL for WebView)
             // Extensions are in the /forms directory
@@ -291,7 +291,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
           };
         }
       } catch (error) {
-        console.warn('Failed to load extensions:', error);
+        console.warn("Failed to load extensions:", error);
         // Continue without extensions - not a fatal error
       }
 
@@ -307,19 +307,19 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
 
       if (!webViewRef.current) {
         console.warn(
-          'FormplayerModal: WebView ref is not available when trying to initialize form',
+          "FormplayerModal: WebView ref is not available when trying to initialize form"
         );
         return;
       }
 
       try {
         await webViewRef.current.sendFormInit(formInitData);
-        console.log('FormplayerModal: Form init acknowledged by WebView');
+        console.log("FormplayerModal: Form init acknowledged by WebView");
       } catch (error) {
-        console.error('FormplayerModal: Error sending form init data:', error);
+        console.error("FormplayerModal: Error sending form init data:", error);
         Alert.alert(
-          'Error',
-          'Failed to initialize the form UI. Please close and try again.',
+          "Error",
+          "Failed to initialize the form UI. Please close and try again."
         );
       }
     };
@@ -331,7 +331,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
         finalData: Record<string, unknown>;
       }): Promise<string> => {
         const { formType, finalData } = data;
-        console.log('FormplayerModal: handleSubmission called', {
+        console.log("FormplayerModal: handleSubmission called", {
           formType,
           finalData,
         });
@@ -343,35 +343,35 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
           // Get the local repository from the database service
           const localRepo = databaseService.getLocalRepo();
           if (!localRepo) {
-            throw new Error('Database repository not available');
+            throw new Error("Database repository not available");
           }
 
           // Save the observation
           let resultObservationId: string;
           if (currentObservationId) {
             console.log(
-              'FormplayerModal: Updating existing observation:',
-              currentObservationId,
+              "FormplayerModal: Updating existing observation:",
+              currentObservationId
             );
             const updateSuccess = await localRepo.updateObservation({
               observationId: currentObservationId,
               data: finalData,
             });
             if (!updateSuccess) {
-              throw new Error('Failed to update observation');
+              throw new Error("Failed to update observation");
             }
             resultObservationId = currentObservationId;
           } else {
             console.log(
-              'FormplayerModal: Creating new observation for form type:',
-              formType,
+              "FormplayerModal: Creating new observation for form type:",
+              formType
             );
             const newId = await localRepo.saveObservation({
               formType,
               data: finalData,
             });
             if (!newId) {
-              throw new Error('Failed to save new observation');
+              throw new Error("Failed to save new observation");
             }
             resultObservationId = newId;
           }
@@ -381,7 +381,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
 
           // Resolve the form operation with success result
           const completionResult: FormCompletionResult = {
-            status: currentObservationId ? 'form_updated' : 'form_submitted',
+            status: currentObservationId ? "form_updated" : "form_submitted",
             observationId: resultObservationId,
             formData: finalData,
             formType: formType,
@@ -397,11 +397,11 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
 
           // Show success message and close modal
           const successMessage = currentObservationId
-            ? 'Observation updated successfully!'
-            : 'Form submitted successfully!';
-          Alert.alert('Success', successMessage, [
+            ? "Observation updated successfully!"
+            : "Form submitted successfully!";
+          Alert.alert("Success", successMessage, [
             {
-              text: 'OK',
+              text: "OK",
               onPress: () => {
                 setIsSubmitting(false);
                 onClose();
@@ -411,15 +411,15 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
 
           return resultObservationId;
         } catch (error) {
-          console.error('FormplayerModal: Error in handleSubmission:', error);
+          console.error("FormplayerModal: Error in handleSubmission:", error);
           setIsSubmitting(false);
 
           // Resolve the form operation with error result
           const errorResult: FormCompletionResult = {
-            status: 'error',
+            status: "error",
             formType: formType,
             message:
-              error instanceof Error ? error.message : 'Unknown error occurred',
+              error instanceof Error ? error.message : "Unknown error occurred",
           };
 
           if (currentOperationId) {
@@ -428,11 +428,11 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
             resolveFormOperationByType(formType, errorResult);
           }
 
-          Alert.alert('Error', 'Failed to save your form. Please try again.');
+          Alert.alert("Error", "Failed to save your form. Please try again.");
           throw error;
         }
       },
-      [currentObservationId, currentOperationId, onClose],
+      [currentObservationId, currentOperationId, onClose]
     );
 
     // Register/unregister modal with message handlers and reset form state
@@ -464,7 +464,8 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
         visible={visible}
         onRequestClose={handleClose}
         presentationStyle="fullScreen"
-        statusBarTranslucent={false}>
+        statusBarTranslucent={false}
+      >
         <View style={styles.container}>
           <View style={styles.header}>
             <TouchableOpacity
@@ -473,7 +474,8 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
                 styles.closeButton,
                 (isSubmitting || isClosing) && styles.disabledButton,
               ]}
-              disabled={isSubmitting || isClosing}>
+              disabled={isSubmitting || isClosing}
+            >
               <Icon
                 name="close"
                 size={24}
@@ -485,7 +487,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
               />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>
-              {currentObservationId ? 'Edit Observation' : 'New Observation'}
+              {currentObservationId ? "Edit Observation" : "New Observation"}
             </Text>
             <View style={styles.headerRightSpacer} />
           </View>
@@ -512,7 +514,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
         </View>
       </Modal>
     );
-  },
+  }
 );
 const styles = StyleSheet.create({
   container: {
@@ -520,8 +522,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral.white,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 8,
     paddingVertical: 12,
     borderBottomWidth: 1,
@@ -529,9 +531,9 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     flex: 1,
-    textAlign: 'center',
+    textAlign: "center",
     marginRight: 40, // To balance the close button width
   },
   headerRightSpacer: {
@@ -547,20 +549,20 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   loadingOverlay: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
     backgroundColor: colors.ui.background,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingContainer: {
     backgroundColor: colors.neutral.white,
     padding: 20,
     borderRadius: 10,
-    alignItems: 'center',
+    alignItems: "center",
     shadowColor: colors.neutral.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,

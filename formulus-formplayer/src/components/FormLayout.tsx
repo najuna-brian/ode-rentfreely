@@ -1,5 +1,5 @@
-import React, { ReactNode, useState, useEffect } from 'react';
-import { Box, Paper, Stack, Button } from '@mui/material';
+import React, { ReactNode, useState, useEffect } from "react";
+import { Box, Paper, Stack, Button } from "@mui/material";
 
 interface FormLayoutProps {
   /**
@@ -67,7 +67,7 @@ const FormLayout: React.FC<FormLayoutProps> = ({
   const [isKeyboardVisible, setIsKeyboardVisible] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.visualViewport) {
+    if (typeof window !== "undefined" && window.visualViewport) {
       const viewport = window.visualViewport;
 
       const handleViewportChange = () => {
@@ -78,13 +78,13 @@ const FormLayout: React.FC<FormLayoutProps> = ({
         setIsKeyboardVisible(heightDifference > keyboardThreshold);
       };
 
-      viewport.addEventListener('resize', handleViewportChange);
-      viewport.addEventListener('scroll', handleViewportChange);
+      viewport.addEventListener("resize", handleViewportChange);
+      viewport.addEventListener("scroll", handleViewportChange);
       handleViewportChange();
 
       return () => {
-        viewport.removeEventListener('resize', handleViewportChange);
-        viewport.removeEventListener('scroll', handleViewportChange);
+        viewport.removeEventListener("resize", handleViewportChange);
+        viewport.removeEventListener("scroll", handleViewportChange);
       };
     } else {
       // Fallback for browsers without Visual Viewport API
@@ -94,11 +94,11 @@ const FormLayout: React.FC<FormLayoutProps> = ({
         setIsKeyboardVisible(currentHeight < initialHeight * 0.75);
       };
 
-      window.addEventListener('resize', handleResize);
+      window.addEventListener("resize", handleResize);
       handleResize();
 
       return () => {
-        window.removeEventListener('resize', handleResize);
+        window.removeEventListener("resize", handleResize);
       };
     }
   }, []);
@@ -106,50 +106,59 @@ const FormLayout: React.FC<FormLayoutProps> = ({
   return (
     <Box
       sx={{
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100dvh',
-        width: '100%',
-        overflow: 'hidden',
-        position: 'relative',
-        WebkitOverflowScrolling: 'touch',
-      }}>
+        display: "flex",
+        flexDirection: "column",
+        height: "100dvh",
+        width: "100%",
+        overflow: "hidden",
+        position: "relative",
+        WebkitOverflowScrolling: "touch",
+      }}
+    >
       {header && (
         <Box
           sx={{
             flexShrink: 0,
-            position: 'sticky',
+            position: "sticky",
             top: 0,
             zIndex: 100,
-            backgroundColor: 'background.default',
-            paddingTop: 'env(safe-area-inset-top, 0px)',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
-            width: '100%',
-            overflow: 'hidden',
-          }}>
+            backgroundColor: "background.default",
+            paddingTop: "env(safe-area-inset-top, 0px)",
+            boxShadow: "0 2px 4px rgba(0,0,0,0.05)",
+            width: "100%",
+            overflow: "hidden",
+          }}
+        >
           {header}
         </Box>
       )}
 
       <Box
-        sx={theme => ({
+        sx={(theme) => ({
           flex: 1,
-          overflowY: 'auto',
-          overflowX: 'hidden',
-          WebkitOverflowScrolling: 'touch',
+          overflowY: "auto",
+          overflowX: "hidden",
+          WebkitOverflowScrolling: "touch",
           paddingBottom:
             showNavigation &&
             (previousButton || nextButton) &&
             !isKeyboardVisible
               ? {
-                  xs: `calc(${theme.spacing(11)} + env(safe-area-inset-bottom, 0px))`,
-                  sm: `calc(${theme.spacing(12)} + env(safe-area-inset-bottom, 0px))`,
-                  md: `calc(${theme.spacing(13)} + env(safe-area-inset-bottom, 0px))`,
+                  xs: `calc(${theme.spacing(
+                    11
+                  )} + env(safe-area-inset-bottom, 0px))`,
+                  sm: `calc(${theme.spacing(
+                    12
+                  )} + env(safe-area-inset-bottom, 0px))`,
+                  md: `calc(${theme.spacing(
+                    13
+                  )} + env(safe-area-inset-bottom, 0px))`,
                 }
               : theme.spacing(15),
-          overscrollBehavior: 'contain',
-          position: 'relative',
-        })}>
+          overscrollBehavior: "contain",
+          position: "relative",
+        })}
+      >
         {children}
       </Box>
 
@@ -158,42 +167,50 @@ const FormLayout: React.FC<FormLayoutProps> = ({
         !isKeyboardVisible && (
           <Paper
             elevation={4}
-            sx={theme => ({
-              position: 'fixed',
+            sx={(theme) => ({
+              position: "fixed",
               bottom: 0,
               left: 0,
               right: 0,
               zIndex: theme.zIndex.appBar,
-              width: '100%',
+              width: "100%",
               padding: {
                 xs: theme.spacing(1, 1.5),
                 sm: theme.spacing(1.5, 2),
                 md: theme.spacing(1.5, 2.5),
               },
               paddingBottom: {
-                xs: `calc(${theme.spacing(1)} + env(safe-area-inset-bottom, 0px))`,
-                sm: `calc(${theme.spacing(1.5)} + env(safe-area-inset-bottom, 0px))`,
-                md: `calc(${theme.spacing(1.5)} + env(safe-area-inset-bottom, 0px))`,
+                xs: `calc(${theme.spacing(
+                  1
+                )} + env(safe-area-inset-bottom, 0px))`,
+                sm: `calc(${theme.spacing(
+                  1.5
+                )} + env(safe-area-inset-bottom, 0px))`,
+                md: `calc(${theme.spacing(
+                  1.5
+                )} + env(safe-area-inset-bottom, 0px))`,
               },
-              backgroundColor: 'background.paper',
-              borderTop: 'none',
-              borderColor: 'divider',
-              boxShadow: '0 -4px 12px rgba(0,0,0,0.15)',
+              backgroundColor: "background.paper",
+              borderTop: "none",
+              borderColor: "divider",
+              boxShadow: "0 -4px 12px rgba(0,0,0,0.15)",
               transition:
-                'opacity 0.2s ease-in-out, transform 0.2s ease-in-out',
-              boxSizing: 'border-box',
-            })}>
+                "opacity 0.2s ease-in-out, transform 0.2s ease-in-out",
+              boxSizing: "border-box",
+            })}
+          >
             <Stack
               direction="row"
               spacing={2}
               justifyContent="center"
               sx={{
-                '& > *': {
-                  flex: { xs: 1, sm: '0 1 auto' },
-                  minWidth: { xs: 'auto', sm: '120px', md: '140px' },
-                  maxWidth: { md: '200px' },
+                "& > *": {
+                  flex: { xs: 1, sm: "0 1 auto" },
+                  minWidth: { xs: "auto", sm: "120px", md: "140px" },
+                  maxWidth: { md: "200px" },
                 },
-              }}>
+              }}
+            >
               {previousButton && (
                 <Button
                   variant="outlined"
@@ -201,19 +218,20 @@ const FormLayout: React.FC<FormLayoutProps> = ({
                   disabled={previousButton.disabled}
                   fullWidth={false}
                   sx={{
-                    minHeight: { xs: '48px', sm: '48px', md: '52px' },
+                    minHeight: { xs: "48px", sm: "48px", md: "52px" },
                     fontSize: {
-                      xs: '0.875rem',
-                      sm: '0.875rem',
-                      md: '0.9375rem',
+                      xs: "0.875rem",
+                      sm: "0.875rem",
+                      md: "0.9375rem",
                     },
                     fontWeight: 600,
                     borderWidth: 2,
-                    '&:hover': {
+                    "&:hover": {
                       borderWidth: 2,
                     },
-                  }}>
-                  {previousButton.label || 'Previous'}
+                  }}
+                >
+                  {previousButton.label || "Previous"}
                 </Button>
               )}
               {nextButton && (
@@ -223,19 +241,20 @@ const FormLayout: React.FC<FormLayoutProps> = ({
                   disabled={nextButton.disabled}
                   fullWidth={false}
                   sx={{
-                    minHeight: { xs: '48px', sm: '48px', md: '52px' },
+                    minHeight: { xs: "48px", sm: "48px", md: "52px" },
                     fontSize: {
-                      xs: '0.875rem',
-                      sm: '0.875rem',
-                      md: '0.9375rem',
+                      xs: "0.875rem",
+                      sm: "0.875rem",
+                      md: "0.9375rem",
                     },
                     fontWeight: 600,
                     boxShadow: 2,
-                    '&:hover': {
+                    "&:hover": {
                       boxShadow: 4,
                     },
-                  }}>
-                  {nextButton.label || 'Next'}
+                  }}
+                >
+                  {nextButton.label || "Next"}
                 </Button>
               )}
             </Stack>

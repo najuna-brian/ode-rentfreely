@@ -1,4 +1,4 @@
-import RNFS from 'react-native-fs';
+import RNFS from "react-native-fs";
 
 /**
  * Extension definition structure
@@ -85,7 +85,7 @@ export class ExtensionService {
    */
   public async getCustomAppExtensions(
     customAppPath: string,
-    formName?: string,
+    formName?: string
   ): Promise<MergedExtensions> {
     const result: MergedExtensions = {
       definitions: {},
@@ -93,11 +93,17 @@ export class ExtensionService {
       renderers: {},
     };
 
-    console.log(`[ExtensionService] Loading extensions for app: ${customAppPath}, form: ${formName || 'none'}`);
+    console.log(
+      `[ExtensionService] Loading extensions for app: ${customAppPath}, form: ${
+        formName || "none"
+      }`
+    );
 
     // Load app-level extensions
     const appExtPath = `${customAppPath}/forms/ext.json`;
-    console.log(`[ExtensionService] Loading app-level ext.json from: ${appExtPath}`);
+    console.log(
+      `[ExtensionService] Loading app-level ext.json from: ${appExtPath}`
+    );
     const appLevelExt = await this.loadExtensionFile(appExtPath);
     if (appLevelExt) {
       console.log(`[ExtensionService] App-level extensions loaded:`, {
@@ -106,13 +112,17 @@ export class ExtensionService {
       });
       this.mergeExtension(result, appLevelExt);
     } else {
-      console.warn(`[ExtensionService] App-level ext.json not found or failed to load: ${appExtPath}`);
+      console.warn(
+        `[ExtensionService] App-level ext.json not found or failed to load: ${appExtPath}`
+      );
     }
 
     // Load form-level extensions (higher precedence)
     if (formName) {
       const formExtPath = `${customAppPath}/forms/${formName}/ext.json`;
-      console.log(`[ExtensionService] Loading form-level ext.json from: ${formExtPath}`);
+      console.log(
+        `[ExtensionService] Loading form-level ext.json from: ${formExtPath}`
+      );
       const formLevelExt = await this.loadExtensionFile(formExtPath);
       if (formLevelExt) {
         console.log(`[ExtensionService] Form-level extensions loaded:`, {
@@ -142,7 +152,7 @@ export class ExtensionService {
    * Load an extension file
    */
   private async loadExtensionFile(
-    filePath: string,
+    filePath: string
   ): Promise<ExtensionDefinition | null> {
     try {
       const exists = await RNFS.exists(filePath);
@@ -151,37 +161,40 @@ export class ExtensionService {
         return null;
       }
 
-      const content = await RNFS.readFile(filePath, 'utf8');
+      const content = await RNFS.readFile(filePath, "utf8");
       const rawExtension = JSON.parse(content) as any;
 
       console.log(`[ExtensionService] Loaded ext.json from ${filePath}:`, {
         hasSchemas: !!rawExtension.schemas,
         hasDefinitions: !!rawExtension.definitions,
         hasFunctions: !!rawExtension.functions,
-        functionKeys: rawExtension.functions ? Object.keys(rawExtension.functions) : [],
+        functionKeys: rawExtension.functions
+          ? Object.keys(rawExtension.functions)
+          : [],
         hasRenderers: !!rawExtension.renderers,
       });
 
       // Normalize the extension format to match ExtensionDefinition interface
       const extension: ExtensionDefinition = {
         // Handle both "schemas.definitions" and direct "definitions"
-        definitions: rawExtension.definitions || rawExtension.schemas?.definitions || {},
-        
+        definitions:
+          rawExtension.definitions || rawExtension.schemas?.definitions || {},
+
         // Transform functions from {key: {path, export}} to {key: {name, module, export}}
         functions: rawExtension.functions
           ? Object.entries(rawExtension.functions).reduce(
               (acc, [key, func]: [string, any]) => {
                 acc[key] = {
                   name: key, // Use key as name
-                  module: func.path || func.module || '', // Support both "path" and "module"
+                  module: func.path || func.module || "", // Support both "path" and "module"
                   export: func.export || key, // Use export if provided, otherwise use key
                 };
                 return acc;
               },
-              {} as Record<string, ExtensionFunction>,
+              {} as Record<string, ExtensionFunction>
             )
           : undefined,
-        
+
         // Transform renderers (similar structure)
         renderers: rawExtension.renderers
           ? Object.entries(rawExtension.renderers).reduce(
@@ -189,17 +202,22 @@ export class ExtensionService {
                 // Handle both flat structure and nested structure
                 const rendererObj = renderer.renderer || renderer;
                 const testerObj = renderer.tester || {};
-                
+
                 acc[key] = {
                   name: key,
-                  format: renderer.format || rendererObj?.format || '',
-                  module: rendererObj?.path || rendererObj?.module || renderer.module || '',
+                  format: renderer.format || rendererObj?.format || "",
+                  module:
+                    rendererObj?.path ||
+                    rendererObj?.module ||
+                    renderer.module ||
+                    "",
                   tester: testerObj?.export || renderer.tester?.export,
-                  renderer: rendererObj?.export || renderer.renderer?.export || key,
+                  renderer:
+                    rendererObj?.export || renderer.renderer?.export || key,
                 };
                 return acc;
               },
-              {} as Record<string, ExtensionRenderer>,
+              {} as Record<string, ExtensionRenderer>
             )
           : undefined,
       };
@@ -223,11 +241,14 @@ export class ExtensionService {
 
       return extension;
     } catch (error) {
-      if ((error as any).code === 'ENOENT') {
+      if ((error as any).code === "ENOENT") {
         // File doesn't exist - this is OK
         return null;
       }
-      console.warn(`[ExtensionService] Failed to load extension file ${filePath}:`, error);
+      console.warn(
+        `[ExtensionService] Failed to load extension file ${filePath}:`,
+        error
+      );
       return null;
     }
   }
@@ -237,23 +258,23 @@ export class ExtensionService {
    */
   private validateExtension(
     extension: ExtensionDefinition,
-    filePath: string,
+    filePath: string
   ): void {
-    if (typeof extension !== 'object' || extension === null) {
+    if (typeof extension !== "object" || extension === null) {
       throw new Error(`Invalid extension file ${filePath}: must be an object`);
     }
 
     // Validate functions
     if (extension.functions) {
-      if (typeof extension.functions !== 'object') {
+      if (typeof extension.functions !== "object") {
         throw new Error(
-          `Invalid extension file ${filePath}: functions must be an object`,
+          `Invalid extension file ${filePath}: functions must be an object`
         );
       }
       for (const [key, func] of Object.entries(extension.functions)) {
         if (!func.name) {
           throw new Error(
-            `Invalid extension file ${filePath}: function ${key} must have a name`,
+            `Invalid extension file ${filePath}: function ${key} must have a name`
           );
         }
       }
@@ -261,21 +282,21 @@ export class ExtensionService {
 
     // Validate renderers
     if (extension.renderers) {
-      if (typeof extension.renderers !== 'object') {
+      if (typeof extension.renderers !== "object") {
         throw new Error(
-          `Invalid extension file ${filePath}: renderers must be an object`,
+          `Invalid extension file ${filePath}: renderers must be an object`
         );
       }
       for (const [key, renderer] of Object.entries(extension.renderers)) {
         if (!renderer.name) {
           throw new Error(
-            `Invalid extension file ${filePath}: renderer ${key} must have a name`,
+            `Invalid extension file ${filePath}: renderer ${key} must have a name`
           );
         }
         // Format can be empty for custom renderers that handle their own testers
         if (!renderer.module) {
           throw new Error(
-            `Invalid extension file ${filePath}: renderer ${key} must have a module path`,
+            `Invalid extension file ${filePath}: renderer ${key} must have a module path`
           );
         }
       }
@@ -283,9 +304,9 @@ export class ExtensionService {
 
     // Validate definitions
     if (extension.definitions) {
-      if (typeof extension.definitions !== 'object') {
+      if (typeof extension.definitions !== "object") {
         throw new Error(
-          `Invalid extension file ${filePath}: definitions must be an object`,
+          `Invalid extension file ${filePath}: definitions must be an object`
         );
       }
     }
@@ -296,7 +317,7 @@ export class ExtensionService {
    */
   private mergeExtension(
     result: MergedExtensions,
-    extension: ExtensionDefinition,
+    extension: ExtensionDefinition
   ): void {
     // Merge definitions (form-level can override app-level)
     if (extension.definitions) {
@@ -318,11 +339,11 @@ export class ExtensionService {
    * Get all extension files for a custom app (for discovery)
    */
   public async discoverExtensions(
-    customAppPath: string,
-  ): Promise<Array<{ path: string; type: 'app' | 'form'; formName?: string }>> {
+    customAppPath: string
+  ): Promise<Array<{ path: string; type: "app" | "form"; formName?: string }>> {
     const extensions: Array<{
       path: string;
-      type: 'app' | 'form';
+      type: "app" | "form";
       formName?: string;
     }> = [];
 
@@ -331,7 +352,7 @@ export class ExtensionService {
       const appExtPath = `${customAppPath}/forms/ext.json`;
       const appExtExists = await RNFS.exists(appExtPath);
       if (appExtExists) {
-        extensions.push({ path: appExtPath, type: 'app' });
+        extensions.push({ path: appExtPath, type: "app" });
       }
 
       // Check form-level extensions
@@ -346,7 +367,7 @@ export class ExtensionService {
             if (formExtExists) {
               extensions.push({
                 path: formExtPath,
-                type: 'form',
+                type: "form",
                 formName: form.name,
               });
             }
@@ -354,7 +375,7 @@ export class ExtensionService {
         }
       }
     } catch (error) {
-      console.warn('Failed to discover extensions:', error);
+      console.warn("Failed to discover extensions:", error);
     }
 
     return extensions;

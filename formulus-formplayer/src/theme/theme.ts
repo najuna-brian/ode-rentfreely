@@ -1,8 +1,8 @@
 import {
   createTheme as muiCreateTheme,
   ThemeOptions,
-} from '@mui/material/styles';
-import { tokens } from './tokens-adapter';
+} from "@mui/material/styles";
+import { tokens } from "./tokens-adapter";
 
 /**
  * Material Design 3 Theme Configuration with ODE Design Tokens
@@ -20,7 +20,7 @@ import { tokens } from './tokens-adapter';
 
 // Helper to parse pixel values
 const parsePx = (value: string): number => {
-  return parseInt(value.replace('px', ''), 10);
+  return parseInt(value.replace("px", ""), 10);
 };
 
 /**
@@ -28,8 +28,8 @@ const parsePx = (value: string): number => {
  * @param mode - 'light' or 'dark'
  * @returns ThemeOptions for Material-UI
  */
-export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
-  const isDark = mode === 'dark';
+export const getThemeOptions = (mode: "light" | "dark"): ThemeOptions => {
+  const isDark = mode === "dark";
 
   return {
     palette: {
@@ -103,24 +103,24 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
       fontFamily: tokens.typography.fontFamily.sans,
       fontSize: parsePx(tokens.typography.fontSize.base),
       h1: {
-        fontSize: parsePx(tokens.typography.fontSize['5xl']),
+        fontSize: parsePx(tokens.typography.fontSize["5xl"]),
         fontWeight: tokens.typography.fontWeight.regular,
         lineHeight: parseFloat(tokens.typography.lineHeight.tight),
         letterSpacing: tokens.typography.letterSpacing.tight,
       },
       h2: {
-        fontSize: parsePx(tokens.typography.fontSize['4xl']),
+        fontSize: parsePx(tokens.typography.fontSize["4xl"]),
         fontWeight: tokens.typography.fontWeight.regular,
         lineHeight: parseFloat(tokens.typography.lineHeight.tight),
         letterSpacing: tokens.typography.letterSpacing.tight,
       },
       h3: {
-        fontSize: parsePx(tokens.typography.fontSize['3xl']),
+        fontSize: parsePx(tokens.typography.fontSize["3xl"]),
         fontWeight: tokens.typography.fontWeight.regular,
         lineHeight: parseFloat(tokens.typography.lineHeight.tight),
       },
       h4: {
-        fontSize: parsePx(tokens.typography.fontSize['2xl']),
+        fontSize: parsePx(tokens.typography.fontSize["2xl"]),
         fontWeight: tokens.typography.fontWeight.regular,
         lineHeight: parseFloat(tokens.typography.lineHeight.tight),
       },
@@ -151,7 +151,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
         fontWeight: tokens.typography.fontWeight.medium,
         lineHeight: 1.75,
         letterSpacing: tokens.typography.letterSpacing.wider,
-        textTransform: 'none', // Material Design 3 uses lowercase buttons
+        textTransform: "none", // Material Design 3 uses lowercase buttons
       },
     },
     spacing: parsePx(tokens.spacing[1]), // Base spacing unit (4px)
@@ -162,7 +162,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
       MuiFormControl: {
         styleOverrides: {
           root: {
-            width: '100%',
+            width: "100%",
             marginBottom: parsePx(tokens.spacing[4]),
           },
         },
@@ -172,19 +172,21 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
         styleOverrides: {
           root: {
             borderRadius: tokens.border.radius.full, // Fully rounded buttons (pill shape)
-            padding: `${parsePx(tokens.spacing[3])}px ${parsePx(tokens.spacing[6])}px`, // 12px 24px
+            padding: `${parsePx(tokens.spacing[3])}px ${parsePx(
+              tokens.spacing[6]
+            )}px`, // 12px 24px
             minHeight: `${tokens.touchTarget.comfortable}px`, // 48px - from tokens
             fontSize: parsePx(tokens.typography.fontSize.sm),
             fontWeight: tokens.typography.fontWeight.medium,
-            textTransform: 'none',
-            boxShadow: 'none',
-            '&:hover': {
+            textTransform: "none",
+            boxShadow: "none",
+            "&:hover": {
               boxShadow: tokens.shadow.sm,
             },
-            '&:active': {
+            "&:active": {
               boxShadow: tokens.shadow.md,
             },
-            '&:disabled': {
+            "&:disabled": {
               opacity: 0.38,
               backgroundColor: isDark
                 ? tokens.color.neutral[800]
@@ -196,19 +198,19 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
           },
           contained: {
             boxShadow: tokens.shadow.sm,
-            '&:hover': {
+            "&:hover": {
               boxShadow: tokens.shadow.md,
             },
           },
           outlined: {
             borderWidth: parsePx(tokens.border.width.thin),
-            borderStyle: 'solid',
-            '&:hover': {
+            borderStyle: "solid",
+            "&:hover": {
               borderWidth: parsePx(tokens.border.width.thin),
             },
           },
           text: {
-            '&:hover': {
+            "&:hover": {
               backgroundColor: isDark
                 ? `${tokens.color.brand.primary[500]}20` // 12% opacity for dark mode
                 : `${tokens.color.brand.primary[500]}14`, // 8% opacity for light mode
@@ -216,12 +218,16 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
           },
           sizeSmall: {
             minHeight: `${tokens.touchTarget.comfortable}px`, // Still maintain 48dp for accessibility
-            padding: `${parsePx(tokens.spacing[3])}px ${parsePx(tokens.spacing[4])}px`,
+            padding: `${parsePx(tokens.spacing[3])}px ${parsePx(
+              tokens.spacing[4]
+            )}px`,
             fontSize: parsePx(tokens.typography.fontSize.sm),
           },
           sizeLarge: {
             minHeight: `${tokens.touchTarget.large}px`, // 56px
-            padding: `${parsePx(tokens.spacing[4])}px ${parsePx(tokens.spacing[8])}px`,
+            padding: `${parsePx(tokens.spacing[4])}px ${parsePx(
+              tokens.spacing[8]
+            )}px`,
             fontSize: parsePx(tokens.typography.fontSize.base),
           },
         },
@@ -230,63 +236,63 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
       MuiTextField: {
         styleOverrides: {
           root: {
-            width: '100%',
+            width: "100%",
             marginBottom: parsePx(tokens.spacing[4]),
-            '& .MuiOutlinedInput-root': {
+            "& .MuiOutlinedInput-root": {
               borderRadius: parsePx(tokens.border.radius.sm), // 4px - Material Design 3 text field
-              backgroundColor: isDark ? '#2d2d2d' : 'transparent', // Dark: #2d2d2d (slightly lighter than paper for subtle differentiation), Light: transparent
-              '& fieldset': {
+              backgroundColor: isDark ? "#2d2d2d" : "transparent", // Dark: #2d2d2d (slightly lighter than paper for subtle differentiation), Light: transparent
+              "& fieldset": {
                 borderColor: isDark
                   ? tokens.color.neutral[700]
                   : tokens.color.neutral[400], // Dark: #616161, Light: #BDBDBD
                 borderWidth: parsePx(tokens.border.width.thin),
               },
-              '&:hover fieldset': {
+              "&:hover fieldset": {
                 borderColor: isDark
                   ? tokens.color.neutral[600]
                   : tokens.color.neutral[900], // Dark: #757575, Light: #212121
               },
-              '&.Mui-focused fieldset': {
+              "&.Mui-focused fieldset": {
                 borderColor: tokens.color.brand.primary[500],
                 borderWidth: parsePx(tokens.border.width.medium), // 2px on focus
               },
-              '&.Mui-error fieldset': {
+              "&.Mui-error fieldset": {
                 borderColor: tokens.color.semantic.error[500],
               },
-              '&.Mui-disabled': {
-                backgroundColor: isDark ? '#2d2d2d' : tokens.color.neutral[100],
+              "&.Mui-disabled": {
+                backgroundColor: isDark ? "#2d2d2d" : tokens.color.neutral[100],
                 opacity: isDark ? 0.5 : 1,
-                '& fieldset': {
+                "& fieldset": {
                   borderColor: isDark
                     ? tokens.color.neutral[700]
                     : tokens.color.neutral[300],
                 },
               },
             },
-            '& .MuiInputLabel-root': {
+            "& .MuiInputLabel-root": {
               color: isDark
                 ? tokens.color.neutral[400]
                 : tokens.color.neutral[600], // Dark: #BDBDBD, Light: #757575
-              '&.Mui-focused': {
+              "&.Mui-focused": {
                 color: tokens.color.brand.primary[500],
               },
-              '&.Mui-error': {
+              "&.Mui-error": {
                 color: tokens.color.semantic.error[500],
               },
             },
-            '& .MuiInputBase-input': {
+            "& .MuiInputBase-input": {
               padding: `${parsePx(tokens.spacing[4])}px`,
               fontSize: parsePx(tokens.typography.fontSize.base),
               lineHeight: parseFloat(tokens.typography.lineHeight.normal),
               minHeight: `${tokens.touchTarget.large}px`, // 56px - Minimum touch target
-              '&::placeholder': {
+              "&::placeholder": {
                 color: isDark
                   ? tokens.color.neutral[500]
                   : tokens.color.neutral[400],
                 opacity: 1,
               },
             },
-            '& .MuiInputBase-inputMultiline': {
+            "& .MuiInputBase-inputMultiline": {
               padding: parsePx(tokens.spacing[4]),
               minHeight: `${tokens.touchTarget.large}px`,
             },
@@ -297,22 +303,22 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
         styleOverrides: {
           root: {
             borderRadius: parsePx(tokens.border.radius.sm),
-            '& fieldset': {
+            "& fieldset": {
               borderColor: isDark
                 ? tokens.color.neutral[700]
                 : tokens.color.neutral[400],
               borderWidth: parsePx(tokens.border.width.thin),
             },
-            '&:hover fieldset': {
+            "&:hover fieldset": {
               borderColor: isDark
                 ? tokens.color.neutral[600]
                 : tokens.color.neutral[900],
             },
-            '&.Mui-focused fieldset': {
+            "&.Mui-focused fieldset": {
               borderColor: tokens.color.brand.primary[500],
               borderWidth: parsePx(tokens.border.width.medium),
             },
-            '&.Mui-error fieldset': {
+            "&.Mui-error fieldset": {
               borderColor: tokens.color.semantic.error[500],
             },
           },
@@ -328,15 +334,15 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
         styleOverrides: {
           root: {
             fontSize: parsePx(tokens.typography.fontSize.base),
-            '&.Mui-focused': {
-              '& .MuiOutlinedInput-notchedOutline': {
+            "&.Mui-focused": {
+              "& .MuiOutlinedInput-notchedOutline": {
                 borderColor: tokens.color.brand.primary[500],
                 borderWidth: parsePx(tokens.border.width.medium),
               },
             },
           },
           input: {
-            '&::placeholder': {
+            "&::placeholder": {
               color: isDark
                 ? tokens.color.neutral[500]
                 : tokens.color.neutral[400],
@@ -354,7 +360,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
           },
           label: {
             fontSize: parsePx(tokens.typography.fontSize.base),
-            '&.Mui-disabled': {
+            "&.Mui-disabled": {
               color: isDark
                 ? tokens.color.neutral[600]
                 : tokens.color.neutral[400],
@@ -370,10 +376,10 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
             color: isDark
               ? tokens.color.neutral[500]
               : tokens.color.neutral[400],
-            '&.Mui-checked': {
+            "&.Mui-checked": {
               color: tokens.color.brand.primary[500],
             },
-            '&.Mui-disabled': {
+            "&.Mui-disabled": {
               color: isDark
                 ? tokens.color.neutral[700]
                 : tokens.color.neutral[300],
@@ -389,10 +395,10 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
             color: isDark
               ? tokens.color.neutral[500]
               : tokens.color.neutral[400],
-            '&.Mui-checked': {
+            "&.Mui-checked": {
               color: tokens.color.brand.primary[500],
             },
-            '&.Mui-disabled': {
+            "&.Mui-disabled": {
               color: isDark
                 ? tokens.color.neutral[700]
                 : tokens.color.neutral[300],
@@ -407,34 +413,34 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
             width: 52,
             height: 32,
             padding: 0,
-            '& .MuiSwitch-switchBase': {
+            "& .MuiSwitch-switchBase": {
               padding: 0,
               margin: 2,
-              transitionDuration: '300ms',
-              '&.Mui-checked': {
-                transform: 'translateX(20px)',
+              transitionDuration: "300ms",
+              "&.Mui-checked": {
+                transform: "translateX(20px)",
                 color: tokens.color.neutral.white,
-                '& + .MuiSwitch-track': {
+                "& + .MuiSwitch-track": {
                   backgroundColor: tokens.color.brand.primary[500],
                   opacity: 1,
                   border: 0,
                 },
-                '&.Mui-disabled + .MuiSwitch-track': {
+                "&.Mui-disabled + .MuiSwitch-track": {
                   opacity: 0.5,
                 },
               },
-              '&.Mui-disabled .MuiSwitch-thumb': {
+              "&.Mui-disabled .MuiSwitch-thumb": {
                 color: isDark
                   ? tokens.color.neutral[700]
                   : tokens.color.neutral[200],
               },
             },
-            '& .MuiSwitch-thumb': {
-              boxSizing: 'border-box',
+            "& .MuiSwitch-thumb": {
+              boxSizing: "border-box",
               width: 28,
               height: 28,
             },
-            '& .MuiSwitch-track': {
+            "& .MuiSwitch-track": {
               borderRadius: 16,
               backgroundColor: isDark
                 ? tokens.color.neutral[700]
@@ -450,8 +456,8 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
           root: {
             borderRadius: parsePx(tokens.border.radius.sm),
             minHeight: `${tokens.touchTarget.large}px`,
-            '&.Mui-focused': {
-              '& .MuiOutlinedInput-notchedOutline': {
+            "&.Mui-focused": {
+              "& .MuiOutlinedInput-notchedOutline": {
                 borderColor: tokens.color.brand.primary[500],
                 borderWidth: parsePx(tokens.border.width.medium),
               },
@@ -461,7 +467,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
         defaultProps: {
           inputProps: {
             readOnly: true,
-            inputMode: 'none',
+            inputMode: "none",
           },
           MenuProps: {
             disableAutoFocus: true,
@@ -480,17 +486,17 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
           },
           elevation1: {
             boxShadow: isDark
-              ? '0 2px 8px rgba(0, 0, 0, 0.4)'
+              ? "0 2px 8px rgba(0, 0, 0, 0.4)"
               : tokens.shadow.sm,
           },
           elevation2: {
             boxShadow: isDark
-              ? '0 4px 12px rgba(0, 0, 0, 0.5)'
+              ? "0 4px 12px rgba(0, 0, 0, 0.5)"
               : tokens.shadow.md,
           },
           elevation3: {
             boxShadow: isDark
-              ? '0 8px 24px rgba(0, 0, 0, 0.6)'
+              ? "0 8px 24px rgba(0, 0, 0, 0.6)"
               : tokens.shadow.lg,
           },
         },
@@ -504,7 +510,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
               ? tokens.color.neutral[800]
               : tokens.color.neutral.white, // Dark: #424242 (medium dark for cards), Light: #FFFFFF
             boxShadow: isDark
-              ? '0 2px 8px rgba(0, 0, 0, 0.4)'
+              ? "0 2px 8px rgba(0, 0, 0, 0.4)"
               : tokens.shadow.sm,
           },
         },
@@ -516,7 +522,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
             padding: parsePx(tokens.spacing[3]),
             minWidth: `${tokens.touchTarget.comfortable}px`,
             minHeight: `${tokens.touchTarget.comfortable}px`,
-            '&:hover': {
+            "&:hover": {
               backgroundColor: isDark
                 ? `${tokens.color.brand.primary[500]}20` // 12% opacity for dark mode
                 : `${tokens.color.brand.primary[500]}14`, // 8% opacity for light mode
@@ -534,7 +540,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
         styleOverrides: {
           root: {
             borderRadius: parsePx(tokens.border.radius.md),
-            height: '32px',
+            height: "32px",
             fontSize: parsePx(tokens.typography.fontSize.sm),
           },
         },
@@ -555,7 +561,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
             backgroundColor: isDark
               ? tokens.color.neutral[800]
               : tokens.color.neutral.white, // Dark: #424242 (medium dark)
-            border: isDark ? `1px solid ${tokens.color.neutral[700]}` : 'none', // Dark: #616161 border
+            border: isDark ? `1px solid ${tokens.color.neutral[700]}` : "none", // Dark: #616161 border
           },
         },
       },
@@ -565,7 +571,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
             backgroundColor: isDark
               ? tokens.color.neutral[800]
               : tokens.color.neutral.white, // Dark: #424242 (medium dark)
-            border: isDark ? `1px solid ${tokens.color.neutral[700]}` : 'none', // Dark: #616161 border
+            border: isDark ? `1px solid ${tokens.color.neutral[700]}` : "none", // Dark: #616161 border
           },
         },
       },
@@ -573,7 +579,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
       MuiList: {
         styleOverrides: {
           root: {
-            backgroundColor: 'transparent', // Transparent - use parent background
+            backgroundColor: "transparent", // Transparent - use parent background
             padding: 0, // Remove default padding to allow full control
           },
         },
@@ -593,7 +599,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
       MuiListItem: {
         styleOverrides: {
           root: {
-            '&:hover': {
+            "&:hover": {
               backgroundColor: isDark
                 ? tokens.color.neutral[700]
                 : tokens.color.neutral[50], // Dark: #616161 on hover (lighter gray)
@@ -609,4 +615,4 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
 export const createTheme = muiCreateTheme;
 
 // Create and export a default light theme for backward compatibility
-export const theme = muiCreateTheme(getThemeOptions('light'));
+export const theme = muiCreateTheme(getThemeOptions("light"));

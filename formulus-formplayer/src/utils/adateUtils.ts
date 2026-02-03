@@ -7,7 +7,7 @@
  * The storage format is year-first to ensure SQL sortability.
  */
 
-const NA = 'NS'; // Value to use for N/A (Not Specified)
+const NA = "NS"; // Value to use for N/A (Not Specified)
 
 /**
  * Converts adate format (D:DD,M:MM,Y:YYYY) to year-first storage format (YYYY-MM-DD)
@@ -17,9 +17,9 @@ const NA = 'NS'; // Value to use for N/A (Not Specified)
  * @returns Year-first format string (YYYY-MM-DD) with ?? for unknown parts, or null if invalid
  */
 export function adateToStorageFormat(
-  adate: string | null | undefined,
+  adate: string | null | undefined
 ): string | null {
-  if (!adate || typeof adate !== 'string') {
+  if (!adate || typeof adate !== "string") {
     return null;
   }
 
@@ -43,19 +43,19 @@ export function adateToStorageFormat(
   const yearMatch = upperAdate.match(/Y:(\d+|NS)/);
 
   if (!yearMatch) {
-    console.warn('Unable to parse year from adate:', adate);
+    console.warn("Unable to parse year from adate:", adate);
     return null;
   }
 
   const day =
-    dayMatch && dayMatch[1] !== NA ? dayMatch[1].padStart(2, '0') : '??';
+    dayMatch && dayMatch[1] !== NA ? dayMatch[1].padStart(2, "0") : "??";
   const month =
-    monthMatch && monthMatch[1] !== NA ? monthMatch[1].padStart(2, '0') : '??';
-  const year = yearMatch[1] !== NA ? yearMatch[1] : '????';
+    monthMatch && monthMatch[1] !== NA ? monthMatch[1].padStart(2, "0") : "??";
+  const year = yearMatch[1] !== NA ? yearMatch[1] : "????";
 
   // Validate year is 4 digits if not unknown
-  if (year !== '????' && year.length !== 4) {
-    console.warn('Invalid year format in adate:', adate);
+  if (year !== "????" && year.length !== 4) {
+    console.warn("Invalid year format in adate:", adate);
     return null;
   }
 
@@ -69,24 +69,24 @@ export function adateToStorageFormat(
  * @returns Adate string in format "D:DD,M:MM,Y:YYYY" with NS for unknown parts
  */
 export function storageFormatToAdate(
-  storageFormat: string | null | undefined,
+  storageFormat: string | null | undefined
 ): string | null {
-  if (!storageFormat || typeof storageFormat !== 'string') {
+  if (!storageFormat || typeof storageFormat !== "string") {
     return null;
   }
 
   // Parse YYYY-MM-DD format (may contain ??)
-  const parts = storageFormat.split('-');
+  const parts = storageFormat.split("-");
   if (parts.length !== 3) {
-    console.warn('Invalid storage format:', storageFormat);
+    console.warn("Invalid storage format:", storageFormat);
     return null;
   }
 
   const [year, month, day] = parts;
 
-  const dayValue = day === '??' ? NA : parseInt(day, 10).toString();
-  const monthValue = month === '??' ? NA : parseInt(month, 10).toString();
-  const yearValue = year === '????' ? NA : year;
+  const dayValue = day === "??" ? NA : parseInt(day, 10).toString();
+  const monthValue = month === "??" ? NA : parseInt(month, 10).toString();
+  const yearValue = year === "????" ? NA : year;
 
   return `D:${dayValue},M:${monthValue},Y:${yearValue}`;
 }
@@ -96,8 +96,8 @@ export function storageFormatToAdate(
  */
 export function hasUncertainty(adate: string | null | undefined): boolean {
   if (!adate) return true;
-  const upperAdate = typeof adate === 'string' ? adate.toUpperCase() : '';
-  return upperAdate.indexOf(NA) > -1 || upperAdate.indexOf('??') > -1;
+  const upperAdate = typeof adate === "string" ? adate.toUpperCase() : "";
+  return upperAdate.indexOf(NA) > -1 || upperAdate.indexOf("??") > -1;
 }
 
 /**
@@ -105,8 +105,8 @@ export function hasUncertainty(adate: string | null | undefined): boolean {
  */
 export function yearUnknown(adate: string | null | undefined): boolean {
   if (!adate) return true;
-  const upperAdate = typeof adate === 'string' ? adate.toUpperCase() : '';
-  return upperAdate.indexOf(`Y:${NA}`) > -1 || upperAdate.indexOf('????') > -1;
+  const upperAdate = typeof adate === "string" ? adate.toUpperCase() : "";
+  return upperAdate.indexOf(`Y:${NA}`) > -1 || upperAdate.indexOf("????") > -1;
 }
 
 /**
@@ -114,9 +114,9 @@ export function yearUnknown(adate: string | null | undefined): boolean {
  */
 export function monthUnknown(adate: string | null | undefined): boolean {
   if (!adate) return true;
-  const upperAdate = typeof adate === 'string' ? adate.toUpperCase() : '';
+  const upperAdate = typeof adate === "string" ? adate.toUpperCase() : "";
   return (
-    upperAdate.indexOf(`M:${NA}`) > -1 || upperAdate.split('-')[1] === '??'
+    upperAdate.indexOf(`M:${NA}`) > -1 || upperAdate.split("-")[1] === "??"
   );
 }
 
@@ -125,9 +125,9 @@ export function monthUnknown(adate: string | null | undefined): boolean {
  */
 export function dayUnknown(adate: string | null | undefined): boolean {
   if (!adate) return true;
-  const upperAdate = typeof adate === 'string' ? adate.toUpperCase() : '';
+  const upperAdate = typeof adate === "string" ? adate.toUpperCase() : "";
   return (
-    upperAdate.indexOf(`D:${NA}`) > -1 || upperAdate.split('-')[2] === '??'
+    upperAdate.indexOf(`D:${NA}`) > -1 || upperAdate.split("-")[2] === "??"
   );
 }
 
@@ -136,20 +136,20 @@ export function dayUnknown(adate: string | null | undefined): boolean {
  * Shows ?? for unknown parts
  */
 export function displayAdate(adate: string | null | undefined): string {
-  if (!adate) return 'n/a';
+  if (!adate) return "n/a";
 
   // Convert to storage format first if needed
   const storageFormat = adateToStorageFormat(adate);
-  if (!storageFormat) return 'n/a';
+  if (!storageFormat) return "n/a";
 
-  const [year, month, day] = storageFormat.split('-');
+  const [year, month, day] = storageFormat.split("-");
 
   // Format based on what's known
-  if (day === '??' && month === '??') {
+  if (day === "??" && month === "??") {
     return `??/??/${year}`;
-  } else if (day === '??') {
+  } else if (day === "??") {
     return `??/${month}/${year}`;
-  } else if (month === '??') {
+  } else if (month === "??") {
     return `${day}/??/${year}`;
   } else {
     return `${day}/${month}/${year}`;

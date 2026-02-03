@@ -6,14 +6,14 @@
  * and uses "font" instead of "typography", so we transform it to match.
  */
 
-import tokensJson from '@ode/tokens/dist/json/tokens.json';
+import tokensJson from "@ode/tokens/dist/json/tokens.json";
 
 // Helper to recursively extract values from { value: "..." } structure
 const extractValues = (obj: any): any => {
   if (
     obj &&
-    typeof obj === 'object' &&
-    'value' in obj &&
+    typeof obj === "object" &&
+    "value" in obj &&
     Object.keys(obj).length === 1
   ) {
     // This is a { value: "..." } wrapper, extract the value
@@ -24,7 +24,7 @@ const extractValues = (obj: any): any => {
     return obj.map(extractValues);
   }
 
-  if (obj && typeof obj === 'object') {
+  if (obj && typeof obj === "object") {
     const result: any = {};
     for (const key in obj) {
       result[key] = extractValues(obj[key]);
@@ -37,7 +37,7 @@ const extractValues = (obj: any): any => {
 
 // Helper to parse pixel values to numbers
 const parsePx = (value: string): number => {
-  return parseInt(value.replace('px', ''), 10);
+  return parseInt(value.replace("px", ""), 10);
 };
 
 // Transform the tokens and map font -> typography structure

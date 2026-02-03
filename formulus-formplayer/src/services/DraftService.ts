@@ -5,7 +5,7 @@
  * Handles saving, loading, and cleaning up partial form data.
  */
 
-import { FormInitData } from '../types/FormulusInterfaceDefinition';
+import { FormInitData } from "../types/FormulusInterfaceDefinition";
 
 /**
  * Interface for a saved draft
@@ -48,7 +48,7 @@ export interface DraftSummary {
  */
 export class DraftService {
   private static instance: DraftService;
-  private readonly STORAGE_KEY = 'formulus_drafts';
+  private readonly STORAGE_KEY = "formulus_drafts";
   private readonly MAX_AGE_DAYS = 7;
 
   private constructor() {}
@@ -68,7 +68,7 @@ export class DraftService {
    */
   private generateDraftId(
     formType: string,
-    observationId?: string | null,
+    observationId?: string | null
   ): string {
     const base = observationId ? `${formType}_${observationId}` : formType;
     return `draft_${base}_${Date.now()}`;
@@ -84,13 +84,13 @@ export class DraftService {
 
       const drafts = JSON.parse(stored) as Draft[];
       // Convert date strings back to Date objects
-      return drafts.map(draft => ({
+      return drafts.map((draft) => ({
         ...draft,
         createdAt: new Date(draft.createdAt),
         updatedAt: new Date(draft.updatedAt),
       }));
     } catch (error) {
-      console.error('Error loading drafts from localStorage:', error);
+      console.error("Error loading drafts from localStorage:", error);
       return [];
     }
   }
@@ -102,7 +102,7 @@ export class DraftService {
     try {
       localStorage.setItem(this.STORAGE_KEY, JSON.stringify(drafts));
     } catch (error) {
-      console.error('Error saving drafts to localStorage:', error);
+      console.error("Error saving drafts to localStorage:", error);
     }
   }
 
@@ -113,7 +113,7 @@ export class DraftService {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - this.MAX_AGE_DAYS);
 
-    const validDrafts = drafts.filter(draft => draft.updatedAt > cutoffDate);
+    const validDrafts = drafts.filter((draft) => draft.updatedAt > cutoffDate);
     const removedCount = drafts.length - validDrafts.length;
 
     if (removedCount > 0) {
@@ -129,16 +129,16 @@ export class DraftService {
   public saveDraft(
     formType: string,
     data: Record<string, any>,
-    formInitData?: FormInitData,
+    formInitData?: FormInitData
   ): string {
     const drafts = this.getAllDrafts();
     const now = new Date();
 
     // Look for existing draft for this form instance
     const existingIndex = drafts.findIndex(
-      draft =>
+      (draft) =>
         draft.formType === formType &&
-        draft.observationId === (formInitData?.observationId || null),
+        draft.observationId === (formInitData?.observationId || null)
     );
 
     let draftId: string;
@@ -154,7 +154,7 @@ export class DraftService {
         params: formInitData?.params,
       };
       console.log(
-        `DraftService: Updated existing draft ${draftId} for ${formType}`,
+        `DraftService: Updated existing draft ${draftId} for ${formType}`
       );
     } else {
       // Create new draft
@@ -185,7 +185,7 @@ export class DraftService {
    */
   public getDraftsForForm(
     formType: string,
-    formVersion?: string,
+    formVersion?: string
   ): DraftSummary[] {
     const drafts = this.getAllDrafts();
     const cleanedDrafts = this.cleanupOldDrafts(drafts);
@@ -195,7 +195,7 @@ export class DraftService {
       this.saveAllDrafts(cleanedDrafts);
     }
 
-    const formDrafts = cleanedDrafts.filter(draft => {
+    const formDrafts = cleanedDrafts.filter((draft) => {
       if (draft.formType !== formType) return false;
 
       // If formVersion is specified, only return drafts with matching version
@@ -212,7 +212,7 @@ export class DraftService {
 
     // Convert to summaries and sort by most recent first
     return formDrafts
-      .map(draft => ({
+      .map((draft) => ({
         id: draft.id,
         formType: draft.formType,
         formVersion: draft.formVersion,
@@ -229,7 +229,7 @@ export class DraftService {
    */
   public getDraft(draftId: string): Draft | null {
     const drafts = this.getAllDrafts();
-    return drafts.find(draft => draft.id === draftId) || null;
+    return drafts.find((draft) => draft.id === draftId) || null;
   }
 
   /**
@@ -238,7 +238,7 @@ export class DraftService {
   public deleteDraft(draftId: string): boolean {
     const drafts = this.getAllDrafts();
     const initialLength = drafts.length;
-    const filteredDrafts = drafts.filter(draft => draft.id !== draftId);
+    const filteredDrafts = drafts.filter((draft) => draft.id !== draftId);
 
     if (filteredDrafts.length < initialLength) {
       this.saveAllDrafts(filteredDrafts);
@@ -254,17 +254,17 @@ export class DraftService {
    */
   public deleteDraftsForFormInstance(
     formType: string,
-    observationId?: string | null,
+    observationId?: string | null
   ): number {
     const drafts = this.getAllDrafts();
     const initialLength = drafts.length;
 
     const filteredDrafts = drafts.filter(
-      draft =>
+      (draft) =>
         !(
           draft.formType === formType &&
           draft.observationId === (observationId || null)
-        ),
+        )
     );
 
     const deletedCount = initialLength - filteredDrafts.length;
@@ -272,7 +272,7 @@ export class DraftService {
     if (deletedCount > 0) {
       this.saveAllDrafts(filteredDrafts);
       console.log(
-        `DraftService: Deleted ${deletedCount} drafts for ${formType} (observationId: ${observationId})`,
+        `DraftService: Deleted ${deletedCount} drafts for ${formType} (observationId: ${observationId})`
       );
     }
 
@@ -287,7 +287,7 @@ export class DraftService {
     const cutoffDate = new Date();
     cutoffDate.setDate(cutoffDate.getDate() - days);
 
-    return drafts.filter(draft => draft.updatedAt <= cutoffDate).length;
+    return drafts.filter((draft) => draft.updatedAt <= cutoffDate).length;
   }
 
   /**
@@ -309,36 +309,36 @@ export class DraftService {
    * Generate a preview string from form data for display purposes
    */
   private generateDataPreview(data: Record<string, any>): string {
-    const keys = Object.keys(data).filter(key => {
+    const keys = Object.keys(data).filter((key) => {
       const value = data[key];
-      return value !== null && value !== undefined && value !== '';
+      return value !== null && value !== undefined && value !== "";
     });
 
-    if (keys.length === 0) return 'No data entered';
+    if (keys.length === 0) return "No data entered";
 
     // Try to find meaningful fields for preview
     const meaningfulKeys = keys
       .filter(
-        key =>
-          !key.startsWith('_') && // Skip internal fields
-          (typeof data[key] === 'string' || typeof data[key] === 'number'),
+        (key) =>
+          !key.startsWith("_") && // Skip internal fields
+          (typeof data[key] === "string" || typeof data[key] === "number")
       )
       .slice(0, 3); // Take first 3 meaningful fields
 
     if (meaningfulKeys.length === 0) {
-      return `${keys.length} field${keys.length === 1 ? '' : 's'} filled`;
+      return `${keys.length} field${keys.length === 1 ? "" : "s"} filled`;
     }
 
-    const previews = meaningfulKeys.map(key => {
+    const previews = meaningfulKeys.map((key) => {
       const value = data[key];
       const truncated =
         String(value).length > 30
-          ? String(value).substring(0, 30) + '...'
+          ? String(value).substring(0, 30) + "..."
           : String(value);
       return `${key}: ${truncated}`;
     });
 
-    return previews.join(', ');
+    return previews.join(", ");
   }
 
   /**
@@ -353,7 +353,7 @@ export class DraftService {
    */
   public clearAllDrafts(): void {
     localStorage.removeItem(this.STORAGE_KEY);
-    console.log('DraftService: Cleared all drafts');
+    console.log("DraftService: Cleared all drafts");
   }
 }
 
