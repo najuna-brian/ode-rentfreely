@@ -10,7 +10,7 @@
 ## Example
 
 ```typescript
-import { UsersResetPasswordPostRequest } from './api';
+import { UsersResetPasswordPostRequest } from "./api";
 
 const instance: UsersResetPasswordPostRequest = {
   username,

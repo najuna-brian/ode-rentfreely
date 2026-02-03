@@ -11,7 +11,7 @@
 ## Example
 
 ```typescript
-import { SystemInfo } from './api';
+import { SystemInfo } from "./api";
 
 const instance: SystemInfo = {
   os,

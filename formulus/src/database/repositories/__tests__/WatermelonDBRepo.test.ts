@@ -1,10 +1,10 @@
-import { Database } from '@nozbe/watermelondb';
-import LokiJSAdapter from '@nozbe/watermelondb/adapters/lokijs';
-import { schemas } from '../../schema';
-import { ObservationModel } from '../../models/ObservationModel';
-import { WatermelonDBRepo } from '../WatermelonDBRepo';
-import { Observation } from '../LocalRepoInterface';
-import { Q } from '@nozbe/watermelondb';
+import { Database } from "@nozbe/watermelondb";
+import LokiJSAdapter from "@nozbe/watermelondb/adapters/lokijs";
+import { schemas } from "../../schema";
+import { ObservationModel } from "../../models/ObservationModel";
+import { WatermelonDBRepo } from "../WatermelonDBRepo";
+import { Observation } from "../LocalRepoInterface";
+import { Q } from "@nozbe/watermelondb";
 
 // Create a test database with in-memory LokiJS adapter
 function createTestDatabase() {
@@ -15,7 +15,7 @@ function createTestDatabase() {
     // Don't use IndexedDB for tests
     useIncrementalIndexedDB: false,
     // Disable logging to reduce noise in test output
-    dbName: 'test-watermelon-db',
+    dbName: "test-watermelon-db",
   });
 
   return new Database({
@@ -24,7 +24,7 @@ function createTestDatabase() {
   });
 }
 
-describe('WatermelonDBRepo', () => {
+describe("WatermelonDBRepo", () => {
   let database: Database;
   let repo: WatermelonDBRepo;
 
@@ -39,7 +39,7 @@ describe('WatermelonDBRepo', () => {
     });
 
     // Verify the database is empty at the start of each test
-    const collection = database.get('observations');
+    const collection = database.get("observations");
     const count = await collection.query().fetchCount();
     console.log(`Database initialized with ${count} records`);
     expect(count).toBe(0);
@@ -60,15 +60,15 @@ describe('WatermelonDBRepo', () => {
       if (
         adapter &&
         adapter._queue &&
-        typeof adapter._queue.clear === 'function'
+        typeof adapter._queue.clear === "function"
       ) {
         adapter._queue.clear();
       }
 
       // Allow time for any async operations to complete
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     } catch (error) {
-      console.error('Error during test cleanup:', error);
+      console.error("Error during test cleanup:", error);
     }
   }, 5000); // Ensure enough time for cleanup
 
@@ -89,26 +89,26 @@ describe('WatermelonDBRepo', () => {
         const adapter = database.adapter as any;
         if (adapter) {
           // Close LokiJS database
-          if (adapter.loki && typeof adapter.loki.close === 'function') {
+          if (adapter.loki && typeof adapter.loki.close === "function") {
             adapter.loki.close();
           }
 
           // Close any other connections in the adapter
-          if (typeof adapter.close === 'function') {
+          if (typeof adapter.close === "function") {
             await adapter.close();
           }
 
           // Destroy any worker if it exists
           if (
             adapter.worker &&
-            typeof adapter.worker.terminate === 'function'
+            typeof adapter.worker.terminate === "function"
           ) {
             adapter.worker.terminate();
           }
         }
       }
     } catch (error) {
-      console.error('Error during test cleanup:', error);
+      console.error("Error during test cleanup:", error);
     }
 
     // Force garbage collection if available (Node.js only)
@@ -117,25 +117,25 @@ describe('WatermelonDBRepo', () => {
     }
   }, 10000); // Ensure enough time for cleanup
 
-  test('saveObservation should create a new observation and return its ID', async () => {
+  test("saveObservation should create a new observation and return its ID", async () => {
     // Arrange
     const testObservation: Partial<Observation> = {
-      formType: 'test-form',
-      formVersion: '1.0',
-      data: { field1: 'value1', field2: 'value2' },
+      formType: "test-form",
+      formVersion: "1.0",
+      data: { field1: "value1", field2: "value2" },
       deleted: false,
     };
 
     // Act
     const id = await repo.saveObservation(testObservation);
-    console.log('Created observation with ID:', id);
+    console.log("Created observation with ID:", id);
 
     // Assert
     expect(id).toBeTruthy();
 
     // Debug: Check if we can retrieve the observation immediately after creation
     const savedObservation = await repo.getObservation(id);
-    console.log('Retrieved observation:', savedObservation);
+    console.log("Retrieved observation:", savedObservation);
 
     // Verify the observation was saved correctly
     expect(savedObservation).not.toBeNull();
@@ -146,63 +146,63 @@ describe('WatermelonDBRepo', () => {
 
       // Check data was properly saved and can be parsed
       const parsedData =
-        typeof savedObservation.data === 'string'
+        typeof savedObservation.data === "string"
           ? JSON.parse(savedObservation.data)
           : savedObservation.data;
       expect(parsedData).toEqual(testObservation.data);
     }
 
     // Additional verification: Check if the record exists in the database directly
-    const collection = database.get('observations');
+    const collection = database.get("observations");
     const count = await collection.query().fetchCount();
     console.log(`Total records in database: ${count}`);
     expect(count).toBe(1);
 
     // Try to find the record using the observationId field
     const records = await collection
-      .query(Q.where('observation_id', id))
+      .query(Q.where("observation_id", id))
       .fetch();
     console.log(`Records found by observation_id: ${records.length}`);
     expect(records.length).toBe(1);
   });
 
-  test('getObservation should return null for non-existent ID', async () => {
+  test("getObservation should return null for non-existent ID", async () => {
     // Act
-    const observation = await repo.getObservation('non-existent-id');
+    const observation = await repo.getObservation("non-existent-id");
 
     // Assert
     expect(observation).toBeNull();
 
     // Verify database is empty
-    const collection = database.get('observations');
+    const collection = database.get("observations");
     const count = await collection.query().fetchCount();
     console.log(`Total records in database: ${count}`);
     expect(count).toBe(0);
   });
 
-  test('getObservationsByFormId should return observations for a specific form type', async () => {
+  test("getObservationsByFormId should return observations for a specific form type", async () => {
     // Arrange
-    const formType1 = 'form-type-1';
-    const formType2 = 'form-type-2';
+    const formType1 = "form-type-1";
+    const formType2 = "form-type-2";
 
     // Create test observations
     const id1 = await repo.saveObservation({
       formType: formType1,
-      data: { test: 'data1' },
+      data: { test: "data1" },
     });
     const id2 = await repo.saveObservation({
       formType: formType1,
-      data: { test: 'data2' },
+      data: { test: "data2" },
     });
     const id3 = await repo.saveObservation({
       formType: formType2,
-      data: { test: 'data3' },
+      data: { test: "data3" },
     });
 
-    console.log('Created observations with IDs:', id1, id2, id3);
+    console.log("Created observations with IDs:", id1, id2, id3);
 
     // Verify records were created in the database
-    const collection = database.get('observations');
+    const collection = database.get("observations");
     const count = await collection.query().fetchCount();
     console.log(`Total records in database: ${count}`);
     expect(count).toBe(3);
@@ -213,21 +213,21 @@ describe('WatermelonDBRepo', () => {
     const obs3 = await repo.getObservation(id3);
 
     console.log(
-      'Retrieved individual observations:',
-      obs1 ? 'obs1 found' : 'obs1 not found',
-      obs2 ? 'obs2 found' : 'obs2 not found',
-      obs3 ? 'obs3 found' : 'obs3 not found',
+      "Retrieved individual observations:",
+      obs1 ? "obs1 found" : "obs1 not found",
+      obs2 ? "obs2 found" : "obs2 not found",
+      obs3 ? "obs3 found" : "obs3 not found"
     );
 
     // Verify we can find records by their observation_id
     const records1 = await collection
-      .query(Q.where('observation_id', id1))
+      .query(Q.where("observation_id", id1))
       .fetch();
     const records2 = await collection
-      .query(Q.where('observation_id', id2))
+      .query(Q.where("observation_id", id2))
       .fetch();
     const records3 = await collection
-      .query(Q.where('observation_id', id3))
+      .query(Q.where("observation_id", id3))
       .fetch();
 
     expect(records1.length).toBe(1);
@@ -237,7 +237,7 @@ describe('WatermelonDBRepo', () => {
     // Act
     const observations = await repo.getObservationsByFormId(formType1);
     console.log(
-      `Found ${observations.length} observations for form type ${formType1}`,
+      `Found ${observations.length} observations for form type ${formType1}`
     );
 
     // Assert
@@ -248,31 +248,31 @@ describe('WatermelonDBRepo', () => {
     }
   });
 
-  test('updateObservation should modify an existing observation', async () => {
+  test("updateObservation should modify an existing observation", async () => {
     // Arrange
     const testObservation: Partial<Observation> = {
-      formType: 'test-form',
-      formVersion: '1.0',
-      data: { field1: 'original' },
+      formType: "test-form",
+      formVersion: "1.0",
+      data: { field1: "original" },
       deleted: false,
     };
 
     const id = await repo.saveObservation(testObservation);
-    console.log('Created observation with ID:', id);
+    console.log("Created observation with ID:", id);
 
     // Verify record was created in the database
-    const collection = database.get('observations');
+    const collection = database.get("observations");
     const initialCount = await collection.query().fetchCount();
     console.log(`Total records in database before update: ${initialCount}`);
     expect(initialCount).toBe(1);
 
     // Debug: Verify the observation was saved
     const originalObservation = await repo.getObservation(id);
-    console.log('Original observation:', originalObservation);
+    console.log("Original observation:", originalObservation);
 
     // Act
     const updateSuccess = await repo.updateObservation(id, {
-      data: { field1: 'updated' },
+      data: { field1: "updated" },
     });
 
     // Assert
@@ -285,20 +285,20 @@ describe('WatermelonDBRepo', () => {
 
     // Verify the observation was updated
     const updatedObservation = await repo.getObservation(id);
-    console.log('Updated observation:', updatedObservation);
+    console.log("Updated observation:", updatedObservation);
 
     if (updatedObservation) {
       const parsedData =
-        typeof updatedObservation.data === 'string'
+        typeof updatedObservation.data === "string"
           ? JSON.parse(updatedObservation.data)
           : updatedObservation.data;
 
-      expect(parsedData.field1).toBe('updated');
+      expect(parsedData.field1).toBe("updated");
     }
 
     // Verify we can find the updated record by its observation_id
     const records = await collection
-      .query(Q.where('observation_id', id))
+      .query(Q.where("observation_id", id))
       .fetch();
     expect(records.length).toBe(1);
 
@@ -307,22 +307,22 @@ describe('WatermelonDBRepo', () => {
       // Access the data through the model's getter method
       const record = records[0] as ObservationModel;
       const parsedData = record.getParsedData();
-      expect(parsedData.field1).toBe('updated');
+      expect(parsedData.field1).toBe("updated");
     }
   });
 
-  test('deleteObservation should mark an observation as deleted', async () => {
+  test("deleteObservation should mark an observation as deleted", async () => {
     // Arrange
     const testObservation: Partial<Observation> = {
-      formType: 'test-form',
-      data: { field1: 'value1' },
+      formType: "test-form",
+      data: { field1: "value1" },
     };
 
     const id = await repo.saveObservation(testObservation);
-    console.log('Created observation with ID:', id);
+    console.log("Created observation with ID:", id);
 
     // Verify record was created in the database
-    const collection = database.get('observations');
+    const collection = database.get("observations");
     const initialCount = await collection.query().fetchCount();
     console.log(`Total records in database before deletion: ${initialCount}`);
     expect(initialCount).toBe(1);
@@ -336,13 +336,13 @@ describe('WatermelonDBRepo', () => {
     // Verify the record count hasn't changed after marking as deleted
     const countAfterDelete = await collection.query().fetchCount();
     console.log(
-      `Total records in database after deletion: ${countAfterDelete}`,
+      `Total records in database after deletion: ${countAfterDelete}`
     );
     expect(countAfterDelete).toBe(1); // Record should still exist, just marked as deleted
 
     // Verify the observation is marked as deleted
     const deletedObservation = await repo.getObservation(id);
-    console.log('Deleted observation:', deletedObservation);
+    console.log("Deleted observation:", deletedObservation);
 
     if (deletedObservation) {
       expect(deletedObservation.deleted).toBe(true);
@@ -350,7 +350,7 @@ describe('WatermelonDBRepo', () => {
 
     // Verify we can find the deleted record by its observation_id
     const records = await collection
-      .query(Q.where('observation_id', id))
+      .query(Q.where("observation_id", id))
       .fetch();
     expect(records.length).toBe(1);
 
@@ -362,18 +362,18 @@ describe('WatermelonDBRepo', () => {
     }
   });
 
-  test('markObservationAsSynced should update the syncedAt field', async () => {
+  test("markObservationAsSynced should update the syncedAt field", async () => {
     // Arrange
     const testObservation: Partial<Observation> = {
-      formType: 'test-form',
-      data: { field1: 'value1' },
+      formType: "test-form",
+      data: { field1: "value1" },
     };
 
     const id = await repo.saveObservation(testObservation);
-    console.log('Created observation with ID:', id);
+    console.log("Created observation with ID:", id);
 
     // Verify record was created in the database
-    const collection = database.get('observations');
+    const collection = database.get("observations");
     const initialCount = await collection.query().fetchCount();
     console.log(`Total records in database before sync: ${initialCount}`);
     expect(initialCount).toBe(1);
@@ -391,7 +391,7 @@ describe('WatermelonDBRepo', () => {
 
     // Verify the syncedAt field was updated
     const syncedObservation = await repo.getObservation(id);
-    console.log('Synced observation:', syncedObservation);
+    console.log("Synced observation:", syncedObservation);
 
     if (syncedObservation) {
       expect(syncedObservation.syncedAt).toBeTruthy();
@@ -399,7 +399,7 @@ describe('WatermelonDBRepo', () => {
 
     // Verify we can find the synced record by its observation_id
     const records = await collection
-      .query(Q.where('observation_id', id))
+      .query(Q.where("observation_id", id))
       .fetch();
     expect(records.length).toBe(1);
 
@@ -412,17 +412,17 @@ describe('WatermelonDBRepo', () => {
   });
 
   // Add a test to verify persistence across database instances
-  test('observations should persist across database instances', async () => {
+  test("observations should persist across database instances", async () => {
     // Arrange - create an observation
     const testObservation: Partial<Observation> = {
-      formType: 'persistence-test',
-      formVersion: '1.0',
-      data: { field1: 'persistence-value' },
+      formType: "persistence-test",
+      formVersion: "1.0",
+      data: { field1: "persistence-value" },
     };
 
     // Save the observation
     const id = await repo.saveObservation(testObservation);
-    console.log('Created observation with ID for persistence test:', id);
+    console.log("Created observation with ID for persistence test:", id);
 
     // Verify it exists in the current database
     const savedObservation = await repo.getObservation(id);
@@ -437,8 +437,8 @@ describe('WatermelonDBRepo', () => {
     // But it's useful to verify the behavior with SQLite in real device testing
     const retrievedObservation = await newRepo.getObservation(id);
     console.log(
-      'Observation retrieved from new database instance:',
-      retrievedObservation,
+      "Observation retrieved from new database instance:",
+      retrievedObservation
     );
 
     // With LokiJS adapter (in-memory), we expect the observation not to be found
@@ -446,13 +446,13 @@ describe('WatermelonDBRepo', () => {
     if (retrievedObservation) {
       // This would pass with SQLite but fail with LokiJS
       console.log(
-        'Observation found in new database instance - this is unexpected with LokiJS but would be correct with SQLite',
+        "Observation found in new database instance - this is unexpected with LokiJS but would be correct with SQLite"
       );
       expect(retrievedObservation.formType).toBe(testObservation.formType);
     } else {
       // This is the expected behavior with LokiJS
       console.log(
-        'Observation not found in new database instance - this is expected with LokiJS',
+        "Observation not found in new database instance - this is expected with LokiJS"
       );
       // We don't assert here because we expect it to be null with LokiJS
     }
@@ -464,32 +464,32 @@ describe('WatermelonDBRepo', () => {
 
     // For LokiJS adapter, we need to access the adapter directly to close connections
     const adapter = newDatabase.adapter as any;
-    if (adapter && adapter.loki && typeof adapter.loki.close === 'function') {
+    if (adapter && adapter.loki && typeof adapter.loki.close === "function") {
       adapter.loki.close();
     }
   });
 
   // Add a test to verify basic persistence works
-  test('should save and retrieve observations', async () => {
+  test("should save and retrieve observations", async () => {
     // Arrange
     const testObservation1: Partial<Observation> = {
-      formType: 'test-observation-1',
-      data: { field1: 'test-value-1' },
+      formType: "test-observation-1",
+      data: { field1: "test-value-1" },
     };
 
     const testObservation2: Partial<Observation> = {
-      formType: 'test-observation-2',
-      data: { field1: 'test-value-2' },
+      formType: "test-observation-2",
+      data: { field1: "test-value-2" },
     };
 
     // Act - create observations directly with the repo
     const id1 = await repo.saveObservation(testObservation1);
     const id2 = await repo.saveObservation(testObservation2);
 
-    console.log('Created observations with IDs:', id1, id2);
+    console.log("Created observations with IDs:", id1, id2);
 
     // Assert - verify both observations were saved
-    const collection = database.get('observations');
+    const collection = database.get("observations");
     const count = await collection.query().fetchCount();
     console.log(`Total records in database: ${count}`);
     expect(count).toBe(2);
@@ -507,5 +507,5 @@ describe('WatermelonDBRepo', () => {
     }
   });
 
-  test.todo('synchronize should pull and push observations correctly');
+  test.todo("synchronize should pull and push observations correctly");
 });

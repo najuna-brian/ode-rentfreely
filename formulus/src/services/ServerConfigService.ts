@@ -1,7 +1,7 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const SERVER_URL_KEY = '@server_url';
-const SERVER_URL_STORAGE_KEY = '@settings';
+const SERVER_URL_KEY = "@server_url";
+const SERVER_URL_STORAGE_KEY = "@settings";
 
 export class ServerConfigService {
   private static instance: ServerConfigService;
@@ -20,10 +20,10 @@ export class ServerConfigService {
       await AsyncStorage.setItem(SERVER_URL_KEY, serverUrl);
       await AsyncStorage.setItem(
         SERVER_URL_STORAGE_KEY,
-        JSON.stringify({ serverUrl }),
+        JSON.stringify({ serverUrl })
       );
     } catch (error) {
-      console.error('Failed to save server URL:', error);
+      console.error("Failed to save server URL:", error);
       throw error;
     }
   }
@@ -43,7 +43,7 @@ export class ServerConfigService {
 
       return null;
     } catch (error) {
-      console.error('Failed to get server URL:', error);
+      console.error("Failed to get server URL:", error);
       return null;
     }
   }
@@ -53,44 +53,44 @@ export class ServerConfigService {
       await AsyncStorage.removeItem(SERVER_URL_KEY);
       await AsyncStorage.removeItem(SERVER_URL_STORAGE_KEY);
     } catch (error) {
-      console.error('Failed to clear server URL:', error);
+      console.error("Failed to clear server URL:", error);
       throw error;
     }
   }
 
   async testConnection(
-    serverUrl: string,
+    serverUrl: string
   ): Promise<{ success: boolean; message: string }> {
     if (!serverUrl.trim()) {
-      return { success: false, message: 'Please enter a server URL' };
+      return { success: false, message: "Please enter a server URL" };
     }
 
     try {
       const url = new URL(serverUrl);
-      if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-        return { success: false, message: 'URL must be HTTP or HTTPS' };
+      if (url.protocol !== "http:" && url.protocol !== "https:") {
+        return { success: false, message: "URL must be HTTP or HTTPS" };
       }
     } catch {
-      return { success: false, message: 'Please enter a valid URL' };
+      return { success: false, message: "Please enter a valid URL" };
     }
 
     try {
-      const healthUrl = `${serverUrl.replace(/\/$/, '')}/health`;
+      const healthUrl = `${serverUrl.replace(/\/$/, "")}/health`;
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000);
 
       const response = await fetch(healthUrl, {
-        method: 'GET',
+        method: "GET",
         signal: controller.signal,
         headers: {
-          Accept: 'application/json',
+          Accept: "application/json",
         },
       });
 
       clearTimeout(timeoutId);
 
       if (response.ok) {
-        return { success: true, message: 'Connection successful!' };
+        return { success: true, message: "Connection successful!" };
       } else {
         return {
           success: false,
@@ -98,17 +98,17 @@ export class ServerConfigService {
         };
       }
     } catch (error) {
-      console.error('Unknown error occured', error);
+      console.error("Unknown error occured", error);
 
-      const errorMessage = 'Unknown error';
+      const errorMessage = "Unknown error";
       if (
-        errorMessage.includes('Network request failed') ||
-        errorMessage.includes('Failed to fetch')
+        errorMessage.includes("Network request failed") ||
+        errorMessage.includes("Failed to fetch")
       ) {
         return {
           success: false,
           message:
-            'Cannot reach server. Check:\n• Server is running\n• Correct IP/URL\n• Same network (for local IP)\n• Firewall settings',
+            "Cannot reach server. Check:\n• Server is running\n• Correct IP/URL\n• Same network (for local IP)\n• Firewall settings",
         };
       }
 

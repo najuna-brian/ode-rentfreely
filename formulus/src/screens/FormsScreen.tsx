@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -7,14 +7,14 @@ import {
   RefreshControl,
   ActivityIndicator,
   Alert,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useForms } from '../hooks/useForms';
-import { FormCard, EmptyState } from '../components/common';
-import { openFormplayerFromNative } from '../webview/FormulusMessageHandlers';
-import { useFocusEffect } from '@react-navigation/native';
-import colors from '../theme/colors';
-import { FormSpec } from '../services';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useForms } from "../hooks/useForms";
+import { FormCard, EmptyState } from "../components/common";
+import { openFormplayerFromNative } from "../webview/FormulusMessageHandlers";
+import { useFocusEffect } from "@react-navigation/native";
+import colors from "../theme/colors";
+import { FormSpec } from "../services";
 
 const FormsScreen: React.FC = () => {
   const { forms, loading, error, refresh, getObservationCount } = useForms();
@@ -23,7 +23,7 @@ const FormsScreen: React.FC = () => {
   useFocusEffect(
     React.useCallback(() => {
       refresh();
-    }, [refresh]),
+    }, [refresh])
   );
 
   const handleRefresh = async () => {
@@ -39,14 +39,14 @@ const FormsScreen: React.FC = () => {
     try {
       const result = await openFormplayerFromNative(formId, {}, {});
       if (
-        result.status === 'form_submitted' ||
-        result.status === 'form_updated'
+        result.status === "form_submitted" ||
+        result.status === "form_updated"
       ) {
         await refresh();
       }
     } catch (err) {
-      console.error('Error opening form:', err);
-      Alert.alert('Error', 'Failed to open form. Please try again.');
+      console.error("Error opening form:", err);
+      Alert.alert("Error", "Failed to open form. Please try again.");
     }
   };
 
@@ -92,7 +92,7 @@ const FormsScreen: React.FC = () => {
         <Text style={styles.title}>Forms</Text>
         {forms.length > 0 && (
           <Text style={styles.subtitle}>
-            {forms.length} form{forms.length !== 1 ? 's' : ''} available
+            {forms.length} form{forms.length !== 1 ? "s" : ""} available
           </Text>
         )}
       </View>
@@ -107,7 +107,7 @@ const FormsScreen: React.FC = () => {
         <FlatList
           data={forms}
           renderItem={renderForm}
-          keyExtractor={item => item.id}
+          keyExtractor={(item) => item.id}
           contentContainerStyle={styles.listContent}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.neutral[900],
     marginBottom: 4,
   },
@@ -144,8 +144,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     marginTop: 12,

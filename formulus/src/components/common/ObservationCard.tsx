@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Icon from '@react-native-vector-icons/material-design-icons';
-import { Observation } from '../../database/models/Observation';
-import colors from '../../theme/colors';
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import Icon from "@react-native-vector-icons/material-design-icons";
+import { Observation } from "../../database/models/Observation";
+import colors from "../../theme/colors";
 
 interface ObservationCardProps {
   observation: Observation;
@@ -21,26 +21,26 @@ const ObservationCard: React.FC<ObservationCardProps> = ({
 }) => {
   const isSynced =
     observation.syncedAt &&
-    observation.syncedAt.getTime() > new Date('1980-01-01').getTime();
+    observation.syncedAt.getTime() > new Date("1980-01-01").getTime();
   const dateStr = observation.createdAt.toLocaleDateString();
   const timeStr = observation.createdAt.toLocaleTimeString([], {
-    hour: '2-digit',
-    minute: '2-digit',
+    hour: "2-digit",
+    minute: "2-digit",
   });
 
   const getDataPreview = () => {
     try {
       const data =
-        typeof observation.data === 'string'
+        typeof observation.data === "string"
           ? JSON.parse(observation.data)
           : observation.data;
       const keys = Object.keys(data).slice(0, 2);
-      if (keys.length === 0) return 'No data';
+      if (keys.length === 0) return "No data";
       return keys
-        .map(key => `${key}: ${String(data[key]).substring(0, 20)}`)
-        .join(', ');
+        .map((key) => `${key}: ${String(data[key]).substring(0, 20)}`)
+        .join(", ");
     } catch {
-      return 'No data';
+      return "No data";
     }
   };
 
@@ -49,7 +49,7 @@ const ObservationCard: React.FC<ObservationCardProps> = ({
       <View style={styles.content}>
         <View style={styles.iconContainer}>
           <Icon
-            name={isSynced ? 'check-circle' : 'clock-outline'}
+            name={isSynced ? "check-circle" : "clock-outline"}
             size={24}
             color={
               isSynced
@@ -74,9 +74,10 @@ const ObservationCard: React.FC<ObservationCardProps> = ({
               style={[
                 styles.statusBadge,
                 isSynced ? styles.syncedBadge : styles.pendingBadge,
-              ]}>
+              ]}
+            >
               <Text style={styles.statusText}>
-                {isSynced ? 'Synced' : 'Pending'}
+                {isSynced ? "Synced" : "Pending"}
               </Text>
             </View>
           </View>
@@ -84,11 +85,11 @@ const ObservationCard: React.FC<ObservationCardProps> = ({
             {`By ${
               observation.author && observation.author.trim().length > 0
                 ? observation.author
-                : 'Unknown'
+                : "Unknown"
             } • ${
               observation.deviceId && observation.deviceId.trim().length > 0
                 ? observation.deviceId.slice(-8)
-                : 'no-device'
+                : "no-device"
             }`}
           </Text>
         </View>
@@ -96,20 +97,22 @@ const ObservationCard: React.FC<ObservationCardProps> = ({
           {onEdit && (
             <TouchableOpacity
               style={styles.actionButton}
-              onPress={e => {
+              onPress={(e) => {
                 e.stopPropagation();
                 onEdit();
-              }}>
+              }}
+            >
               <Icon name="pencil" size={20} color={colors.brand.primary[500]} />
             </TouchableOpacity>
           )}
           {onDelete && (
             <TouchableOpacity
               style={styles.actionButton}
-              onPress={e => {
+              onPress={(e) => {
                 e.stopPropagation();
                 onDelete();
-              }}>
+              }}
+            >
               <Icon
                 name="delete"
                 size={20}
@@ -137,8 +140,8 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   content: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   iconContainer: {
     marginRight: 12,
@@ -148,14 +151,14 @@ const styles = StyleSheet.create({
   },
   formName: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.brand.primary[500],
     marginBottom: 4,
   },
   id: {
     fontSize: 12,
     color: colors.neutral[500],
-    fontFamily: 'monospace',
+    fontFamily: "monospace",
     marginBottom: 4,
   },
   preview: {
@@ -164,8 +167,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   metaContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   owner: {
@@ -190,11 +193,11 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 11,
-    fontWeight: '500',
+    fontWeight: "500",
     color: colors.neutral[900],
   },
   actions: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 8,
   },
   actionButton: {

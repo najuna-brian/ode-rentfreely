@@ -1,4 +1,4 @@
-import { ObservationGeolocation } from '../../types/Geolocation';
+import { ObservationGeolocation } from "../../types/Geolocation";
 
 /**
  * Interface for the observation data structure. This is

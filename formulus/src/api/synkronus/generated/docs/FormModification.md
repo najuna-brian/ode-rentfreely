@@ -14,7 +14,7 @@
 ## Example
 
 ```typescript
-import { FormModification } from './api';
+import { FormModification } from "./api";
 
 const instance: FormModification = {
   form,

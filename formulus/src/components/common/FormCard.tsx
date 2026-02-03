@@ -1,8 +1,8 @@
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import Icon from '@react-native-vector-icons/material-design-icons';
-import { FormSpec } from '../../services/FormService';
-import colors from '../../theme/colors';
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import Icon from "@react-native-vector-icons/material-design-icons";
+import { FormSpec } from "../../services/FormService";
+import colors from "../../theme/colors";
 
 interface FormCardProps {
   form: FormSpec;
@@ -37,8 +37,8 @@ const FormCard: React.FC<FormCardProps> = ({
             {observationCount > 0 && (
               <View style={styles.countBadge}>
                 <Text style={styles.countText}>
-                  {observationCount}{' '}
-                  {observationCount === 1 ? 'entry' : 'entries'}
+                  {observationCount}{" "}
+                  {observationCount === 1 ? "entry" : "entries"}
                 </Text>
               </View>
             )}
@@ -64,16 +64,16 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   content: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   iconContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
     backgroundColor: colors.brand.primary[50],
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 12,
   },
   textContainer: {
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   },
   name: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.neutral[900],
     marginBottom: 4,
   },
@@ -91,8 +91,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   metaContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
   },
   version: {
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   countText: {
     fontSize: 11,
     color: colors.brand.primary[500],
-    fontWeight: '500',
+    fontWeight: "500",
   },
 });
 

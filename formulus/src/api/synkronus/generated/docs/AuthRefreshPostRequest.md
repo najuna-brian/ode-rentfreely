@@ -9,7 +9,7 @@
 ## Example
 
 ```typescript
-import { AuthRefreshPostRequest } from './api';
+import { AuthRefreshPostRequest } from "./api";
 
 const instance: AuthRefreshPostRequest = {
   refreshToken,

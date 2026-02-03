@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef } from "react";
 import {
   Modal,
   View,
@@ -7,10 +7,10 @@ import {
   StyleSheet,
   Alert,
   Dimensions,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Signature, { SignatureViewRef } from 'react-native-signature-canvas';
-import { colors } from '../theme/colors';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Signature, { SignatureViewRef } from "react-native-signature-canvas";
+import { colors } from "../theme/colors";
 
 interface SignatureCaptureModalProps {
   visible: boolean;
@@ -27,7 +27,7 @@ const SignatureCaptureModal: React.FC<SignatureCaptureModalProps> = ({
 }) => {
   const [_isCapturing, setIsCapturing] = useState(false);
   const signatureRef = useRef<SignatureViewRef>(null);
-  const { width, height } = Dimensions.get('window');
+  const { width, height } = Dimensions.get("window");
 
   const handleSignatureEnd = () => {
     setIsCapturing(false);
@@ -47,13 +47,13 @@ const SignatureCaptureModal: React.FC<SignatureCaptureModalProps> = ({
     if (signature) {
       // Generate GUID for signature
       const generateGUID = () => {
-        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
           /[xy]/g,
           function (c) {
             const r = Math.floor(Math.random() * 16);
-            const v = c === 'x' ? r : (r % 4) + 8;
+            const v = c === "x" ? r : (r % 4) + 8;
             return v.toString(16);
-          },
+          }
         );
       };
 
@@ -61,13 +61,13 @@ const SignatureCaptureModal: React.FC<SignatureCaptureModalProps> = ({
       const filename = `${signatureGuid}.png`;
 
       // Extract base64 data from data URL
-      const base64Data = signature.split(',')[1];
+      const base64Data = signature.split(",")[1];
 
       const signatureResult = {
         fieldId,
-        status: 'success',
+        status: "success",
         data: {
-          type: 'signature',
+          type: "signature",
           filename,
           base64: base64Data,
           url: signature,
@@ -84,7 +84,7 @@ const SignatureCaptureModal: React.FC<SignatureCaptureModalProps> = ({
       onSignatureCapture(signatureResult);
       onClose();
     } else {
-      Alert.alert('Error', 'No signature data captured. Please try again.');
+      Alert.alert("Error", "No signature data captured. Please try again.");
     }
   };
 
@@ -97,8 +97,8 @@ const SignatureCaptureModal: React.FC<SignatureCaptureModalProps> = ({
   const handleCancel = () => {
     const cancelResult = {
       fieldId,
-      status: 'cancelled',
-      message: 'User cancelled signature capture',
+      status: "cancelled",
+      message: "User cancelled signature capture",
     };
     onSignatureCapture(cancelResult);
     onClose();
@@ -131,7 +131,8 @@ const SignatureCaptureModal: React.FC<SignatureCaptureModalProps> = ({
       visible={visible}
       animationType="slide"
       presentationStyle="fullScreen"
-      onRequestClose={onClose}>
+      onRequestClose={onClose}
+    >
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.title}>Capture Signature</Text>
@@ -147,7 +148,7 @@ const SignatureCaptureModal: React.FC<SignatureCaptureModalProps> = ({
             onBegin={handleSignatureBegin}
             onOK={handleSignatureResult}
             onEmpty={() =>
-              Alert.alert('Error', 'Please provide a signature before saving.')
+              Alert.alert("Error", "Please provide a signature before saving.")
             }
             descriptionText=""
             clearText="Clear"
@@ -162,19 +163,22 @@ const SignatureCaptureModal: React.FC<SignatureCaptureModalProps> = ({
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={[styles.button, styles.clearButton]}
-            onPress={handleClearSignature}>
+            onPress={handleClearSignature}
+          >
             <Text style={styles.clearButtonText}>Clear</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.cancelButton]}
-            onPress={handleCancel}>
+            onPress={handleCancel}
+          >
             <Text style={styles.cancelButtonText}>Cancel</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.button, styles.saveButton]}
-            onPress={handleSaveSignature}>
+            onPress={handleSaveSignature}
+          >
             <Text style={styles.saveButtonText}>Save Signature</Text>
           </TouchableOpacity>
         </View>
@@ -193,18 +197,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral.white,
     borderBottomWidth: 1,
     borderBottomColor: colors.neutral[300],
-    alignItems: 'center',
+    alignItems: "center",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.neutral[800],
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 16,
     color: colors.neutral[600],
-    textAlign: 'center',
+    textAlign: "center",
   },
   signatureContainer: {
     flex: 1,
@@ -222,19 +226,19 @@ const styles = StyleSheet.create({
     borderRadius: 12,
   },
   buttonContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     padding: 20,
     backgroundColor: colors.neutral.white,
     borderTopWidth: 1,
     borderTopColor: colors.neutral[300],
-    justifyContent: 'space-around',
+    justifyContent: "space-around",
   },
   button: {
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
     minWidth: 80,
-    alignItems: 'center',
+    alignItems: "center",
   },
   clearButton: {
     backgroundColor: colors.neutral[200],
@@ -244,7 +248,7 @@ const styles = StyleSheet.create({
   clearButtonText: {
     color: colors.neutral[600],
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   cancelButton: {
     backgroundColor: colors.neutral[200],
@@ -254,7 +258,7 @@ const styles = StyleSheet.create({
   cancelButtonText: {
     color: colors.neutral[600],
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   saveButton: {
     backgroundColor: colors.semantic.info.ios,
@@ -262,7 +266,7 @@ const styles = StyleSheet.create({
   saveButtonText: {
     color: colors.neutral.white,
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
 

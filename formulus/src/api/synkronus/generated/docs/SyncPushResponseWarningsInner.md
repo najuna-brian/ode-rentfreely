@@ -11,7 +11,7 @@
 ## Example
 
 ```typescript
-import { SyncPushResponseWarningsInner } from './api';
+import { SyncPushResponseWarningsInner } from "./api";
 
 const instance: SyncPushResponseWarningsInner = {
   id,

@@ -591,6 +591,7 @@ ORDER BY approximate_date ASC
 The adate system uses two formats:
 
 1. **Storage Format** (YYYY-MM-DD): Used in the database and for sorting
+
    - Example: `"2024-06-15"`, `"2024-06-??"`
 
 2. **Adate Format** (D:DD,M:MM,Y:YYYY): Legacy format for compatibility
@@ -679,7 +680,7 @@ Add the result data interface and type alias:
 ```typescript
 // 1. Add the result data interface
 export interface MyCustomResultData {
-  type: 'mycustom'; // Unique identifier for this result type
+  type: "mycustom"; // Unique identifier for this result type
   value: string; // The actual data (adjust type as needed)
   timestamp: string; // ISO timestamp of when the action completed
   // Add any additional fields specific to your question type
@@ -719,7 +720,7 @@ Add the import and implement the client method:
 import {
   // ... existing imports
   MyCustomResult,
-} from './webview/FormulusInterfaceDefinition';
+} from "./webview/FormulusInterfaceDefinition";
 
 // 2. Add method to FormulusClient class
 export class FormulusClient {
@@ -731,8 +732,8 @@ export class FormulusClient {
     } else {
       return Promise.reject({
         fieldId,
-        status: 'error' as const,
-        message: 'Formulus interface not available',
+        status: "error" as const,
+        message: "Formulus interface not available",
       });
     }
   }
@@ -856,7 +857,7 @@ private resolveMyCustomPromise(fieldId: string, status: 'success' | 'cancelled' 
 Create the React component:
 
 ```typescript
-import React, {useState, useCallback, useRef, useEffect} from 'react';
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
   Button,
   TextField,
@@ -866,26 +867,29 @@ import {
   CircularProgress,
   Paper,
   IconButton,
-} from '@mui/material';
-import {Build as MyCustomIcon, Delete as DeleteIcon} from '@mui/icons-material';
-import {withJsonFormsControlProps} from '@jsonforms/react';
+} from "@mui/material";
+import {
+  Build as MyCustomIcon,
+  Delete as DeleteIcon,
+} from "@mui/icons-material";
+import { withJsonFormsControlProps } from "@jsonforms/react";
 import {
   ControlProps,
   rankWith,
   schemaTypeIs,
   and,
   schemaMatches,
-} from '@jsonforms/core';
-import {FormulusClient} from './FormulusInterface';
-import {MyCustomResult} from './webview/FormulusInterfaceDefinition';
+} from "@jsonforms/core";
+import { FormulusClient } from "./FormulusInterface";
+import { MyCustomResult } from "./webview/FormulusInterfaceDefinition";
 
 // Tester function - determines when this renderer should be used
 export const myCustomQuestionTester = rankWith(
   5, // Priority (higher = more specific)
   and(
-    schemaTypeIs('string'), // Expects string data type
-    schemaMatches(schema => schema.format === 'mycustom'), // Matches format
-  ),
+    schemaTypeIs("string"), // Expects string data type
+    schemaMatches((schema) => schema.format === "mycustom") // Matches format
+  )
 );
 
 const MyCustomQuestionRenderer: React.FC<ControlProps> = ({
@@ -901,18 +905,18 @@ const MyCustomQuestionRenderer: React.FC<ControlProps> = ({
   // State management
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [manualInput, setManualInput] = useState('');
+  const [manualInput, setManualInput] = useState("");
   const [showManualInput, setShowManualInput] = useState(false);
 
   // Refs
   const formulusClient = useRef(new FormulusClient());
 
   // Extract field ID from path
-  const fieldId = path.split('.').pop() || path;
+  const fieldId = path.split(".").pop() || path;
 
   // Initialize manual input with current data
   useEffect(() => {
-    if (data && typeof data === 'string') {
+    if (data && typeof data === "string") {
       setManualInput(data);
     }
   }, [data]);
@@ -926,20 +930,20 @@ const MyCustomQuestionRenderer: React.FC<ControlProps> = ({
       const result: MyCustomResult =
         await formulusClient.current.requestMyCustom(fieldId);
 
-      if (result.status === 'success' && result.data) {
+      if (result.status === "success" && result.data) {
         // Update form data with the result
         handleChange(path, result.data.value);
         setManualInput(result.data.value);
         setShowManualInput(false);
       }
     } catch (err: any) {
-      if (err.status === 'cancelled') {
+      if (err.status === "cancelled") {
         // User cancelled - don't show error
-        console.log('MyCustom action cancelled by user');
-      } else if (err.status === 'error') {
-        setError(err.message || 'MyCustom action failed');
+        console.log("MyCustom action cancelled by user");
+      } else if (err.status === "error") {
+        setError(err.message || "MyCustom action failed");
       } else {
-        setError('An unexpected error occurred');
+        setError("An unexpected error occurred");
       }
     } finally {
       setIsLoading(false);
@@ -954,13 +958,13 @@ const MyCustomQuestionRenderer: React.FC<ControlProps> = ({
       handleChange(path, value);
       setError(null);
     },
-    [handleChange, path],
+    [handleChange, path]
   );
 
   // Handle delete/clear
   const handleDelete = useCallback(() => {
-    handleChange(path, '');
-    setManualInput('');
+    handleChange(path, "");
+    setManualInput("");
     setShowManualInput(false);
     setError(null);
   }, [handleChange, path]);
@@ -970,39 +974,39 @@ const MyCustomQuestionRenderer: React.FC<ControlProps> = ({
     return null;
   }
 
-  const hasData = data && typeof data === 'string' && data.length > 0;
+  const hasData = data && typeof data === "string" && data.length > 0;
   const hasError = errors && errors.length > 0;
 
   return (
-    <Box sx={{mb: 2}}>
+    <Box sx={{ mb: 2 }}>
       {/* Title and Description */}
       {schema.title && (
-        <Typography variant="subtitle1" sx={{mb: 1, fontWeight: 500}}>
+        <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 500 }}>
           {schema.title}
         </Typography>
       )}
       {schema.description && (
-        <Typography variant="body2" color="text.secondary" sx={{mb: 2}}>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
           {schema.description}
         </Typography>
       )}
 
       {/* Error Display */}
       {error && (
-        <Alert severity="error" sx={{mb: 2}}>
+        <Alert severity="error" sx={{ mb: 2 }}>
           {error}
         </Alert>
       )}
 
       {/* Validation Errors */}
       {hasError && (
-        <Alert severity="error" sx={{mb: 2}}>
-          {errors.join(', ')}
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {errors.join(", ")}
         </Alert>
       )}
 
       {/* Main Action Button */}
-      <Box sx={{mb: 2}}>
+      <Box sx={{ mb: 2 }}>
         <Button
           variant="contained"
           startIcon={
@@ -1011,8 +1015,9 @@ const MyCustomQuestionRenderer: React.FC<ControlProps> = ({
           onClick={handleMyCustomAction}
           disabled={!enabled || isLoading}
           fullWidth
-          sx={{mb: 1}}>
-          {isLoading ? 'Processing...' : 'Start MyCustom Action'}
+          sx={{ mb: 1 }}
+        >
+          {isLoading ? "Processing..." : "Start MyCustom Action"}
         </Button>
 
         <Button
@@ -1020,14 +1025,15 @@ const MyCustomQuestionRenderer: React.FC<ControlProps> = ({
           onClick={() => setShowManualInput(!showManualInput)}
           disabled={!enabled}
           fullWidth
-          size="small">
-          {showManualInput ? 'Hide Manual Input' : 'Enter Manually'}
+          size="small"
+        >
+          {showManualInput ? "Hide Manual Input" : "Enter Manually"}
         </Button>
       </Box>
 
       {/* Manual Input Section */}
       {showManualInput && (
-        <Box sx={{mb: 2}}>
+        <Box sx={{ mb: 2 }}>
           <TextField
             label="Enter data manually"
             value={manualInput}
@@ -1043,31 +1049,34 @@ const MyCustomQuestionRenderer: React.FC<ControlProps> = ({
 
       {/* Data Display */}
       {hasData && (
-        <Paper sx={{p: 2, bgcolor: 'grey.50'}}>
+        <Paper sx={{ p: 2, bgcolor: "grey.50" }}>
           <Box
             sx={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-            }}>
-            <Box sx={{flex: 1}}>
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+            }}
+          >
+            <Box sx={{ flex: 1 }}>
               <Typography
                 variant="subtitle2"
                 color="text.secondary"
-                sx={{mb: 1}}>
+                sx={{ mb: 1 }}
+              >
                 Current Data:
               </Typography>
               <Typography
                 variant="body2"
                 sx={{
-                  wordBreak: 'break-all',
-                  fontFamily: 'monospace',
-                  bgcolor: 'white',
+                  wordBreak: "break-all",
+                  fontFamily: "monospace",
+                  bgcolor: "white",
                   p: 1,
                   borderRadius: 1,
-                  border: '1px solid',
-                  borderColor: 'grey.300',
-                }}>
+                  border: "1px solid",
+                  borderColor: "grey.300",
+                }}
+              >
                 {data}
               </Typography>
             </Box>
@@ -1075,7 +1084,8 @@ const MyCustomQuestionRenderer: React.FC<ControlProps> = ({
               onClick={handleDelete}
               disabled={!enabled}
               size="small"
-              sx={{ml: 1}}>
+              sx={{ ml: 1 }}
+            >
               <DeleteIcon />
             </IconButton>
           </Box>
@@ -1083,9 +1093,9 @@ const MyCustomQuestionRenderer: React.FC<ControlProps> = ({
       )}
 
       {/* Development Debug Info */}
-      {process.env.NODE_ENV === 'development' && (
-        <Box sx={{mt: 2, p: 1, bgcolor: 'info.light', borderRadius: 1}}>
-          <Typography variant="caption" sx={{fontFamily: 'monospace'}}>
+      {process.env.NODE_ENV === "development" && (
+        <Box sx={{ mt: 2, p: 1, bgcolor: "info.light", borderRadius: 1 }}>
+          <Typography variant="caption" sx={{ fontFamily: "monospace" }}>
             Debug: fieldId="{fieldId}", path="{path}", format="mycustom"
           </Typography>
         </Box>
@@ -1107,7 +1117,7 @@ Register the new renderer:
 // 1. Add import
 import MyCustomQuestionRenderer, {
   myCustomQuestionTester,
-} from './MyCustomQuestionRenderer';
+} from "./MyCustomQuestionRenderer";
 
 // 2. Add to customRenderers array
 const customRenderers = [
@@ -1128,15 +1138,15 @@ Add custom format validation:
 
 ```typescript
 // Add after existing format validations
-ajv.addFormat('mycustom', (data: any) => {
+ajv.addFormat("mycustom", (data: any) => {
   // Allow null, undefined, or empty string (for optional fields)
-  if (data === null || data === undefined || data === '') {
+  if (data === null || data === undefined || data === "") {
     return true;
   }
 
   // Validate the actual data format
   // Adjust this validation logic based on your data type requirements
-  return typeof data === 'string';
+  return typeof data === "string";
 });
 ```
 
@@ -1255,16 +1265,16 @@ All question types should implement consistent error handling:
 ```typescript
 try {
   const result = await formulusClient.current.requestXxx(fieldId);
-  if (result.status === 'success') {
+  if (result.status === "success") {
     // Handle success
     handleChange(path, result.data.value);
   }
 } catch (err: any) {
-  if (err.status === 'cancelled') {
+  if (err.status === "cancelled") {
     // User cancelled - don't show error
-  } else if (err.status === 'error') {
+  } else if (err.status === "error") {
     // Show error message
-    setError(err.message || 'Operation failed');
+    setError(err.message || "Operation failed");
   }
 }
 ```

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   View,
   Text,
@@ -10,36 +10,36 @@ import {
   ScrollView,
   Alert,
   AlertButton,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import * as Keychain from 'react-native-keychain';
-import { login } from '../api/synkronus/Auth';
-import { serverConfigService } from '../services/ServerConfigService';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useNavigation } from "@react-navigation/native";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import * as Keychain from "react-native-keychain";
+import { login } from "../api/synkronus/Auth";
+import { serverConfigService } from "../services/ServerConfigService";
 import QRScannerModal, {
   ScannerModalResults,
-} from '../components/QRScannerModal';
-import { QRSettingsService } from '../services/QRSettingsService';
-import { MainTabParamList } from '../types/NavigationTypes';
-import { colors } from '../theme/colors';
-import Icon from '@react-native-vector-icons/material-design-icons';
-import { ToastService } from '../services/ToastService';
-import { serverSwitchService } from '../services/ServerSwitchService';
-import { syncService } from '../services/SyncService';
-import Logo from '../../assets/images/logo.png';
+} from "../components/QRScannerModal";
+import { QRSettingsService } from "../services/QRSettingsService";
+import { MainTabParamList } from "../types/NavigationTypes";
+import { colors } from "../theme/colors";
+import Icon from "@react-native-vector-icons/material-design-icons";
+import { ToastService } from "../services/ToastService";
+import { serverSwitchService } from "../services/ServerSwitchService";
+import { syncService } from "../services/SyncService";
+import Logo from "../../assets/images/logo.png";
 
 type SettingsScreenNavigationProp = BottomTabNavigationProp<
   MainTabParamList,
-  'Settings'
+  "Settings"
 >;
 
 const SettingsScreen = () => {
   const navigation = useNavigation<SettingsScreenNavigationProp>();
-  const [serverUrl, setServerUrl] = useState('');
-  const [initialServerUrl, setInitialServerUrl] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [serverUrl, setServerUrl] = useState("");
+  const [initialServerUrl, setInitialServerUrl] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [showQRScanner, setShowQRScanner] = useState(false);
@@ -54,7 +54,7 @@ const SettingsScreen = () => {
     async (url: string): Promise<boolean> => {
       const trimmedUrl = url.trim();
       if (!trimmedUrl) {
-        ToastService.showLong('Please enter a server URL');
+        ToastService.showLong("Please enter a server URL");
         return false;
       }
 
@@ -74,7 +74,7 @@ const SettingsScreen = () => {
           await serverSwitchService.resetForServerChange(trimmedUrl);
           setInitialServerUrl(trimmedUrl);
           setServerUrl(trimmedUrl);
-          ToastService.showShort('Switched server and cleared local data.');
+          ToastService.showShort("Switched server and cleared local data.");
         };
 
         const syncThenReset = async () => {
@@ -83,42 +83,42 @@ const SettingsScreen = () => {
             await performReset();
             return true;
           } catch (error) {
-            console.error('Sync before server switch failed:', error);
+            console.error("Sync before server switch failed:", error);
             ToastService.showLong(
-              'Sync failed. Please retry or proceed without syncing.',
+              "Sync failed. Please retry or proceed without syncing."
             );
             return false;
           }
         };
 
-        return await new Promise<boolean>(resolve => {
+        return await new Promise<boolean>((resolve) => {
           const hasPending = pendingObservations > 0 || pendingAttachments > 0;
           const message = hasPending
             ? `Unsynced observations: ${pendingObservations}\nUnsynced attachments: ${pendingAttachments}\n\nSync is recommended before switching.`
-            : 'Switching servers will wipe all local data for the previous server.';
+            : "Switching servers will wipe all local data for the previous server.";
 
           const buttons: AlertButton[] = hasPending
             ? [
                 {
-                  text: 'Cancel',
-                  style: 'cancel' as const,
+                  text: "Cancel",
+                  style: "cancel" as const,
                   onPress: () => {
                     setServerUrl(initialServerUrl);
                     resolve(false);
                   },
                 },
                 {
-                  text: 'Proceed without syncing',
-                  style: 'destructive' as const,
+                  text: "Proceed without syncing",
+                  style: "destructive" as const,
                   onPress: () => {
                     (async () => {
                       try {
                         await performReset();
                         resolve(true);
                       } catch (error) {
-                        console.error('Failed to switch server:', error);
+                        console.error("Failed to switch server:", error);
                         ToastService.showLong(
-                          'Failed to switch server. Please try again.',
+                          "Failed to switch server. Please try again."
                         );
                         resolve(false);
                       }
@@ -126,11 +126,11 @@ const SettingsScreen = () => {
                   },
                 },
                 {
-                  text: 'Sync then switch',
+                  text: "Sync then switch",
                   onPress: () => {
                     (async () => {
                       if (syncService.getIsSyncing()) {
-                        ToastService.showShort('Sync already in progress...');
+                        ToastService.showShort("Sync already in progress...");
                         return;
                       }
                       const ok = await syncThenReset();
@@ -141,25 +141,25 @@ const SettingsScreen = () => {
               ]
             : [
                 {
-                  text: 'Cancel',
-                  style: 'cancel' as const,
+                  text: "Cancel",
+                  style: "cancel" as const,
                   onPress: () => {
                     setServerUrl(initialServerUrl);
                     resolve(false);
                   },
                 },
                 {
-                  text: 'Yes, wipe & switch',
-                  style: 'destructive' as const,
+                  text: "Yes, wipe & switch",
+                  style: "destructive" as const,
                   onPress: () => {
                     (async () => {
                       try {
                         await performReset();
                         resolve(true);
                       } catch (error) {
-                        console.error('Failed to switch server:', error);
+                        console.error("Failed to switch server:", error);
                         ToastService.showLong(
-                          'Failed to switch server. Please try again.',
+                          "Failed to switch server. Please try again."
                         );
                         resolve(false);
                       }
@@ -168,17 +168,17 @@ const SettingsScreen = () => {
                 },
               ];
 
-          Alert.alert('Switch server?', message, buttons, {
+          Alert.alert("Switch server?", message, buttons, {
             cancelable: false,
           });
         });
       } catch (error) {
-        console.error('Failed to prepare server switch:', error);
-        ToastService.showLong('Unable to check pending data. Try again.');
+        console.error("Failed to prepare server switch:", error);
+        ToastService.showLong("Unable to check pending data. Try again.");
         return false;
       }
     },
-    [initialServerUrl],
+    [initialServerUrl]
   );
 
   const loadSettings = async () => {
@@ -195,7 +195,7 @@ const SettingsScreen = () => {
         setPassword(credentials.password);
       }
     } catch (error) {
-      console.error('Failed to load settings:', error);
+      console.error("Failed to load settings:", error);
     } finally {
       setIsLoading(false);
     }
@@ -226,12 +226,12 @@ const SettingsScreen = () => {
 
       await Keychain.setGenericPassword(trimmedUsername, trimmedPassword);
       await login(trimmedUsername, trimmedPassword);
-      ToastService.showShort('Successfully logged in!');
-      navigation.navigate('Home');
+      ToastService.showShort("Successfully logged in!");
+      navigation.navigate("Home");
     } catch (error) {
-      console.error('Login failed:', error);
+      console.error("Login failed:", error);
       const errorMessage =
-        error && 'Failed to login. Please check your credentials.';
+        error && "Failed to login. Please check your credentials.";
       ToastService.showLong(`Login failed: ${errorMessage}`);
     } finally {
       setIsLoggingIn(false);
@@ -248,18 +248,18 @@ const SettingsScreen = () => {
   const handleQRResult = async (result: ScannerModalResults) => {
     setShowQRScanner(false);
 
-    if (result.status === 'cancelled') {
+    if (result.status === "cancelled") {
       return;
     }
 
-    if (result.status === 'success' && result.data?.value) {
+    if (result.status === "success" && result.data?.value) {
       try {
         const settings = await QRSettingsService.processQRCode(
-          result.data.value,
+          result.data.value
         );
 
         const serverReady = await handleServerSwitchIfNeeded(
-          settings.serverUrl,
+          settings.serverUrl
         );
         if (!serverReady) {
           return;
@@ -275,29 +275,29 @@ const SettingsScreen = () => {
 
           await Keychain.setGenericPassword(
             settings.username,
-            settings.password,
+            settings.password
           );
           try {
             await login(settings.username, settings.password);
-            ToastService.showShort('Successfully logged in!');
-            navigation.navigate('Home');
+            ToastService.showShort("Successfully logged in!");
+            navigation.navigate("Home");
           } catch (error) {
-            console.error('Auto-login failed:', error);
+            console.error("Auto-login failed:", error);
             const errorMessage =
-              error && 'Failed to login. Please check your credentials.';
+              error && "Failed to login. Please check your credentials.";
             ToastService.showLong(`Login failed: ${errorMessage}`);
           }
         } else {
-          ToastService.showShort('Settings updated successfully');
+          ToastService.showShort("Settings updated successfully");
         }
       } catch (error) {
-        console.error('Failed to process QR code:', error);
+        console.error("Failed to process QR code:", error);
         const errorMessage =
-          error && 'Invalid QR code format. Please try again.';
+          error && "Invalid QR code format. Please try again.";
         ToastService.showLong(`QR code error: ${errorMessage}`);
       }
     } else {
-      ToastService.showLong('Failed to scan QR code. Please try again.');
+      ToastService.showLong("Failed to scan QR code. Please try again.");
     }
   };
 
@@ -316,7 +316,7 @@ const SettingsScreen = () => {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image source={Logo} style={styles.logo} resizeMode="contain" />
@@ -329,7 +329,8 @@ const SettingsScreen = () => {
         style={styles.card}
         contentContainerStyle={styles.cardContent}
         keyboardShouldPersistTaps="handled"
-        keyboardDismissMode="on-drag">
+        keyboardDismissMode="on-drag"
+      >
         <Text style={styles.title}>
           Please enter the server you want to connect to.
         </Text>
@@ -347,7 +348,8 @@ const SettingsScreen = () => {
           />
           <TouchableOpacity
             style={styles.qrButton}
-            onPress={() => setShowQRScanner(true)}>
+            onPress={() => setShowQRScanner(true)}
+          >
             <Icon
               name="qrcode-scan"
               size={24}
@@ -388,7 +390,8 @@ const SettingsScreen = () => {
           ]}
           onPress={handleLogin}
           disabled={isButtonDisabled}
-          activeOpacity={isButtonDisabled ? 1 : 0.7}>
+          activeOpacity={isButtonDisabled ? 1 : 0.7}
+        >
           <Icon
             name="arrow-right"
             size={20}
@@ -400,8 +403,9 @@ const SettingsScreen = () => {
             style={[
               styles.nextButtonText,
               isButtonDisabled && styles.nextButtonTextDisabled,
-            ]}>
-            {isLoggingIn ? 'Logging in...' : 'Login'}
+            ]}
+          >
+            {isLoggingIn ? "Logging in..." : "Login"}
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -421,18 +425,18 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand.primary[500],
   },
   centered: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     paddingHorizontal: 20,
     paddingVertical: 16,
   },
   logoContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
   logo: {
     width: 40,
@@ -441,7 +445,7 @@ const styles = StyleSheet.create({
   },
   brandName: {
     fontSize: 32,
-    fontWeight: '700',
+    fontWeight: "700",
     color: colors.neutral.white,
     letterSpacing: 1,
   },
@@ -463,13 +467,13 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 20,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.neutral[900],
     marginBottom: 24,
   },
   inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: colors.neutral[50],
     borderBottomWidth: 2,
     borderBottomColor: colors.brand.primary[500],
@@ -486,16 +490,16 @@ const styles = StyleSheet.create({
   qrButton: {
     width: 56,
     height: 56,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   nextButton: {
-    flexDirection: 'row',
+    flexDirection: "row",
     height: 56,
     borderRadius: 8,
     backgroundColor: colors.brand.primary[500],
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     gap: 8,
   },
   nextButtonDisabled: {
@@ -507,7 +511,7 @@ const styles = StyleSheet.create({
   },
   nextButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.neutral.white,
   },
   nextButtonTextDisabled: {

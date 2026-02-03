@@ -1,11 +1,11 @@
-import { Platform } from 'react-native';
+import { Platform } from "react-native";
 import {
   check,
   request,
   PERMISSIONS,
   RESULTS,
   Permission,
-} from 'react-native-permissions';
+} from "react-native-permissions";
 
 export interface LocationPermissionOptions {
   background?: boolean;

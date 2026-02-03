@@ -1,13 +1,13 @@
-import Geolocation from 'react-native-geolocation-service';
+import Geolocation from "react-native-geolocation-service";
 import {
   ObservationGeolocation,
   GeolocationConfig,
-} from '../types/Geolocation';
+} from "../types/Geolocation";
 import {
   ensureLocationPermission,
   hasLocationPermission,
-} from './LocationPermissions';
-import { RESULTS } from 'react-native-permissions';
+} from "./LocationPermissions";
+import { RESULTS } from "react-native-permissions";
 
 /**
  * Service for on-demand geolocation capture for observations
@@ -43,31 +43,31 @@ export class GeolocationService {
       // Check and request permissions first
       const permissionStatus = await ensureLocationPermission();
       if (permissionStatus !== RESULTS.GRANTED) {
-        console.warn('Location permission not granted:', permissionStatus);
+        console.warn("Location permission not granted:", permissionStatus);
         return null;
       }
 
       // Get current position using react-native-geolocation-service
-      return new Promise<ObservationGeolocation | null>(resolve => {
+      return new Promise<ObservationGeolocation | null>((resolve) => {
         Geolocation.getCurrentPosition(
-          position => {
+          (position) => {
             const location = this.convertToObservationGeolocation(position);
-            console.debug('Got location for observation:', location);
+            console.debug("Got location for observation:", location);
             resolve(location);
           },
-          error => {
-            console.warn('Failed to get location for observation:', error);
+          (error) => {
+            console.warn("Failed to get location for observation:", error);
             resolve(null);
           },
           {
             ...this.config,
             forceRequestLocation: true,
             showLocationDialog: true,
-          },
+          }
         );
       });
     } catch (error) {
-      console.error('Error getting location for observation:', error);
+      console.error("Error getting location for observation:", error);
       return null;
     }
   }
@@ -85,31 +85,31 @@ export class GeolocationService {
    * Returns a cleanup function to stop watching
    */
   public startWatching(
-    onUpdate: (location: ObservationGeolocation) => void,
+    onUpdate: (location: ObservationGeolocation) => void
   ): () => void {
     let watchId: number | null = null;
 
     const startWatch = async () => {
       const hasPermission = await hasLocationPermission();
       if (!hasPermission) {
-        console.warn('Location permission not available for watching');
+        console.warn("Location permission not available for watching");
         return;
       }
 
       watchId = Geolocation.watchPosition(
-        position => {
+        (position) => {
           const location = this.convertToObservationGeolocation(position);
           onUpdate(location);
         },
-        error => {
-          console.warn('Location watch error:', error);
+        (error) => {
+          console.warn("Location watch error:", error);
         },
         {
           enableHighAccuracy: true,
           distanceFilter: 25, // Battery-friendly: update when moved 25 meters
           interval: 10000, // 10 seconds
           fastestInterval: 5000, // 5 seconds
-        },
+        }
       );
     };
 
@@ -128,7 +128,7 @@ export class GeolocationService {
    * Convert react-native-geolocation-service position to our observation format
    */
   private convertToObservationGeolocation(
-    position: Geolocation.GeoPosition,
+    position: Geolocation.GeoPosition
   ): ObservationGeolocation {
     return {
       latitude: position.coords.latitude,

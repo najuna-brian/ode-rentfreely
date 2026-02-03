@@ -1,11 +1,11 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Linking } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import colors from '../theme/colors';
+import React from "react";
+import { View, Text, StyleSheet, ScrollView, Linking } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import colors from "../theme/colors";
 
 const HelpScreen: React.FC = () => {
   return (
-    <SafeAreaView style={styles.container} edges={['top']}>
+    <SafeAreaView style={styles.container} edges={["top"]}>
       <View style={styles.header}>
         <Text style={styles.title}>Help & Support</Text>
         <Text style={styles.subtitle}>Get help and share feedback</Text>
@@ -20,9 +20,10 @@ const HelpScreen: React.FC = () => {
           <Text
             style={[styles.cardText, styles.link]}
             onPress={() =>
-              Linking.openURL('https://forum.opendataensemble.org')
+              Linking.openURL("https://forum.opendataensemble.org")
             }
-            suppressHighlighting={true}>
+            suppressHighlighting={true}
+          >
             https://forum.opendataensemble.org
           </Text>
         </View>
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.neutral[900],
     marginBottom: 4,
   },
@@ -93,7 +94,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.neutral[900],
     marginBottom: 8,
   },
@@ -105,7 +106,7 @@ const styles = StyleSheet.create({
   link: {
     color: colors.brand.primary[500],
     marginTop: 12,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
 

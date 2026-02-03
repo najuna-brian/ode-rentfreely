@@ -67,7 +67,7 @@ export interface FormInitData {
  */
 export interface ActionResult<T = unknown> {
   fieldId: string;
-  status: 'success' | 'cancelled' | 'error';
+  status: "success" | "cancelled" | "error";
   message?: string;
   data?: T;
 }
@@ -80,7 +80,7 @@ export interface ActionResult<T = unknown> {
  * @property {object} metadata - Image metadata (dimensions, size, etc.)
  */
 export interface CameraResultData {
-  type: 'image';
+  type: "image";
   id: string;
   filename: string;
   uri: string;
@@ -109,7 +109,7 @@ export interface CameraResultData {
  * @property {object} metadata - Audio metadata (duration, format, etc.)
  */
 export interface AudioResultData {
-  type: 'audio';
+  type: "audio";
   filename: string;
   base64: string;
   url: string;
@@ -132,7 +132,7 @@ export interface AudioResultData {
  * @property {object} metadata - Signature metadata (dimensions, etc.)
  */
 export interface SignatureResultData {
-  type: 'signature';
+  type: "signature";
   filename: string;
   uri: string;
   timestamp: string;
@@ -151,7 +151,7 @@ export interface SignatureResultData {
  * @property {string} timestamp - ISO timestamp when QR code was scanned
  */
 export interface QrcodeResultData {
-  type: 'qrcode';
+  type: "qrcode";
   value: string;
   timestamp: string;
 }
@@ -167,7 +167,7 @@ export interface QrcodeResultData {
  * @property {object} metadata - File metadata (extension, original path, etc.)
  */
 export interface FileResultData {
-  type: 'file';
+  type: "file";
   filename: string;
   uri: string; // Local file URI (no base64 encoding)
   mimeType: string;
@@ -198,17 +198,17 @@ export type FileResult = ActionResult<FileResultData>;
 export interface AttachmentData {
   fieldId: string;
   type:
-    | 'image'
-    | 'location'
-    | 'file'
-    | 'intent'
-    | 'subform'
-    | 'audio'
-    | 'signature'
-    | 'biometric'
-    | 'connectivity'
-    | 'sync'
-    | 'ml_result';
+    | "image"
+    | "location"
+    | "file"
+    | "intent"
+    | "subform"
+    | "audio"
+    | "signature"
+    | "biometric"
+    | "connectivity"
+    | "sync"
+    | "ml_result";
   [key: string]: unknown;
 }
 
@@ -262,11 +262,11 @@ export interface FormObservation {
  */
 export interface FormCompletionResult {
   status:
-    | 'form_submitted'
-    | 'form_updated'
-    | 'draft_saved'
-    | 'cancelled'
-    | 'error';
+    | "form_submitted"
+    | "form_updated"
+    | "draft_saved"
+    | "cancelled"
+    | "error";
   observationId?: string;
   formData?: Record<string, unknown>;
   message?: string;
@@ -300,7 +300,7 @@ export interface FormulusInterface {
   openFormplayer(
     formType: string,
     params: Record<string, unknown>,
-    savedData: Record<string, unknown>,
+    savedData: Record<string, unknown>
   ): Promise<FormCompletionResult>;
 
   /**
@@ -313,7 +313,7 @@ export interface FormulusInterface {
   getObservations(
     formType: string,
     isDraft?: boolean,
-    includeDeleted?: boolean,
+    includeDeleted?: boolean
   ): Promise<FormObservation[]>;
 
   /**
@@ -324,7 +324,7 @@ export interface FormulusInterface {
    */
   submitObservation(
     formType: string,
-    finalData: Record<string, unknown>,
+    finalData: Record<string, unknown>
   ): Promise<string>;
 
   /**
@@ -337,7 +337,7 @@ export interface FormulusInterface {
   updateObservation(
     observationId: string,
     formType: string,
-    finalData: Record<string, unknown>,
+    finalData: Record<string, unknown>
   ): Promise<string>;
 
   /**
@@ -369,7 +369,7 @@ export interface FormulusInterface {
    */
   launchIntent(
     fieldId: string,
-    intentSpec: Record<string, unknown>,
+    intentSpec: Record<string, unknown>
   ): Promise<void>;
 
   /**
@@ -382,7 +382,7 @@ export interface FormulusInterface {
   callSubform(
     fieldId: string,
     formType: string,
-    options: Record<string, unknown>,
+    options: Record<string, unknown>
   ): Promise<void>;
 
   /**
@@ -435,7 +435,7 @@ export interface FormulusInterface {
   runLocalModel(
     fieldId: string,
     modelId: string,
-    input: Record<string, unknown>,
+    input: Record<string, unknown>
   ): Promise<void>;
 
   /**
@@ -453,7 +453,7 @@ export interface FormulusCallbacks {
     formType: string,
     observationId: string | null,
     params: Record<string, unknown>,
-    savedData: Record<string, unknown>,
+    savedData: Record<string, unknown>
   ) => void;
   onReceiveFocus?: () => void;
 }
@@ -461,7 +461,7 @@ export interface FormulusCallbacks {
 /**
  * Current version of the interface
  */
-export const FORMULUS_INTERFACE_VERSION = '1.1.0';
+export const FORMULUS_INTERFACE_VERSION = "1.1.0";
 
 /**
  * Check if the current interface version is compatible with the required version

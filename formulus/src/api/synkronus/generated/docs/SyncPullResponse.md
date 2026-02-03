@@ -13,7 +13,7 @@
 ## Example
 
 ```typescript
-import { SyncPullResponse } from './api';
+import { SyncPullResponse } from "./api";
 
 const instance: SyncPullResponse = {
   current_version,

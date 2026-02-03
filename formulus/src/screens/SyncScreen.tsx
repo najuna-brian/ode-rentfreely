@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
@@ -9,17 +9,17 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from '@react-native-vector-icons/material-design-icons';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { formatRelativeTime } from '../utils/dateUtils';
-import { syncService } from '../services/SyncService';
-import { useSyncContext } from '../contexts/SyncContext';
-import RNFS from 'react-native-fs';
-import { databaseService } from '../database/DatabaseService';
-import { getUserInfo } from '../api/synkronus/Auth';
-import colors from '../theme/colors';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Icon from "@react-native-vector-icons/material-design-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { formatRelativeTime } from "../utils/dateUtils";
+import { syncService } from "../services/SyncService";
+import { useSyncContext } from "../contexts/SyncContext";
+import RNFS from "react-native-fs";
+import { databaseService } from "../database/DatabaseService";
+import { getUserInfo } from "../api/synkronus/Auth";
+import colors from "../theme/colors";
 
 const SyncScreen = () => {
   const syncContextValue = useSyncContext();
@@ -39,9 +39,9 @@ const SyncScreen = () => {
   }>({ count: 0, sizeMB: 0 });
   const [pendingObservations, setPendingObservations] = useState<number>(0);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
-  const [appBundleVersion, setAppBundleVersion] = useState<string>('0');
+  const [appBundleVersion, setAppBundleVersion] = useState<string>("0");
   const [serverBundleVersion, setServerBundleVersion] =
-    useState<string>('Unknown');
+    useState<string>("Unknown");
   const [animatedProgress] = useState(new Animated.Value(0));
 
   const updatePendingUploads = useCallback(async () => {
@@ -49,18 +49,18 @@ const SyncScreen = () => {
       const pendingUploadDirectory = `${RNFS.DocumentDirectoryPath}/attachments/pending_upload`;
       await RNFS.mkdir(pendingUploadDirectory);
       const files = await RNFS.readDir(pendingUploadDirectory);
-      const attachmentFiles = files.filter(file => file.isFile());
+      const attachmentFiles = files.filter((file) => file.isFile());
 
       const count = attachmentFiles.length;
       const totalSizeBytes = attachmentFiles.reduce(
         (sum, file) => sum + file.size,
-        0,
+        0
       );
       const sizeMB = totalSizeBytes / (1024 * 1024);
 
       setPendingUploads({ count, sizeMB });
     } catch (error) {
-      console.error('Failed to get pending uploads info:', error);
+      console.error("Failed to get pending uploads info:", error);
       setPendingUploads({ count: 0, sizeMB: 0 });
     }
   }, []);
@@ -71,66 +71,63 @@ const SyncScreen = () => {
       const pendingChanges = await repo.getPendingChanges();
       setPendingObservations(pendingChanges.length);
     } catch (error) {
-      console.error('Failed to get pending observations count:', error);
+      console.error("Failed to get pending observations count:", error);
       setPendingObservations(0);
     }
   }, []);
 
   const handleSync = useCallback(async () => {
     if (syncState.isActive) {
-      console.log('Sync already active, ignoring request');
+      console.log("Sync already active, ignoring request");
       return;
     }
 
     let syncError: string | undefined;
 
     try {
-      console.log('Starting sync...');
+      console.log("Starting sync...");
       startSync(true);
 
       // Add timeout to prevent infinite hanging (30 minutes max)
       const syncPromise = syncService.syncObservations(true);
       const timeoutPromise = new Promise<never>((_, reject) => {
-        setTimeout(
-          () => {
-            reject(new Error('Sync operation timed out after 30 minutes'));
-          },
-          30 * 60 * 1000,
-        );
+        setTimeout(() => {
+          reject(new Error("Sync operation timed out after 30 minutes"));
+        }, 30 * 60 * 1000);
       });
 
       const finalVersion = await Promise.race([syncPromise, timeoutPromise]);
-      console.log('✅ Sync completed successfully, version:', finalVersion);
+      console.log("✅ Sync completed successfully, version:", finalVersion);
 
       // Update UI state even if these fail
       try {
         await updatePendingUploads();
       } catch (e) {
-        console.warn('Failed to update pending uploads:', e);
+        console.warn("Failed to update pending uploads:", e);
       }
 
       try {
         await updatePendingObservations();
       } catch (e) {
-        console.warn('Failed to update pending observations:', e);
+        console.warn("Failed to update pending observations:", e);
       }
 
       const syncTime = new Date().toISOString();
       setLastSync(syncTime);
       try {
-        await AsyncStorage.setItem('@lastSync', syncTime);
+        await AsyncStorage.setItem("@lastSync", syncTime);
       } catch (e) {
-        console.warn('Failed to save last sync time:', e);
+        console.warn("Failed to save last sync time:", e);
       }
     } catch (error) {
-      console.error('❌ Sync error in handleSync:', error);
-      syncError = (error as Error).message || 'Unknown error occurred';
-      Alert.alert('Error', 'Failed to sync!\n' + syncError);
+      console.error("❌ Sync error in handleSync:", error);
+      syncError = (error as Error).message || "Unknown error occurred";
+      Alert.alert("Error", "Failed to sync!\n" + syncError);
     } finally {
       // Always call finishSync to clear loading state
-      console.log('Calling finishSync, error:', syncError);
+      console.log("Calling finishSync, error:", syncError);
       finishSync(syncError);
-      console.log('✅ Sync finished, isActive should be false now');
+      console.log("✅ Sync finished, isActive should be false now");
     }
   }, [
     updatePendingUploads,
@@ -147,16 +144,16 @@ const SyncScreen = () => {
       const userInfo = await getUserInfo();
       if (!userInfo) {
         Alert.alert(
-          'Authentication Error',
-          'Please log in to update app bundle',
+          "Authentication Error",
+          "Please log in to update app bundle"
         );
         return;
       }
 
       if (!updateAvailable && !isAdmin) {
         Alert.alert(
-          'Permission Denied',
-          'Admin privileges required to force update app bundle',
+          "Permission Denied",
+          "Admin privileges required to force update app bundle"
         );
         return;
       }
@@ -165,25 +162,25 @@ const SyncScreen = () => {
       await syncService.updateAppBundle();
       const syncTime = new Date().toISOString();
       setLastSync(syncTime);
-      await AsyncStorage.setItem('@lastSync', syncTime);
+      await AsyncStorage.setItem("@lastSync", syncTime);
       setUpdateAvailable(false);
       finishSync();
       await updatePendingUploads();
       await updatePendingObservations();
-      const formService = await import('../services/FormService');
+      const formService = await import("../services/FormService");
       const fs = await formService.FormService.getInstance();
       await fs.invalidateCache();
     } catch (error) {
       const errorMessage = (error as Error).message;
       finishSync(errorMessage);
 
-      if (errorMessage.includes('401')) {
+      if (errorMessage.includes("401")) {
         Alert.alert(
-          'Authentication Error',
-          'Your session has expired. Please log in again.',
+          "Authentication Error",
+          "Your session has expired. Please log in again."
         );
       } else {
-        Alert.alert('Error', 'Failed to update app bundle!\n' + errorMessage);
+        Alert.alert("Error", "Failed to update app bundle!\n" + errorMessage);
       }
     }
   }, [
@@ -200,41 +197,41 @@ const SyncScreen = () => {
     try {
       const hasUpdate = await syncService.checkForUpdates(force);
       setUpdateAvailable(hasUpdate);
-      const currentVersion = (await AsyncStorage.getItem('@appVersion')) || '0';
+      const currentVersion = (await AsyncStorage.getItem("@appVersion")) || "0";
       setAppBundleVersion(currentVersion);
       try {
-        const { synkronusApi } = await import('../api/synkronus/index');
+        const { synkronusApi } = await import("../api/synkronus/index");
         const manifest = await synkronusApi.getManifest();
         setServerBundleVersion(manifest.version);
       } catch {
         setServerBundleVersion(currentVersion);
       }
     } catch (error) {
-      console.warn('Update check failed:', error);
+      console.warn("Update check failed:", error);
     }
   }, []);
 
   const getDataSyncStatus = (): string => {
     if (syncState.isActive) {
-      return syncState.progress?.details || 'Syncing...';
+      return syncState.progress?.details || "Syncing...";
     }
     if (syncState.error) {
-      return 'Error';
+      return "Error";
     }
     if (pendingObservations > 0 || pendingUploads.count > 0) {
-      return 'Pending Sync';
+      return "Pending Sync";
     }
-    return 'All synced';
+    return "All synced";
   };
 
   const status = getDataSyncStatus();
   const statusColor = syncState.isActive
     ? colors.brand.primary[500]
     : syncState.error
-      ? colors.semantic.error[500]
-      : pendingObservations > 0 || pendingUploads.count > 0
-        ? colors.semantic.warning[500]
-        : colors.semantic.success[500];
+    ? colors.semantic.error[500]
+    : pendingObservations > 0 || pendingUploads.count > 0
+    ? colors.semantic.warning[500]
+    : colors.semantic.success[500];
 
   useEffect(() => {
     const unsubscribeStatus = syncService.subscribeToStatusUpdates(() => {});
@@ -245,8 +242,8 @@ const SyncScreen = () => {
       await syncService.initialize();
       await checkForUpdates(true);
       const userInfo = await getUserInfo();
-      setIsAdmin(userInfo?.role === 'admin');
-      const lastSyncTime = await AsyncStorage.getItem('@lastSync');
+      setIsAdmin(userInfo?.role === "admin");
+      const lastSyncTime = await AsyncStorage.getItem("@lastSync");
       if (lastSyncTime) {
         setLastSync(lastSyncTime);
       }
@@ -312,13 +309,14 @@ const SyncScreen = () => {
       <View style={styles.header}>
         <Text style={styles.title}>Sync</Text>
         <Text style={styles.subtitle}>
-          {syncState.isActive ? 'Syncing...' : 'Synchronize your data'}
+          {syncState.isActive ? "Syncing..." : "Synchronize your data"}
         </Text>
       </View>
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.statusCardsContainer}>
           <TouchableOpacity
             style={[
@@ -341,17 +339,18 @@ const SyncScreen = () => {
               (pendingObservations === 0 && pendingUploads.count === 0)
                 ? 1
                 : 0.7
-            }>
+            }
+          >
             <View style={styles.statusCardHeader}>
               <Icon
                 name={
                   syncState.isActive
-                    ? 'sync'
+                    ? "sync"
                     : syncState.error
-                      ? 'alert-circle'
-                      : pendingObservations > 0 || pendingUploads.count > 0
-                        ? 'clock-alert-outline'
-                        : 'check-circle'
+                    ? "alert-circle"
+                    : pendingObservations > 0 || pendingUploads.count > 0
+                    ? "clock-alert-outline"
+                    : "check-circle"
                 }
                 size={20}
                 color={statusColor}
@@ -378,7 +377,7 @@ const SyncScreen = () => {
               <Text style={styles.statusCardTitle}>Last Sync</Text>
             </View>
             <Text style={styles.statusCardValue}>
-              {lastSync ? formatRelativeTime(lastSync) : 'Never'}
+              {lastSync ? formatRelativeTime(lastSync) : "Never"}
             </Text>
           </View>
         </View>
@@ -397,7 +396,7 @@ const SyncScreen = () => {
                   <Text style={styles.pendingItemLabel}>Observations</Text>
                   <Text style={styles.pendingItemValue}>
                     {pendingObservations} record
-                    {pendingObservations !== 1 ? 's' : ''}
+                    {pendingObservations !== 1 ? "s" : ""}
                   </Text>
                 </View>
               </View>
@@ -413,7 +412,7 @@ const SyncScreen = () => {
                   <Text style={styles.pendingItemLabel}>Attachments</Text>
                   <Text style={styles.pendingItemValue}>
                     {pendingUploads.count} file
-                    {pendingUploads.count !== 1 ? 's' : ''} (
+                    {pendingUploads.count !== 1 ? "s" : ""} (
                     {pendingUploads.sizeMB.toFixed(2)} MB)
                   </Text>
                 </View>
@@ -458,12 +457,12 @@ const SyncScreen = () => {
               <Text style={styles.progressTitle}>Sync Progress</Text>
             </View>
             <Text style={styles.progressMode}>
-              {syncState.progress.phase === 'attachments_download'
-                ? 'App bundle update'
-                : 'Data sync'}
+              {syncState.progress.phase === "attachments_download"
+                ? "App bundle update"
+                : "Data sync"}
             </Text>
             <Text style={styles.progressDetails}>
-              {syncState.progress.details || 'Syncing...'}
+              {syncState.progress.details || "Syncing..."}
             </Text>
             <View style={styles.progressBar}>
               <Animated.View
@@ -472,23 +471,24 @@ const SyncScreen = () => {
                   {
                     width: animatedProgress.interpolate({
                       inputRange: [0, 100],
-                      outputRange: ['0%', '100%'],
+                      outputRange: ["0%", "100%"],
                     }),
                   },
                 ]}
               />
             </View>
             <Text style={styles.progressText}>
-              {syncState.progress.current}/{syncState.progress.total} -{' '}
+              {syncState.progress.current}/{syncState.progress.total} -{" "}
               {Math.round(
-                (syncState.progress.current / syncState.progress.total) * 100,
+                (syncState.progress.current / syncState.progress.total) * 100
               )}
               %
             </Text>
             {syncState.canCancel && (
               <TouchableOpacity
                 style={styles.cancelButton}
-                onPress={cancelSync}>
+                onPress={cancelSync}
+              >
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
             )}
@@ -520,14 +520,15 @@ const SyncScreen = () => {
               syncState.isActive && styles.buttonDisabled,
             ]}
             onPress={handleSync}
-            disabled={syncState.isActive}>
+            disabled={syncState.isActive}
+          >
             {syncState.isActive ? (
               <ActivityIndicator size="small" color={colors.neutral.white} />
             ) : (
               <Icon name="sync" size={20} color={colors.neutral.white} />
             )}
             <Text style={styles.actionButtonText}>
-              {syncState.isActive ? 'Syncing...' : 'Sync Data'}
+              {syncState.isActive ? "Syncing..." : "Sync Data"}
             </Text>
           </TouchableOpacity>
 
@@ -539,7 +540,8 @@ const SyncScreen = () => {
                 styles.buttonDisabled,
             ]}
             onPress={handleCustomAppUpdate}
-            disabled={syncState.isActive || (!updateAvailable && !isAdmin)}>
+            disabled={syncState.isActive || (!updateAvailable && !isAdmin)}
+          >
             {syncState.isActive ? (
               <ActivityIndicator
                 size="small"
@@ -553,7 +555,7 @@ const SyncScreen = () => {
               />
             )}
             <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>
-              {syncState.isActive ? 'Updating...' : 'Update App Bundle'}
+              {syncState.isActive ? "Updating..." : "Update App Bundle"}
             </Text>
           </TouchableOpacity>
 
@@ -583,7 +585,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     color: colors.neutral[900],
     marginBottom: 4,
   },
@@ -596,7 +598,7 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   statusCardsContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     marginBottom: 16,
   },
@@ -616,20 +618,20 @@ const styles = StyleSheet.create({
     borderColor: colors.brand.primary[200],
   },
   statusCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 8,
   },
   statusCardTitle: {
     fontSize: 12,
-    fontWeight: '500',
+    fontWeight: "500",
     color: colors.neutral[600],
-    textTransform: 'uppercase',
+    textTransform: "uppercase",
   },
   statusCardValue: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.neutral[900],
   },
   statusCardSubtext: {
@@ -650,13 +652,13 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.neutral[900],
     marginBottom: 12,
   },
   pendingItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
     paddingVertical: 8,
   },
@@ -670,7 +672,7 @@ const styles = StyleSheet.create({
   },
   pendingItemValue: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.neutral[900],
   },
   versionCard: {
@@ -685,22 +687,22 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   versionRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
   versionLabel: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: "500",
     color: colors.neutral[600],
   },
   versionValues: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 12,
   },
   versionItem: {
-    alignItems: 'flex-end',
+    alignItems: "flex-end",
   },
   versionItemLabel: {
     fontSize: 11,
@@ -709,7 +711,7 @@ const styles = StyleSheet.create({
   },
   versionItemValue: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.neutral[900],
   },
   versionDivider: {
@@ -718,8 +720,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral[200],
   },
   updateBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 6,
     marginTop: 12,
     paddingTop: 12,
@@ -729,7 +731,7 @@ const styles = StyleSheet.create({
   updateBadgeText: {
     fontSize: 12,
     color: colors.semantic.success[500],
-    fontWeight: '500',
+    fontWeight: "500",
   },
   progressCard: {
     backgroundColor: colors.brand.primary[50],
@@ -740,14 +742,14 @@ const styles = StyleSheet.create({
     borderLeftColor: colors.brand.primary[500],
   },
   progressHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 12,
   },
   progressTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.brand.primary[500],
   },
   progressDetails: {
@@ -759,24 +761,24 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: colors.neutral[500],
     marginBottom: 4,
-    fontStyle: 'italic',
+    fontStyle: "italic",
   },
   progressBar: {
     height: 8,
     backgroundColor: colors.brand.primary[200],
     borderRadius: 4,
     marginBottom: 8,
-    overflow: 'hidden',
+    overflow: "hidden",
   },
   progressFill: {
-    height: '100%',
+    height: "100%",
     backgroundColor: colors.brand.primary[500],
     borderRadius: 4,
   },
   progressText: {
     fontSize: 12,
     color: colors.neutral[600],
-    textAlign: 'center',
+    textAlign: "center",
     marginBottom: 12,
   },
   cancelButton: {
@@ -784,12 +786,12 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 8,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   cancelButtonText: {
     color: colors.neutral.white,
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   errorCard: {
     backgroundColor: colors.semantic.error[50],
@@ -800,14 +802,14 @@ const styles = StyleSheet.create({
     borderLeftColor: colors.semantic.error[500],
   },
   errorHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 8,
     marginBottom: 8,
   },
   errorTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.semantic.error[500],
   },
   errorText: {
@@ -820,20 +822,20 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 16,
     borderRadius: 8,
-    alignSelf: 'flex-end',
+    alignSelf: "flex-end",
   },
   dismissButtonText: {
     color: colors.neutral.white,
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   actionsSection: {
     gap: 12,
   },
   actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 8,
     padding: 16,
     borderRadius: 12,
@@ -856,7 +858,7 @@ const styles = StyleSheet.create({
   },
   actionButtonText: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.neutral.white,
   },
   secondaryButtonText: {
@@ -865,14 +867,14 @@ const styles = StyleSheet.create({
   hintText: {
     fontSize: 12,
     color: colors.neutral[500],
-    textAlign: 'center',
-    fontStyle: 'italic',
+    textAlign: "center",
+    fontStyle: "italic",
     marginTop: 4,
   },
   updateNotification: {
     fontSize: 12,
     color: colors.semantic.warning[600],
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 4,
   },
 });

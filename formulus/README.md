@@ -104,9 +104,9 @@ Reference the assets in your React Native code like this:
 
 ```typescript
 const INJECTION_SCRIPT_PATH =
-  Platform.OS === 'ios'
-    ? 'FormulusInjectionScript.js'
-    : 'file:///android_asset/webview/FormulusInjectionScript.js';
+  Platform.OS === "ios"
+    ? "FormulusInjectionScript.js"
+    : "file:///android_asset/webview/FormulusInjectionScript.js";
 ```
 
 ## Generating the injection script
@@ -150,6 +150,7 @@ The key principle is **decoupling metadata sync (observations) from binary paylo
 We separate sync into two distinct phases:
 
 - **Phase 1: Observation data sync**
+
   - Uses the existing `/sync/pull` and `/sync/push` endpoints.
   - Syncs only the observation records as JSON (including references to attachment IDs in their `data`).
 
@@ -190,6 +191,7 @@ This table is **client-local only**; the server remains agnostic about the clien
 ### Upload flow
 
 - When a new observation is saved locally and references a new attachment:
+
   - Insert a row in the attachment tracking table with `direction = 'upload'` and `synced = false`.
 
 - The client attachment uploader runs periodically:
@@ -206,6 +208,7 @@ This table is **client-local only**; the server remains agnostic about the clien
 - After completing `/sync/pull`, the client receives new or updated observations.
 - It parses the `data` field of those records to extract referenced attachment IDs.
 - For each attachment ID:
+
   - Checks if it's already present locally.
   - If missing, inserts into the tracking table with `direction = 'download'` and `synced = false`.
 

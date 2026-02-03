@@ -1,10 +1,10 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import RNFS from 'react-native-fs';
-import { database } from '../database/database';
-import { databaseService } from '../database/DatabaseService';
-import { synkronusApi } from '../api/synkronus';
-import { logout } from '../api/synkronus/Auth';
-import { serverConfigService } from './ServerConfigService';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import RNFS from "react-native-fs";
+import { database } from "../database/database";
+import { databaseService } from "../database/DatabaseService";
+import { synkronusApi } from "../api/synkronus";
+import { logout } from "../api/synkronus/Auth";
+import { serverConfigService } from "./ServerConfigService";
 
 /**
  * Handles cleanup when switching Synkronus servers to avoid cross-server data.
@@ -52,22 +52,22 @@ class ServerSwitchService {
 
     // 4) Clear sync/app metadata + tokens
     await AsyncStorage.multiRemove([
-      '@last_seen_version',
-      '@last_attachment_version',
-      '@lastSync',
-      '@appVersion',
-      '@settings',
-      '@server_url',
-      '@token',
-      '@refreshToken',
-      '@tokenExpiresAt',
-      '@user',
+      "@last_seen_version",
+      "@last_attachment_version",
+      "@lastSync",
+      "@appVersion",
+      "@settings",
+      "@server_url",
+      "@token",
+      "@refreshToken",
+      "@tokenExpiresAt",
+      "@user",
     ]);
-    await AsyncStorage.setItem('@appVersion', '0');
+    await AsyncStorage.setItem("@appVersion", "0");
 
     // 5) Clear auth/session
-    await logout().catch(error =>
-      console.warn('Logout during server switch failed:', error),
+    await logout().catch((error) =>
+      console.warn("Logout during server switch failed:", error)
     );
 
     // 6) Save the new server URL (recreates @settings/@server_url)

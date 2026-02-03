@@ -1,14 +1,14 @@
-import { synkronusApi } from '../api/synkronus';
-import RNFS from 'react-native-fs';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { SyncProgress } from '../contexts/SyncContext';
-import { notificationService } from './NotificationService';
-import { FormService } from './FormService';
+import { synkronusApi } from "../api/synkronus";
+import RNFS from "react-native-fs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SyncProgress } from "../contexts/SyncContext";
+import { notificationService } from "./NotificationService";
+import { FormService } from "./FormService";
 import {
   autoLogin,
   isUnauthorizedError,
   HttpError,
-} from '../api/synkronus/Auth';
+} from "../api/synkronus/Auth";
 type SyncStatusCallback = (status: string) => void;
 type SyncProgressDetailCallback = (progress: SyncProgress) => void;
 
@@ -36,30 +36,30 @@ export class SyncService {
   }
 
   public subscribeToProgressUpdates(
-    callback: SyncProgressDetailCallback,
+    callback: SyncProgressDetailCallback
   ): () => void {
     this.progressCallbacks.add(callback);
     return () => this.progressCallbacks.delete(callback);
   }
 
   private updateStatus(status: string): void {
-    this.statusCallbacks.forEach(callback => callback(status));
+    this.statusCallbacks.forEach((callback) => callback(status));
   }
 
   private updateProgress(progress: SyncProgress): void {
-    this.progressCallbacks.forEach(callback => callback(progress));
+    this.progressCallbacks.forEach((callback) => callback(progress));
     // Note: showSyncProgress is now async, but we don't await to avoid blocking sync
     notificationService
       .showSyncProgress(progress)
-      .catch(error =>
-        console.warn('Failed to show sync progress notification:', error),
+      .catch((error) =>
+        console.warn("Failed to show sync progress notification:", error)
       );
   }
 
   public cancelSync(): void {
     if (this.canCancel) {
       this.shouldCancel = true;
-      this.updateStatus('Cancelling sync...');
+      this.updateStatus("Cancelling sync...");
     }
   }
 
@@ -79,7 +79,7 @@ export class SyncService {
    */
   private async withAutoLoginRetry<T>(
     operation: () => Promise<T>,
-    operationName: string = 'operation',
+    operationName: string = "operation"
   ): Promise<T> {
     try {
       // Reset retry count on successful operation
@@ -91,18 +91,18 @@ export class SyncService {
         // Prevent infinite retry loops
         if (this.autoLoginRetryCount >= 1) {
           console.error(
-            'Auto-login retry limit reached. Please login manually in Settings.',
+            "Auto-login retry limit reached. Please login manually in Settings."
           );
           throw new Error(
-            'Authentication failed after retry. Please login manually in Settings.',
+            "Authentication failed after retry. Please login manually in Settings."
           );
         }
 
         this.autoLoginRetryCount++;
         console.log(
-          `🚨 401 Unauthorized error detected during ${operationName}, attempting auto-login...`,
+          `🚨 401 Unauthorized error detected during ${operationName}, attempting auto-login...`
         );
-        this.updateStatus('Session expired, re-authenticating...');
+        this.updateStatus("Session expired, re-authenticating...");
 
         try {
           // Attempt auto-login
@@ -113,13 +113,13 @@ export class SyncService {
             // Clear API cache to force new token usage
             synkronusApi.clearTokenCache();
             console.log(
-              `🔄 API cache cleared, retrying ${operationName} with new token...`,
+              `🔄 API cache cleared, retrying ${operationName} with new token...`
             );
             // Retry the operation once (protected by retry count check above)
             try {
               const result = await operation();
               console.log(
-                `✅ ${operationName} succeeded after auto-login retry`,
+                `✅ ${operationName} succeeded after auto-login retry`
               );
               // Reset retry count on successful retry
               this.autoLoginRetryCount = 0;
@@ -128,25 +128,25 @@ export class SyncService {
               // If retry also fails with 401, don't retry again
               if (isUnauthorizedError(retryError)) {
                 throw new Error(
-                  'Authentication failed after auto-login. Please login manually in Settings.',
+                  "Authentication failed after auto-login. Please login manually in Settings."
                 );
               }
               throw retryError;
             }
           } else {
             throw new Error(
-              'No stored credentials found. Please login manually in Settings.',
+              "No stored credentials found. Please login manually in Settings."
             );
           }
         } catch (autoLoginError: unknown) {
           const loginError = autoLoginError as HttpError;
-          console.error('Auto-login failed:', loginError);
+          console.error("Auto-login failed:", loginError);
           // Reset retry count on failure
           this.autoLoginRetryCount = 0;
           throw new Error(
             `Authentication failed: ${
-              loginError.message || 'Please login manually in Settings.'
-            }`,
+              loginError.message || "Please login manually in Settings."
+            }`
           );
         }
       }
@@ -156,23 +156,23 @@ export class SyncService {
   }
 
   public async syncObservations(
-    includeAttachments: boolean = false,
+    includeAttachments: boolean = false
   ): Promise<number> {
     if (this.isSyncing) {
-      throw new Error('Sync already in progress');
+      throw new Error("Sync already in progress");
     }
 
     this.isSyncing = true;
     this.canCancel = true;
     this.shouldCancel = false;
     this.autoLoginRetryCount = 0; // Reset retry count for new sync operation
-    this.updateStatus('Starting sync...');
+    this.updateStatus("Starting sync...");
 
     // Clear any stale notifications before starting new sync
     notificationService
       .clearAllSyncNotifications()
-      .catch(error =>
-        console.warn('Failed to clear stale notifications:', error),
+      .catch((error) =>
+        console.warn("Failed to clear stale notifications:", error)
       );
 
     try {
@@ -180,51 +180,51 @@ export class SyncService {
       this.updateProgress({
         current: 0,
         total: 4,
-        phase: 'pull',
-        details: 'Fetching manifest...',
+        phase: "pull",
+        details: "Fetching manifest...",
       });
 
       if (this.shouldCancel) {
         notificationService
           .showSyncCanceled()
-          .catch(error =>
-            console.warn('Failed to show sync canceled notification:', error),
+          .catch((error) =>
+            console.warn("Failed to show sync canceled notification:", error)
           );
-        throw new Error('Sync cancelled');
+        throw new Error("Sync cancelled");
       }
 
       // Phase 2: Pull - Download observations
       this.updateProgress({
         current: 1,
         total: 4,
-        phase: 'pull',
-        details: 'Downloading observations...',
+        phase: "pull",
+        details: "Downloading observations...",
       });
 
       if (this.shouldCancel) {
         notificationService
           .showSyncCanceled()
-          .catch(error =>
-            console.warn('Failed to show sync canceled notification:', error),
+          .catch((error) =>
+            console.warn("Failed to show sync canceled notification:", error)
           );
-        throw new Error('Sync cancelled');
+        throw new Error("Sync cancelled");
       }
 
       // Phase 3: Push - Upload local changes
       this.updateProgress({
         current: 2,
         total: 4,
-        phase: 'push',
-        details: 'Uploading observations...',
+        phase: "push",
+        details: "Uploading observations...",
       });
 
       if (this.shouldCancel) {
         notificationService
           .showSyncCanceled()
-          .catch(error =>
-            console.warn('Failed to show sync canceled notification:', error),
+          .catch((error) =>
+            console.warn("Failed to show sync canceled notification:", error)
           );
-        throw new Error('Sync cancelled');
+        throw new Error("Sync cancelled");
       }
 
       // Phase 4: Attachments (if enabled)
@@ -232,58 +232,58 @@ export class SyncService {
         this.updateProgress({
           current: 3,
           total: 4,
-          phase: 'attachments_upload',
-          details: 'Syncing attachments...',
+          phase: "attachments_upload",
+          details: "Syncing attachments...",
         });
 
         if (this.shouldCancel) {
           notificationService
             .showSyncCanceled()
-            .catch(error =>
-              console.warn('Failed to show sync canceled notification:', error),
+            .catch((error) =>
+              console.warn("Failed to show sync canceled notification:", error)
             );
-          throw new Error('Sync cancelled');
+          throw new Error("Sync cancelled");
         }
       }
 
       const finalVersion = await this.withAutoLoginRetry(
         () => synkronusApi.syncObservations(includeAttachments),
-        'sync observations',
+        "sync observations"
       );
 
       this.updateProgress({
         current: 4,
         total: 4,
-        phase: 'push',
-        details: 'Sync completed',
+        phase: "push",
+        details: "Sync completed",
       });
-      await AsyncStorage.setItem('@last_seen_version', finalVersion.toString());
+      await AsyncStorage.setItem("@last_seen_version", finalVersion.toString());
 
       this.updateStatus(`Sync completed @ data version ${finalVersion}`);
       console.log(
-        'Sync completed successfully, showing completion notification...',
+        "Sync completed successfully, showing completion notification..."
       );
 
       // Don't let notification service block sync completion
       notificationService
         .showSyncComplete(true)
-        .then(() => console.log('Sync completion notification shown'))
-        .catch(error =>
-          console.warn('Failed to show sync completion notification:', error),
+        .then(() => console.log("Sync completion notification shown"))
+        .catch((error) =>
+          console.warn("Failed to show sync completion notification:", error)
         );
 
-      console.log('Returning final version:', finalVersion);
+      console.log("Returning final version:", finalVersion);
       return finalVersion;
     } catch (error) {
-      console.error('Sync failed', error);
-      const errorMessage = 'Unknown error occurred';
+      console.error("Sync failed", error);
+      const errorMessage = "Unknown error occurred";
       this.updateStatus(`Sync failed: ${errorMessage}`);
 
       // Don't let notification service block error handling
       notificationService
         .showSyncComplete(false, errorMessage)
-        .catch(notifError =>
-          console.warn('Failed to show sync failure notification:', notifError),
+        .catch((notifError) =>
+          console.warn("Failed to show sync failure notification:", notifError)
         );
 
       throw error;
@@ -299,9 +299,9 @@ export class SyncService {
     try {
       const manifest = await this.withAutoLoginRetry(
         () => synkronusApi.getManifest(),
-        'check for updates',
+        "check for updates"
       );
-      const currentVersion = (await AsyncStorage.getItem('@appVersion')) || '0';
+      const currentVersion = (await AsyncStorage.getItem("@appVersion")) || "0";
       // Only report an update when the version actually differs.
       // The "force" flag controls whether we *perform* a fresh network check,
       // not whether we force the result to "update available".
@@ -313,56 +313,56 @@ export class SyncService {
 
       return updateAvailable;
     } catch (error) {
-      console.warn('Failed to check for updates', error);
+      console.warn("Failed to check for updates", error);
       return false;
     }
   }
 
   public async updateAppBundle(): Promise<void> {
     if (this.isSyncing) {
-      throw new Error('Update already in progress');
+      throw new Error("Update already in progress");
     }
 
     this.isSyncing = true;
     this.autoLoginRetryCount = 0; // Reset retry count for new bundle update
-    this.updateStatus('Starting app bundle sync...');
+    this.updateStatus("Starting app bundle sync...");
     // Expose progress to the UI so users can see bundle download progress.
     this.updateProgress({
       current: 0,
       total: 100,
-      phase: 'attachments_download',
-      details: 'Preparing app bundle download...',
+      phase: "attachments_download",
+      details: "Preparing app bundle download...",
     });
 
     try {
       // Get manifest to know what version we're downloading
       const manifest = await this.withAutoLoginRetry(
         () => synkronusApi.getManifest(),
-        'get manifest',
+        "get manifest"
       );
 
       await this.downloadAppBundle();
 
       // Save the version after successful download
-      await AsyncStorage.setItem('@appVersion', manifest.version);
+      await AsyncStorage.setItem("@appVersion", manifest.version);
 
       // Invalidate FormService cache to reload new form specs
-      this.updateStatus('Refreshing form specifications...');
+      this.updateStatus("Refreshing form specifications...");
       const formService = await FormService.getInstance();
       await formService.invalidateCache();
 
       const syncTime = new Date().toLocaleTimeString();
-      await AsyncStorage.setItem('@lastSync', syncTime);
-      this.updateStatus('App bundle sync completed');
+      await AsyncStorage.setItem("@lastSync", syncTime);
+      this.updateStatus("App bundle sync completed");
       this.updateProgress({
         current: 100,
         total: 100,
-        phase: 'attachments_download',
-        details: 'App bundle sync completed',
+        phase: "attachments_download",
+        details: "App bundle sync completed",
       });
     } catch (error) {
-      console.error('App sync failed', error);
-      this.updateStatus('App sync failed');
+      console.error("App sync failed", error);
+      this.updateStatus("App sync failed");
       throw error;
     } finally {
       this.isSyncing = false;
@@ -371,92 +371,92 @@ export class SyncService {
 
   private async downloadAppBundle(): Promise<void> {
     try {
-      this.updateStatus('Fetching manifest...');
+      this.updateStatus("Fetching manifest...");
       const manifest = await this.withAutoLoginRetry(
         () => synkronusApi.getManifest(),
-        'get manifest',
+        "get manifest"
       );
 
       // Clean out the existing app bundle
       await synkronusApi.removeAppBundleFiles();
 
       // Download form specs
-      this.updateStatus('Downloading form specs...');
+      this.updateStatus("Downloading form specs...");
       const formResults = await this.withAutoLoginRetry(
         () =>
           synkronusApi.downloadFormSpecs(
             manifest,
             RNFS.DocumentDirectoryPath,
-            progress => {
+            (progress) => {
               const normalized = Math.max(0, Math.min(100, progress));
               this.updateStatus(`Downloading form specs... ${normalized}%`);
               // Use 0–50% of the overall range for form specs
               this.updateProgress({
                 current: Math.round((normalized / 100) * 50),
                 total: 100,
-                phase: 'attachments_download',
+                phase: "attachments_download",
                 details: `Downloading form specs... ${normalized}%`,
               });
-            },
+            }
           ),
-        'download form specs',
+        "download form specs"
       );
 
       // Download app files
-      this.updateStatus('Downloading app files...');
+      this.updateStatus("Downloading app files...");
       const appResults = await this.withAutoLoginRetry(
         () =>
           synkronusApi.downloadAppFiles(
             manifest,
             RNFS.DocumentDirectoryPath,
-            progress => {
+            (progress) => {
               const normalized = Math.max(0, Math.min(100, progress));
               this.updateStatus(`Downloading app files... ${normalized}%`);
               // Use 50–100% of the overall range for app files
               this.updateProgress({
                 current: 50 + Math.round((normalized / 100) * 50),
                 total: 100,
-                phase: 'attachments_download',
+                phase: "attachments_download",
                 details: `Downloading app files... ${normalized}%`,
               });
-            },
+            }
           ),
-        'download app files',
+        "download app files"
       );
 
       const results = [...formResults, ...appResults];
 
-      if (results.some(r => !r.success)) {
+      if (results.some((r) => !r.success)) {
         const errorMessages = results
-          .filter(r => !r.success)
-          .map(r => r.message)
-          .join('\n');
+          .filter((r) => !r.success)
+          .map((r) => r.message)
+          .join("\n");
         throw new Error(`Failed to download some files:\n${errorMessages}`);
       }
     } catch (error) {
-      console.error('Download failed', error);
+      console.error("Download failed", error);
       throw error;
     }
   }
 
   public async initialize(): Promise<void> {
     // Initialize any required state
-    const lastSeenVersion = await AsyncStorage.getItem('@last_seen_version');
+    const lastSeenVersion = await AsyncStorage.getItem("@last_seen_version");
 
-    const existingAppVersion = await AsyncStorage.getItem('@appVersion');
+    const existingAppVersion = await AsyncStorage.getItem("@appVersion");
     if (!existingAppVersion) {
-      await AsyncStorage.setItem('@appVersion', '0');
+      await AsyncStorage.setItem("@appVersion", "0");
     }
 
     if (lastSeenVersion) {
       this.updateStatus(`Last sync: v${lastSeenVersion}`);
     } else {
-      this.updateStatus('Ready');
+      this.updateStatus("Ready");
     }
   }
 
   public getStatus(): string {
-    return this.isSyncing ? 'Syncing...' : 'Ready';
+    return this.isSyncing ? "Syncing..." : "Ready";
   }
 }
 

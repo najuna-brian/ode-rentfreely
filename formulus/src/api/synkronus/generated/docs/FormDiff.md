@@ -9,7 +9,7 @@
 ## Example
 
 ```typescript
-import { FormDiff } from './api';
+import { FormDiff } from "./api";
 
 const instance: FormDiff = {
   form,

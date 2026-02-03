@@ -10,7 +10,7 @@
 ## Example
 
 ```typescript
-import { AppBundlePushResponse } from './api';
+import { AppBundlePushResponse } from "./api";
 
 const instance: AppBundlePushResponse = {
   message,

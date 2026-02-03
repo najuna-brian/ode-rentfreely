@@ -1,32 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState, useEffect } from "react";
+import { StyleSheet, Alert } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import {
   useFocusEffect,
   useRoute,
   useNavigation,
   CompositeNavigationProp,
-} from '@react-navigation/native';
-import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
-import { StackNavigationProp } from '@react-navigation/stack';
+} from "@react-navigation/native";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { StackNavigationProp } from "@react-navigation/stack";
 import {
   MainTabParamList,
   MainAppStackParamList,
-} from '../types/NavigationTypes';
-import MenuDrawer from '../components/MenuDrawer';
-import { logout } from '../api/synkronus/Auth';
-import { colors } from '../theme/colors';
+} from "../types/NavigationTypes";
+import MenuDrawer from "../components/MenuDrawer";
+import { logout } from "../api/synkronus/Auth";
+import { colors } from "../theme/colors";
 
-type MainAppDrawerScreen = 'FormManagement';
+type MainAppDrawerScreen = "FormManagement";
 
 const isMainAppDrawerScreen = (
-  screen: string,
+  screen: string
 ): screen is MainAppDrawerScreen => {
-  return screen === 'FormManagement';
+  return screen === "FormManagement";
 };
 
 type MoreScreenNavigationProp = CompositeNavigationProp<
-  BottomTabNavigationProp<MainTabParamList, 'More'>,
+  BottomTabNavigationProp<MainTabParamList, "More">,
   StackNavigationProp<MainAppStackParamList>
 >;
 
@@ -38,7 +38,7 @@ const MoreScreen: React.FC = () => {
   useFocusEffect(
     React.useCallback(() => {
       setDrawerVisible(true);
-    }, []),
+    }, [])
   );
 
   useEffect(() => {
@@ -55,29 +55,29 @@ const MoreScreen: React.FC = () => {
     // Navigate to screens in the MainAppStack
     if (isMainAppDrawerScreen(screen)) {
       navigation.navigate(screen);
-    } else if (screen === 'Settings') {
-      navigation.navigate('Settings');
-    } else if (screen === 'About') {
-      navigation.navigate('About');
-    } else if (screen === 'Help') {
-      navigation.navigate('Help');
+    } else if (screen === "Settings") {
+      navigation.navigate("Settings");
+    } else if (screen === "About") {
+      navigation.navigate("About");
+    } else if (screen === "Help") {
+      navigation.navigate("Help");
     } else {
       // Other screens not yet implemented - stay on Home for now
-      console.log('Navigate to:', screen, '(not yet implemented)');
-      navigation.navigate('Home');
+      console.log("Navigate to:", screen, "(not yet implemented)");
+      navigation.navigate("Home");
     }
   };
 
   const handleLogout = () => {
-    Alert.alert('Logout', 'Are you sure you want to logout?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert("Logout", "Are you sure you want to logout?", [
+      { text: "Cancel", style: "cancel" },
       {
-        text: 'Logout',
-        style: 'destructive',
+        text: "Logout",
+        style: "destructive",
         onPress: async () => {
           await logout();
           setDrawerVisible(false);
-          navigation.navigate('Home');
+          navigation.navigate("Home");
         },
       },
     ]);
@@ -85,7 +85,7 @@ const MoreScreen: React.FC = () => {
 
   const handleClose = () => {
     setDrawerVisible(false);
-    navigation.navigate('Home');
+    navigation.navigate("Home");
   };
 
   return (

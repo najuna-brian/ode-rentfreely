@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -6,9 +6,9 @@ import {
   StyleSheet,
   Modal,
   FlatList,
-} from 'react-native';
-import Icon from '@react-native-vector-icons/material-design-icons';
-import colors from '../../theme/colors';
+} from "react-native";
+import Icon from "@react-native-vector-icons/material-design-icons";
+import colors from "../../theme/colors";
 
 interface FormTypeOption {
   id: string;
@@ -26,18 +26,19 @@ const FormTypeSelector: React.FC<FormTypeSelectorProps> = ({
   options,
   selectedId,
   onSelect,
-  placeholder = 'All Forms',
+  placeholder = "All Forms",
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
 
-  const selectedOption = options.find(opt => opt.id === selectedId);
+  const selectedOption = options.find((opt) => opt.id === selectedId);
 
   return (
     <>
       <TouchableOpacity
         style={styles.selector}
         onPress={() => setModalVisible(true)}
-        activeOpacity={0.7}>
+        activeOpacity={0.7}
+      >
         <Icon
           name="file-document-outline"
           size={18}
@@ -53,11 +54,13 @@ const FormTypeSelector: React.FC<FormTypeSelectorProps> = ({
         visible={modalVisible}
         transparent
         animationType="fade"
-        onRequestClose={() => setModalVisible(false)}>
+        onRequestClose={() => setModalVisible(false)}
+      >
         <TouchableOpacity
           style={styles.modalOverlay}
           activeOpacity={1}
-          onPress={() => setModalVisible(false)}>
+          onPress={() => setModalVisible(false)}
+        >
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Select Form Type</Text>
@@ -68,7 +71,7 @@ const FormTypeSelector: React.FC<FormTypeSelectorProps> = ({
 
             <FlatList
               data={[{ id: null, name: placeholder }, ...options]}
-              keyExtractor={item => item.id || 'all'}
+              keyExtractor={(item) => item.id || "all"}
               renderItem={({ item }) => (
                 <TouchableOpacity
                   style={[
@@ -78,12 +81,14 @@ const FormTypeSelector: React.FC<FormTypeSelectorProps> = ({
                   onPress={() => {
                     onSelect(item.id);
                     setModalVisible(false);
-                  }}>
+                  }}
+                >
                   <Text
                     style={[
                       styles.optionText,
                       selectedId === item.id && styles.optionTextSelected,
-                    ]}>
+                    ]}
+                  >
                     {item.name}
                   </Text>
                   {selectedId === item.id && (
@@ -105,8 +110,8 @@ const FormTypeSelector: React.FC<FormTypeSelectorProps> = ({
 
 const styles = StyleSheet.create({
   selector: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     backgroundColor: colors.neutral.white,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -116,26 +121,26 @@ const styles = StyleSheet.create({
     gap: 8,
     flex: 1,
     maxWidth: 300,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   selectorText: {
     flex: 1,
     fontSize: 14,
     color: colors.neutral[900],
-    fontWeight: '500',
+    fontWeight: "500",
   },
   modalOverlay: {
     flex: 1,
     backgroundColor: colors.ui.background,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   modalContent: {
     backgroundColor: colors.neutral.white,
     borderRadius: 12,
-    width: '80%',
+    width: "80%",
     maxWidth: 400,
-    maxHeight: '70%',
+    maxHeight: "70%",
     shadowColor: colors.neutral.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -143,22 +148,22 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors.neutral[200],
   },
   modalTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: "600",
     color: colors.neutral[900],
   },
   optionItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors.neutral[100],
@@ -172,7 +177,7 @@ const styles = StyleSheet.create({
   },
   optionTextSelected: {
     color: colors.brand.primary[500],
-    fontWeight: '600',
+    fontWeight: "600",
   },
 });
 

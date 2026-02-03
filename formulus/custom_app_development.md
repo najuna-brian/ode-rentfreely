@@ -9,15 +9,18 @@ Formulus provides a powerful yet easy-to-use JavaScript API, `globalThis.formulu
 Here's a breakdown of the key components involved:
 
 1.  **The API Contract (`FormulusInterfaceDefinition.ts`):**
+
     - **Location (Formulus Host Codebase):** `src/webview/FormulusInterfaceDefinition.ts`
     - **Purpose:** This TypeScript file is the single source of truth that defines all available functions, their parameters, and what they return. It dictates the "shape" of the `globalThis.formulus` API.
 
 2.  **The JSDoc Interface for Web Apps (`formulus-api.js`):**
+
     - **Location (Provided to Web App Developers):** `assets/webview/formulus-api.js`
     - **Purpose:** This file is **auto-generated** from `FormulusInterfaceDefinition.ts`. It provides JSDoc annotations that enable autocompletion and type-hinting in your IDE when you're writing JavaScript for your custom web app. It _describes_ the API but doesn't contain the actual communication logic.
     - **How it helps you:** By referencing this file in your project, you get a much better development experience.
 
 3.  **The Magic: Injection Script (`FormulusInjectionScript.js`):**
+
     - **Location (Formulus Host Codebase, Injected into your WebView):** `assets/webview/FormulusInjectionScript.js`
     - **Purpose:** This is the core script that Formulus automatically injects into your web app when it loads in a `CustomAppWebView`. It's also **auto-generated** from `FormulusInterfaceDefinition.ts`.
     - **What it does:**
@@ -73,7 +76,7 @@ The `globalThis.formulus` API object is injected asynchronously. To handle this 
         onFormulusReady: () => {
           M_formulusIsReady = true;
           globalThis.formulus.__HOST_IS_READY__ = true; // Mark as ready globally
-          if (typeof originalOnReady === 'function') {
+          if (typeof originalOnReady === "function") {
             originalOnReady(); // Call the user's original onFormulusReady
           }
           resolve(globalThis.formulus);
@@ -95,7 +98,7 @@ The `globalThis.formulus` API object is injected asynchronously. To handle this 
             globalThis.formulusCallbacks.onFormulusReady = originalOnReady;
           }
           reject(
-            new Error('Formulus API did not become ready within 5 seconds.'),
+            new Error("Formulus API did not become ready within 5 seconds.")
           );
         }
       }, timeout);
@@ -132,9 +135,9 @@ The `globalThis.formulus` API object is injected asynchronously. To handle this 
       const formulusApi = await getFormulus();
       // Now it's safe to use formulusApi
       const version = await formulusApi.getVersion();
-      console.log('Formulus Host Version:', version);
+      console.log("Formulus Host Version:", version);
     } catch (error) {
-      console.error('Failed to initialize app with Formulus:', error);
+      console.error("Failed to initialize app with Formulus:", error);
     }
   }
 
@@ -157,9 +160,9 @@ The `globalThis.formulus` API object is injected asynchronously. To handle this 
 
         // Now it's safe to use the API
         const version = await api.getVersion();
-        console.log('Formulus Host Version:', version);
+        console.log("Formulus Host Version:", version);
       } catch (error) {
-        console.error('Failed to load Formulus API:', error);
+        console.error("Failed to load Formulus API:", error);
         // Handle graceful degradation here
       }
     }
@@ -173,6 +176,7 @@ The `globalThis.formulus` API object is injected asynchronously. To handle this 
 The Formulus host can send event-like messages to your web app. You can listen for these by defining functions on the `globalThis.formulusCallbacks` object.
 
 - **`onFormulusReady` (Crucial for Initialization):**
+
   - **Purpose:** The Formulus host calls your `globalThis.formulusCallbacks.onFormulusReady()` function when the `globalThis.formulus` API is fully injected _and_ the Formulus host itself is ready to handle API requests.
   - **Usage:** The `getFormulus()` function internally uses this callback. You can also define your own `onFormulusReady` for app-level initialization logic, and `getFormulus()` will ensure it's still called.
 
@@ -183,7 +187,7 @@ The Formulus host can send event-like messages to your web app. You can listen f
   }
 
   globalThis.formulusCallbacks.onFormulusReady = function () {
-    console.log('Formulus host is now fully ready!');
+    console.log("Formulus host is now fully ready!");
   };
   ```
 
@@ -199,9 +203,9 @@ async function loadAndDisplayForms() {
   try {
     const formulusApi = await getFormulus(); // Ensures API is ready
     const forms = await formulusApi.getAvailableForms();
-    console.log('Available forms:', forms);
+    console.log("Available forms:", forms);
   } catch (error) {
-    console.error('Error getting available forms:', error);
+    console.error("Error getting available forms:", error);
   }
 }
 ```
@@ -218,8 +222,8 @@ function signalMyAppIsReady() {
   ) {
     globalThis.ReactNativeWebView.postMessage(
       JSON.stringify({
-        type: 'customAppReady', // Or whatever type Formulus expects
-      }),
+        type: "customAppReady", // Or whatever type Formulus expects
+      })
     );
   }
 }
