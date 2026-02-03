@@ -1,16 +1,19 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {Observation} from './models/Observation';
-import {geolocationService} from '../services/GeolocationService';
-import {ToastService} from '../services/ToastService';
+import { Observation, ObservationData } from './models/Observation';
+import { geolocationService } from '../services/GeolocationService';
+import { ToastService } from '../services/ToastService';
 
 /**
  * Repository interface for form observations
  */
 export interface LocalRepoInterface {
-  saveObservation(formType: string, data: any): Promise<string>;
+  saveObservation(formType: string, data: ObservationData): Promise<string>;
   getObservation(observationId: string): Promise<Observation | null>;
   getObservationsByFormType(formType: string): Promise<Observation[]>;
-  updateObservation(observationId: string, data: any): Promise<boolean>;
+  updateObservation(
+    observationId: string,
+    data: ObservationData,
+  ): Promise<boolean>;
   deleteObservation(observationId: string): Promise<boolean>;
   markObservationAsSynced(observationId: string): Promise<boolean>;
 }
@@ -29,7 +32,10 @@ export class FormObservationRepository implements LocalRepoInterface {
    * @param data The form data to be saved
    * @returns Promise resolving to the ID of the saved observation
    */
-  async saveObservation(formType: string, data: any): Promise<string> {
+  async saveObservation(
+    formType: string,
+    data: ObservationData,
+  ): Promise<string> {
     try {
       // Generate a unique ID for the observation
       const id = `obs_${Date.now()}_${Math.random()
@@ -125,7 +131,7 @@ export class FormObservationRepository implements LocalRepoInterface {
 
       // Filter observations by formType
       const observationIds = Object.entries(index)
-        .filter(([_, indexFormType]) => indexFormType === formType)
+        .filter(([, indexFormType]) => indexFormType === formType)
         .map(([id]) => id);
 
       // Get all observations
@@ -151,7 +157,7 @@ export class FormObservationRepository implements LocalRepoInterface {
    * @param data The updated form data
    * @returns Promise resolving to a boolean indicating success
    */
-  async updateObservation(id: string, data: any): Promise<boolean> {
+  async updateObservation(id: string, data: ObservationData): Promise<boolean> {
     try {
       // Get the existing observation
       const observation = await this.getObservation(id);

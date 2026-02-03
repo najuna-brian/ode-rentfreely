@@ -15,7 +15,7 @@
 ## Example
 
 ```typescript
-import {ChangeLog} from './api';
+import { ChangeLog } from './api';
 
 const instance: ChangeLog = {
   compare_version_a,

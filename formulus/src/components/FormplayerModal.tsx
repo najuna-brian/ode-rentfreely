@@ -20,17 +20,21 @@ import {
 import CustomAppWebView, {
   CustomAppWebViewHandle,
 } from '../components/CustomAppWebView';
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from '@react-native-vector-icons/material-icons';
 import {
   resolveFormOperation,
   resolveFormOperationByType,
   setActiveFormplayerModal,
 } from '../webview/FormulusMessageHandlers';
-import {FormCompletionResult} from '../webview/FormulusInterfaceDefinition';
+import {
+  FormCompletionResult,
+  FormInitData,
+} from '../webview/FormulusInterfaceDefinition';
 
-import {databaseService} from '../database';
-import {FormSpec} from '../services'; // FormService will be imported directly
-import {ExtensionService} from '../services/ExtensionService';
+import { databaseService } from '../database';
+import { colors } from '../theme/colors';
+import { FormSpec } from '../services'; // FormService will be imported directly
+import { ExtensionService } from '../services/ExtensionService';
 import RNFS from 'react-native-fs';
 
 interface FormplayerModalProps {
@@ -41,19 +45,19 @@ interface FormplayerModalProps {
 export interface FormplayerModalHandle {
   initializeForm: (
     formType: FormSpec,
-    params: Record<string, any> | null,
+    params: Record<string, unknown> | null,
     observationId: string | null,
-    existingObservationData: Record<string, any> | null,
+    existingObservationData: Record<string, unknown> | null,
     operationId: string | null,
   ) => void;
   handleSubmission: (data: {
     formType: string;
-    finalData: Record<string, any>;
+    finalData: Record<string, unknown>;
   }) => Promise<string>;
 }
 
 const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
-  ({visible, onClose}, ref) => {
+  ({ visible, onClose }, ref) => {
     const webViewRef = useRef<CustomAppWebViewHandle>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const colorScheme = useColorScheme();
@@ -64,10 +68,10 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
       string | null
     >(null);
     const [_currentObservationData, setCurrentObservationData] =
-      useState<Record<string, any> | null>(null);
+      useState<Record<string, unknown> | null>(null);
     const [_currentParams, setCurrentParams] = useState<Record<
       string,
-      any
+      unknown
     > | null>(null);
     const [currentOperationId, setCurrentOperationId] = useState<string | null>(
       null,
@@ -84,7 +88,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
     const formplayerUri =
       Platform.OS === 'android'
         ? 'file:///android_asset/formplayer_dist/index.html'
-        : 'file:///formplayer_dist/index.html'; // Add iOS path
+        : `file://${RNFS.MainBundlePath}/formplayer_dist/index.html`;
 
     // Create a debounced close handler to prevent multiple rapid close attempts
     const performClose = useCallback(() => {
@@ -199,9 +203,9 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
     // Initialize a form with the given form type and optional existing data
     const initializeForm = async (
       formType: FormSpec,
-      params: Record<string, any> | null,
+      params: Record<string, unknown> | null,
       observationId: string | null,
-      existingObservationData: Record<string, any> | null,
+      existingObservationData: Record<string, unknown> | null,
       operationId: string | null,
     ) => {
       // Set internal state for the current form and observation
@@ -222,8 +226,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
       };
 
       // Load extensions for this form
-      let extensions: any;
-      let formSchemaToSend = formType.schema;
+      let extensions = undefined;
       try {
         const customAppPath = RNFS.DocumentDirectoryPath + '/app';
         const extensionService = ExtensionService.getInstance();
@@ -265,7 +268,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
                 };
                 return acc;
               },
-              {} as Record<string, any>,
+              {} as Record<string, unknown>,
             ),
             renderers: Object.entries(mergedExtensions.renderers).reduce(
               (acc, [key, renderer]) => {
@@ -280,7 +283,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
                 };
                 return acc;
               },
-              {} as Record<string, any>,
+              {} as Record<string, unknown>,
             ),
             // Base path for loading modules (file:// URL for WebView)
             // Extensions are in the /forms directory
@@ -300,7 +303,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
         formSchema: formSchemaToSend,
         uiSchema: formType.uiSchema,
         extensions,
-      };
+      } as FormInitData;
 
       if (!webViewRef.current) {
         console.warn(
@@ -325,9 +328,9 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
     const handleSubmission = useCallback(
       async (data: {
         formType: string;
-        finalData: Record<string, any>;
+        finalData: Record<string, unknown>;
       }): Promise<string> => {
-        const {formType, finalData} = data;
+        const { formType, finalData } = data;
         console.log('FormplayerModal: handleSubmission called', {
           formType,
           finalData,
@@ -436,7 +439,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
     useEffect(() => {
       if (visible) {
         // Register this modal as the active one for handling submissions
-        setActiveFormplayerModal({handleSubmission});
+        setActiveFormplayerModal({ handleSubmission });
       } else {
         // Unregister when modal is closed
         setActiveFormplayerModal(null);
@@ -452,7 +455,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
       }
     }, [visible, handleSubmission]);
 
-    useImperativeHandle(ref, () => ({initializeForm, handleSubmission}));
+    useImperativeHandle(ref, () => ({ initializeForm, handleSubmission }));
 
     return (
       <Modal
@@ -474,7 +477,11 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
               <Icon
                 name="close"
                 size={24}
-                color={isSubmitting || isClosing ? '#ccc' : '#000'}
+                color={
+                  isSubmitting || isClosing
+                    ? colors.neutral[400]
+                    : colors.neutral.black
+                }
               />
             </TouchableOpacity>
             <Text style={styles.headerTitle}>
@@ -494,7 +501,10 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
           {isSubmitting && (
             <View style={styles.loadingOverlay}>
               <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#007bff" />
+                <ActivityIndicator
+                  size="large"
+                  color={colors.semantic.info.ios}
+                />
                 <Text style={styles.loadingText}>Saving form data...</Text>
               </View>
             </View>
@@ -504,18 +514,18 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
     );
   },
 );
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.neutral.white,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    paddingHorizontal: 8,
+    paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+    borderBottomColor: colors.neutral[200],
   },
   headerTitle: {
     fontSize: 18,
@@ -528,7 +538,7 @@ const styles = StyleSheet.create({
     width: 40,
   },
   closeButton: {
-    padding: 8,
+    padding: 4,
   },
   disabledButton: {
     opacity: 0.5,
@@ -542,17 +552,17 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: colors.ui.background,
     justifyContent: 'center',
     alignItems: 'center',
   },
   loadingContainer: {
-    backgroundColor: 'white',
+    backgroundColor: colors.neutral.white,
     padding: 20,
     borderRadius: 10,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 2},
+    shadowColor: colors.neutral.black,
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
     elevation: 5,
@@ -560,7 +570,7 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#333',
+    color: colors.neutral[800],
   },
 });
 

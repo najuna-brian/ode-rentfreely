@@ -591,7 +591,6 @@ ORDER BY approximate_date ASC
 The adate system uses two formats:
 
 1. **Storage Format** (YYYY-MM-DD): Used in the database and for sorting
-
    - Example: `"2024-06-15"`, `"2024-06-??"`
 
 2. **Adate Format** (D:DD,M:MM,Y:YYYY): Legacy format for compatibility
@@ -1113,11 +1112,11 @@ import MyCustomQuestionRenderer, {
 // 2. Add to customRenderers array
 const customRenderers = [
   ...materialRenderers,
-  {tester: photoQuestionTester, renderer: PhotoQuestionRenderer},
-  {tester: qrcodeQuestionTester, renderer: QrcodeQuestionRenderer},
-  {tester: myCustomQuestionTester, renderer: MyCustomQuestionRenderer}, // Add this line
-  {tester: swipeLayoutTester, renderer: SwipeLayoutRenderer},
-  {tester: finalizeTester, renderer: FinalizeRenderer},
+  { tester: photoQuestionTester, renderer: PhotoQuestionRenderer },
+  { tester: qrcodeQuestionTester, renderer: QrcodeQuestionRenderer },
+  { tester: myCustomQuestionTester, renderer: MyCustomQuestionRenderer }, // Add this line
+  { tester: swipeLayoutTester, renderer: SwipeLayoutRenderer },
+  { tester: finalizeTester, renderer: FinalizeRenderer },
 ];
 ```
 

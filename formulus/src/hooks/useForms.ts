@@ -1,5 +1,5 @@
-import {useState, useEffect, useCallback} from 'react';
-import {FormService, FormSpec} from '../services/FormService';
+import { useState, useEffect, useCallback } from 'react';
+import { FormService, FormSpec } from '../services/FormService';
 
 interface UseFormsResult {
   forms: FormSpec[];

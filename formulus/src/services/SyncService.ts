@@ -1,10 +1,14 @@
-import {synkronusApi} from '../api/synkronus';
+import { synkronusApi } from '../api/synkronus';
 import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import {SyncProgress} from '../contexts/SyncContext';
-import {notificationService} from './NotificationService';
-import {FormService} from './FormService';
-import {autoLogin, isUnauthorizedError} from '../api/synkronus/Auth';
+import { SyncProgress } from '../contexts/SyncContext';
+import { notificationService } from './NotificationService';
+import { FormService } from './FormService';
+import {
+  autoLogin,
+  isUnauthorizedError,
+  HttpError,
+} from '../api/synkronus/Auth';
 type SyncStatusCallback = (status: string) => void;
 type SyncProgressDetailCallback = (progress: SyncProgress) => void;
 
@@ -81,7 +85,7 @@ export class SyncService {
       // Reset retry count on successful operation
       this.autoLoginRetryCount = 0;
       return await operation();
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Check if this is a 401 Unauthorized error
       if (isUnauthorizedError(error)) {
         // Prevent infinite retry loops
@@ -120,7 +124,7 @@ export class SyncService {
               // Reset retry count on successful retry
               this.autoLoginRetryCount = 0;
               return result;
-            } catch (retryError: any) {
+            } catch (retryError: unknown) {
               // If retry also fails with 401, don't retry again
               if (isUnauthorizedError(retryError)) {
                 throw new Error(
@@ -134,13 +138,14 @@ export class SyncService {
               'No stored credentials found. Please login manually in Settings.',
             );
           }
-        } catch (autoLoginError: any) {
-          console.error('Auto-login failed:', autoLoginError);
+        } catch (autoLoginError: unknown) {
+          const loginError = autoLoginError as HttpError;
+          console.error('Auto-login failed:', loginError);
           // Reset retry count on failure
           this.autoLoginRetryCount = 0;
           throw new Error(
             `Authentication failed: ${
-              autoLoginError.message || 'Please login manually in Settings.'
+              loginError.message || 'Please login manually in Settings.'
             }`,
           );
         }
@@ -269,9 +274,9 @@ export class SyncService {
 
       console.log('Returning final version:', finalVersion);
       return finalVersion;
-    } catch (error: any) {
+    } catch (error) {
       console.error('Sync failed', error);
-      const errorMessage = error.message || 'Unknown error occurred';
+      const errorMessage = 'Unknown error occurred';
       this.updateStatus(`Sync failed: ${errorMessage}`);
 
       // Don't let notification service block error handling
@@ -290,14 +295,17 @@ export class SyncService {
     }
   }
 
-  public async checkForUpdates(force: boolean = false): Promise<boolean> {
+  public async checkForUpdates(): Promise<boolean> {
     try {
       const manifest = await this.withAutoLoginRetry(
         () => synkronusApi.getManifest(),
         'check for updates',
       );
       const currentVersion = (await AsyncStorage.getItem('@appVersion')) || '0';
-      const updateAvailable = force || manifest.version !== currentVersion;
+      // Only report an update when the version actually differs.
+      // The "force" flag controls whether we *perform* a fresh network check,
+      // not whether we force the result to "update available".
+      const updateAvailable = manifest.version !== currentVersion;
 
       if (updateAvailable) {
         this.updateStatus(`${this.getStatus()} (Update available)`);
@@ -318,6 +326,13 @@ export class SyncService {
     this.isSyncing = true;
     this.autoLoginRetryCount = 0; // Reset retry count for new bundle update
     this.updateStatus('Starting app bundle sync...');
+    // Expose progress to the UI so users can see bundle download progress.
+    this.updateProgress({
+      current: 0,
+      total: 100,
+      phase: 'attachments_download',
+      details: 'Preparing app bundle download...',
+    });
 
     try {
       // Get manifest to know what version we're downloading
@@ -339,6 +354,12 @@ export class SyncService {
       const syncTime = new Date().toLocaleTimeString();
       await AsyncStorage.setItem('@lastSync', syncTime);
       this.updateStatus('App bundle sync completed');
+      this.updateProgress({
+        current: 100,
+        total: 100,
+        phase: 'attachments_download',
+        details: 'App bundle sync completed',
+      });
     } catch (error) {
       console.error('App sync failed', error);
       this.updateStatus('App sync failed');
@@ -366,8 +387,17 @@ export class SyncService {
           synkronusApi.downloadFormSpecs(
             manifest,
             RNFS.DocumentDirectoryPath,
-            progress =>
-              this.updateStatus(`Downloading form specs... ${progress}%`),
+            progress => {
+              const normalized = Math.max(0, Math.min(100, progress));
+              this.updateStatus(`Downloading form specs... ${normalized}%`);
+              // Use 0–50% of the overall range for form specs
+              this.updateProgress({
+                current: Math.round((normalized / 100) * 50),
+                total: 100,
+                phase: 'attachments_download',
+                details: `Downloading form specs... ${normalized}%`,
+              });
+            },
           ),
         'download form specs',
       );
@@ -379,8 +409,17 @@ export class SyncService {
           synkronusApi.downloadAppFiles(
             manifest,
             RNFS.DocumentDirectoryPath,
-            progress =>
-              this.updateStatus(`Downloading app files... ${progress}%`),
+            progress => {
+              const normalized = Math.max(0, Math.min(100, progress));
+              this.updateStatus(`Downloading app files... ${normalized}%`);
+              // Use 50–100% of the overall range for app files
+              this.updateProgress({
+                current: 50 + Math.round((normalized / 100) * 50),
+                total: 100,
+                phase: 'attachments_download',
+                details: `Downloading app files... ${normalized}%`,
+              });
+            },
           ),
         'download app files',
       );

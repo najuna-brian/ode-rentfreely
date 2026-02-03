@@ -12,7 +12,7 @@
 ## Example
 
 ```typescript
-import {AttachmentManifestResponse} from './api';
+import { AttachmentManifestResponse } from './api';
 
 const instance: AttachmentManifestResponse = {
   current_version,

@@ -1,4 +1,4 @@
-import {Platform} from 'react-native';
+import { Platform } from 'react-native';
 import {
   check,
   request,
@@ -44,6 +44,6 @@ export async function ensureLocationPermission({
 export async function hasLocationPermission({
   background = false,
 }: LocationPermissionOptions = {}): Promise<boolean> {
-  const status = await ensureLocationPermission({background});
+  const status = await ensureLocationPermission({ background });
   return status === RESULTS.GRANTED;
 }

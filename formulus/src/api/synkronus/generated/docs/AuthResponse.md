@@ -11,7 +11,7 @@
 ## Example
 
 ```typescript
-import {AuthResponse} from './api';
+import { AuthResponse } from './api';
 
 const instance: AuthResponse = {
   token,

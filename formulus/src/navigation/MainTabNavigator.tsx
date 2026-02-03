@@ -1,7 +1,7 @@
 import React from 'react';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {useSafeAreaInsets} from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Icon from '@react-native-vector-icons/material-design-icons';
 import HomeScreen from '../screens/HomeScreen';
 import FormsScreen from '../screens/FormsScreen';
 import ObservationsScreen from '../screens/ObservationsScreen';
@@ -10,7 +10,8 @@ import SettingsScreen from '../screens/SettingsScreen';
 import AboutScreen from '../screens/AboutScreen';
 import HelpScreen from '../screens/HelpScreen';
 import MoreScreen from '../screens/MoreScreen';
-import {MainTabParamList} from '../types/NavigationTypes';
+import { colors } from '../theme/colors';
+import { MainTabParamList } from '../types/NavigationTypes';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -19,23 +20,23 @@ type TabBarIconProps = {
   size: number;
 };
 
-const renderHomeIcon = ({color, size}: TabBarIconProps) => (
+const renderHomeIcon = ({ color, size }: TabBarIconProps) => (
   <Icon name="home" size={size} color={color} />
 );
 
-const renderFormsIcon = ({color, size}: TabBarIconProps) => (
+const renderFormsIcon = ({ color, size }: TabBarIconProps) => (
   <Icon name="file-document-outline" size={size} color={color} />
 );
 
-const renderObservationsIcon = ({color, size}: TabBarIconProps) => (
+const renderObservationsIcon = ({ color, size }: TabBarIconProps) => (
   <Icon name="clipboard-text-outline" size={size} color={color} />
 );
 
-const renderSyncIcon = ({color, size}: TabBarIconProps) => (
+const renderSyncIcon = ({ color, size }: TabBarIconProps) => (
   <Icon name="sync" size={size} color={color} />
 );
 
-const renderMoreIcon = ({color, size}: TabBarIconProps) => (
+const renderMoreIcon = ({ color, size }: TabBarIconProps) => (
   <Icon name="menu" size={size} color={color} />
 );
 
@@ -48,12 +49,12 @@ const MainTabNavigator: React.FC = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: '#007AFF',
-        tabBarInactiveTintColor: '#999999',
+        tabBarActiveTintColor: colors.semantic.info.ios,
+        tabBarInactiveTintColor: colors.neutral[500],
         tabBarStyle: {
-          backgroundColor: '#FFFFFF',
+          backgroundColor: colors.neutral.white,
           borderTopWidth: 1,
-          borderTopColor: '#E5E5E5',
+          borderTopColor: colors.ui.gray.light,
           paddingBottom: Math.max(insets.bottom, 4),
           paddingTop: 4,
           height: tabBarHeight,
@@ -114,12 +115,12 @@ const MainTabNavigator: React.FC = () => {
         options={{
           tabBarIcon: renderMoreIcon,
         }}
-        listeners={({navigation}) => ({
-          tabPress: _e => {
+        listeners={({ navigation }) => ({
+          tabPress: () => {
             const state = navigation.getState();
             const currentRoute = state.routes[state.index];
             if (currentRoute?.name === 'More') {
-              navigation.setParams({openDrawer: Date.now()});
+              navigation.setParams({ openDrawer: Date.now() });
             }
           },
         })}

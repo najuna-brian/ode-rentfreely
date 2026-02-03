@@ -1,18 +1,41 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [
     react({
       babel: {
-        plugins: [['babel-plugin-react-compiler']],
+        // Disable React Compiler - it causes issues in production builds
+        // The compiler is experimental and can break React internals
+        plugins: [],
       },
     }),
   ],
-  // Disable caching in development to prevent stale code issues
+  // Ensure React is properly resolved and deduplicated
+  resolve: {
+    dedupe: ['react', 'react-dom'],
+  },
   optimizeDeps: {
-    force: true, // Force re-optimization of dependencies
+    include: ['react', 'react-dom'],
+  },
+  build: {
+    // Ensure React is not bundled multiple times
+    commonjsOptions: {
+      include: [/node_modules/],
+      transformMixedEsModules: true,
+    },
+    rollupOptions: {
+      output: {
+        // Let Vite handle chunking automatically for proper module resolution
+        manualChunks: undefined,
+      },
+    },
+    // Ensure proper module format
+    target: 'esnext',
+    modulePreload: {
+      polyfill: true,
+    },
   },
   server: {
     host: '0.0.0.0', // Allow external connections (needed for Docker)
@@ -21,8 +44,8 @@ export default defineConfig({
     // Disable caching in development
     headers: {
       'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
-      'Pragma': 'no-cache',
-      'Expires': '0',
+      Pragma: 'no-cache',
+      Expires: '0',
     },
     hmr: {
       // Hot Module Replacement configuration
@@ -42,32 +65,44 @@ export default defineConfig({
       // Locally: uses 'localhost'
       '/api': {
         // In Docker, use service name; locally, use localhost
-        target: process.env.DOCKER_ENV === 'true' || process.env.VITE_API_URL?.includes('synkronus:')
-          ? 'http://synkronus:8080'
-          : process.env.API_URL || 'http://localhost:8080',
+        target:
+          process.env.DOCKER_ENV === 'true' ||
+          process.env.VITE_API_URL?.includes('synkronus:')
+            ? 'http://synkronus:8080'
+            : process.env.API_URL || 'http://localhost:8080',
         changeOrigin: true,
         secure: false,
-        rewrite: (path) => {
-          const rewritten = path.replace(/^\/api/, '')
-          console.log(`[Vite Proxy] Rewriting ${path} -> ${rewritten}`)
-          return rewritten
+        rewrite: path => {
+          const rewritten = path.replace(/^\/api/, '');
+          console.log(`[Vite Proxy] Rewriting ${path} -> ${rewritten}`);
+          return rewritten;
         },
         configure: (proxy, _options) => {
           proxy.on('error', (err, req, _res) => {
-            console.error('[Vite Proxy] Error:', err)
-            console.error('[Vite Proxy] Request URL:', req.url)
-            console.error('[Vite Proxy] Target:', process.env.DOCKER_ENV === 'true' || process.env.VITE_API_URL?.includes('synkronus:')
-              ? 'http://synkronus:8080'
-              : process.env.API_URL || 'http://localhost:8080')
-          })
+            console.error('[Vite Proxy] Error:', err);
+            console.error('[Vite Proxy] Request URL:', req.url);
+            console.error(
+              '[Vite Proxy] Target:',
+              process.env.DOCKER_ENV === 'true' ||
+                process.env.VITE_API_URL?.includes('synkronus:')
+                ? 'http://synkronus:8080'
+                : process.env.API_URL || 'http://localhost:8080',
+            );
+          });
           proxy.on('proxyReq', (proxyReq, req, _res) => {
-            console.log('[Vite Proxy] Proxying request:', req.method, req.url, '->', proxyReq.path)
-          })
+            console.log(
+              '[Vite Proxy] Proxying request:',
+              req.method,
+              req.url,
+              '->',
+              proxyReq.path,
+            );
+          });
           proxy.on('proxyRes', (proxyRes, req, _res) => {
-            console.log('[Vite Proxy] Response:', proxyRes.statusCode, req.url)
-          })
+            console.log('[Vite Proxy] Response:', proxyRes.statusCode, req.url);
+          });
         },
       },
     },
   },
-})
+});

@@ -1,8 +1,8 @@
-import {Database} from '@nozbe/watermelondb';
+import { Database } from '@nozbe/watermelondb';
 import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
-import {schemas} from './schema';
-import {ObservationModel} from './models/ObservationModel';
-import {schemaMigrations} from '@nozbe/watermelondb/Schema/migrations';
+import { schemas } from './schema';
+import { ObservationModel } from './models/ObservationModel';
+import { schemaMigrations } from '@nozbe/watermelondb/Schema/migrations';
 
 // Define migrations
 const migrations = schemaMigrations({
@@ -14,7 +14,7 @@ const migrations = schemaMigrations({
         {
           type: 'add_columns',
           table: 'observations',
-          columns: [{name: 'form_type_id', type: 'string', isIndexed: true}],
+          columns: [{ name: 'form_type_id', type: 'string', isIndexed: true }],
         },
       ],
     },
@@ -25,7 +25,7 @@ const migrations = schemaMigrations({
         {
           type: 'add_columns',
           table: 'observations',
-          columns: [{name: 'geolocation', type: 'string'}],
+          columns: [{ name: 'geolocation', type: 'string' }],
         },
       ],
     },
@@ -37,8 +37,8 @@ const migrations = schemaMigrations({
           type: 'add_columns',
           table: 'observations',
           columns: [
-            {name: 'author', type: 'string'},
-            {name: 'device_id', type: 'string'},
+            { name: 'author', type: 'string' },
+            { name: 'device_id', type: 'string' },
           ],
         },
       ],

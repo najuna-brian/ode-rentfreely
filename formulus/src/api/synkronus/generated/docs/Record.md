@@ -18,7 +18,7 @@
 ## Example
 
 ```typescript
-import {Record} from './api';
+import { Record } from './api';
 
 const instance: Record = {
   id,

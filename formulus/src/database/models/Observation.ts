@@ -1,4 +1,4 @@
-import {ObservationGeolocation} from '../../types/Geolocation';
+import { ObservationGeolocation } from '../../types/Geolocation';
 
 /**
  * Interface for the observation data structure. This is
@@ -30,7 +30,7 @@ export interface Observation {
  * Type for the raw form data payload (what comes from the WebView)
  * This is the flexible JSON object containing the actual form field values
  */
-export type ObservationData = Record<string, any>;
+export type ObservationData = Record<string, unknown>;
 
 /**
  * Type for creating a new observation

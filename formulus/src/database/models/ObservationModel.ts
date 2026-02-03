@@ -1,5 +1,5 @@
-import {Model} from '@nozbe/watermelondb';
-import {field, text, date, readonly} from '@nozbe/watermelondb/decorators';
+import { Model } from '@nozbe/watermelondb';
+import { field, text, date, readonly } from '@nozbe/watermelondb/decorators';
 
 /**
  * Model representing a completed form observation in WatermelonDB
@@ -23,7 +23,7 @@ export class ObservationModel extends Model {
   /**
    * Get the parsed data object
    */
-  getParsedData(): any {
+  getParsedData() {
     try {
       return JSON.parse(this.data);
     } catch (error) {
