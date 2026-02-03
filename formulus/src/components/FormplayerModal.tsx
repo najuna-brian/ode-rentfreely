@@ -283,7 +283,8 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
               {} as Record<string, any>,
             ),
             // Base path for loading modules (file:// URL for WebView)
-            basePath: `file://${customAppPath}`,
+            // Extensions are in the /forms directory
+            basePath: `file://${customAppPath}/forms`,
           };
         }
       } catch (error) {

@@ -82,9 +82,10 @@ Transform static dropdowns into dynamic, data-driven selections:
 Dynamic Choice Lists enable:
 
 ✅ **Data-driven dropdowns** - Load from existing observations  
-✅ **Cascading filters** - Village → Subvillage → Household  
-✅ **Real-time queries** - Updates when dependencies change  
+✅ **Filtered queries** - Filter by static parameters  
 ✅ **ODK-X parity** - Replaces linked tables and "select person"  
+
+**Note:** Cascading dropdowns (template parameters like `{{data.field}}`) are not supported. Use static filters only.
 
 ### Architecture
 
@@ -162,7 +163,11 @@ Dynamic Choice Lists enable:
 
 **Result:** Shows only males from hh_person observations.
 
-### Example 3: Cascading Dropdown (Village → Subvillage)
+---
+
+## Real-World Examples
+
+### 📍 Location Selection (Static Filters)
 
 ```json
 {
@@ -185,7 +190,7 @@ Dynamic Choice Lists enable:
       "function": "getDynamicChoiceList",
       "query": "household",
       "params": {
-        "hh_village_name": "{{data.village}}"
+        "hh_village_name": "kopria"
       },
       "valueField": "data.hh_subvillage",
       "labelField": "data.hh_subvillage",
@@ -195,63 +200,7 @@ Dynamic Choice Lists enable:
 }
 ```
 
-**How it works:**
-1. User selects village (e.g., "kopria")
-2. Template `{{data.village}}` resolves to "kopria"
-3. Subvillage query filters: `WHERE data.hh_village_name = 'kopria'`
-4. Only subvillages from Kopria appear
-
----
-
-## Real-World Examples
-
-### 📍 Location Selection (Village → Subvillage → Household)
-
-```json
-{
-  "village": {
-    "type": "string",
-    "title": "1. Select Village",
-    "x-dynamicEnum": {
-      "function": "getDynamicChoiceList",
-      "query": "household",
-      "params": {},
-      "valueField": "data.hh_village_name",
-      "labelField": "data.hh_village_name",
-      "distinct": true
-    }
-  },
-  "subvillage": {
-    "type": "string",
-    "title": "2. Select Subvillage",
-    "x-dynamicEnum": {
-      "function": "getDynamicChoiceList",
-      "query": "household",
-      "params": {
-        "hh_village_name": "{{data.village}}"
-      },
-      "valueField": "data.hh_subvillage",
-      "labelField": "data.hh_subvillage",
-      "distinct": true
-    }
-  },
-  "household_id": {
-    "type": "string",
-    "title": "3. Select Household",
-    "x-dynamicEnum": {
-      "function": "getDynamicChoiceList",
-      "query": "household",
-      "params": {
-        "hh_village_name": "{{data.village}}",
-        "hh_subvillage": "{{data.subvillage}}"
-      },
-      "valueField": "observationId",
-      "labelField": "data.hoh_male",
-      "distinct": false
-    }
-  }
-}
-```
+**Note:** Template parameters (`{{data.field}}`) are not supported. Use static filter values.
 
 ### 👥 Select Person (ODK-X Pattern)
 
@@ -273,7 +222,7 @@ Dynamic Choice Lists enable:
 }
 ```
 
-**Filtered by Village:**
+**Filtered by Village (Static):**
 ```json
 {
   "person_id": {
@@ -283,7 +232,7 @@ Dynamic Choice Lists enable:
       "function": "getDynamicChoiceList",
       "query": "hh_person",
       "params": {
-        "p_hh_res_validation": "{{data.village}}"
+        "p_hh_res_validation": "kopria"
       },
       "valueField": "observationId",
       "labelField": "data.names",
@@ -292,6 +241,8 @@ Dynamic Choice Lists enable:
   }
 }
 ```
+
+**Note:** Template parameters are not supported. Use static values.
 
 **Filtered by Sex:**
 ```json
@@ -338,18 +289,6 @@ Dynamic Choice Lists enable:
 
 ```json
 {
-  "village": {
-    "type": "string",
-    "title": "Village",
-    "x-dynamicEnum": {
-      "function": "getDynamicChoiceList",
-      "query": "household",
-      "params": {},
-      "valueField": "data.hh_village_name",
-      "labelField": "data.hh_village_name",
-      "distinct": true
-    }
-  },
   "rank_1": {
     "type": "string",
     "title": "Most Influential Person (Rank #1)",
@@ -357,8 +296,7 @@ Dynamic Choice Lists enable:
       "function": "getDynamicChoiceList",
       "query": "hh_person",
       "params": {
-        "sex": "male",
-        "p_hh_res_validation": "{{data.village}}"
+        "sex": "male"
       },
       "valueField": "observationId",
       "labelField": "data.names",
@@ -372,8 +310,7 @@ Dynamic Choice Lists enable:
       "function": "getDynamicChoiceList",
       "query": "hh_person",
       "params": {
-        "sex": "male",
-        "p_hh_res_validation": "{{data.village}}"
+        "sex": "male"
       },
       "valueField": "observationId",
       "labelField": "data.names",
@@ -382,6 +319,8 @@ Dynamic Choice Lists enable:
   }
 }
 ```
+
+**Note:** Template parameters are not supported. Use static filters only.
 
 ### 👨‍👩‍👧‍👦 Kinship Survey
 
@@ -424,7 +363,47 @@ Dynamic Choice Lists enable:
 
 ### 🔢 Age-Based Filtering
 
-**Adults Only (18+):**
+**Adults Only (18+) - Using age_from_dob():**
+```json
+{
+  "adult_participant": {
+    "type": "string",
+    "title": "Select Adult (18+)",
+    "x-dynamicEnum": {
+      "function": "getDynamicChoiceList",
+      "query": "hh_person",
+      "params": {
+        "whereClause": "age_from_dob(data.dob) >= 18"
+      },
+      "valueField": "observationId",
+      "labelField": "data.names",
+      "distinct": false
+    }
+  }
+}
+```
+
+**Age Range - Using age_from_dob():**
+```json
+{
+  "working_age": {
+    "type": "string",
+    "title": "Select Working Age Adult (18-65)",
+    "x-dynamicEnum": {
+      "function": "getDynamicChoiceList",
+      "query": "hh_person",
+      "params": {
+        "whereClause": "age_from_dob(data.dob) >= 18 AND age_from_dob(data.dob) <= 65"
+      },
+      "valueField": "observationId",
+      "labelField": "data.names",
+      "distinct": false
+    }
+  }
+}
+```
+
+**Using p_age_participant_estimate (if available):**
 ```json
 {
   "adult_participant": {
@@ -444,17 +423,18 @@ Dynamic Choice Lists enable:
 }
 ```
 
-**Age Range:**
+**Combined Filters (Static + WHERE clause):**
 ```json
 {
-  "working_age": {
+  "adult_male": {
     "type": "string",
-    "title": "Select Working Age Adult (18-65)",
+    "title": "Select Adult Male (18+)",
     "x-dynamicEnum": {
       "function": "getDynamicChoiceList",
       "query": "hh_person",
       "params": {
-        "whereClause": "data.p_age_participant_estimate >= 18 AND data.p_age_participant_estimate <= 65"
+        "sex": "male",
+        "whereClause": "age_from_dob(data.dob) >= 18"
       },
       "valueField": "observationId",
       "labelField": "data.names",
@@ -464,27 +444,7 @@ Dynamic Choice Lists enable:
 }
 ```
 
-**Combined Filters:**
-```json
-{
-  "participant": {
-    "type": "string",
-    "title": "Select Adult Female from Village",
-    "x-dynamicEnum": {
-      "function": "getDynamicChoiceList",
-      "query": "hh_person",
-      "params": {
-        "sex": "female",
-        "p_hh_res_validation": "{{data.village}}",
-        "whereClause": "data.p_age_participant_estimate >= 18"
-      },
-      "valueField": "observationId",
-      "labelField": "data.names",
-      "distinct": false
-    }
-  }
-}
-```
+**Note:** `age_from_dob(data.dob)` calculates age from date of birth in JavaScript. Use this when you need accurate age calculations. Static age fields like `p_age_participant_estimate` can also be used directly in WHERE clauses.
 
 ---
 
@@ -516,13 +476,17 @@ isDeleted        // Is deleted?
 |----------|-------------|---------|
 | `=` | Equals | `data.sex = 'male'` |
 | `!=` or `<>` | Not equals | `data.sex != 'male'` |
-| `<` | Less than | `data.p_age_participant_estimate < 18` |
-| `>` | Greater than | `data.p_age_participant_estimate > 65` |
-| `<=` | Less than or equal | `data.p_age_participant_estimate <= 18` |
-| `>=` | Greater than or equal | `data.p_age_participant_estimate >= 18` |
-| `AND` | Logical AND | `data.sex = 'male' AND data.p_age_participant_estimate >= 18` |
+| `<` | Less than | `age_from_dob(data.dob) < 18` |
+| `>` | Greater than | `age_from_dob(data.dob) > 65` |
+| `<=` | Less than or equal | `age_from_dob(data.dob) <= 18` |
+| `>=` | Greater than or equal | `age_from_dob(data.dob) >= 18` |
+| `AND` | Logical AND | `age_from_dob(data.dob) >= 18 AND age_from_dob(data.dob) <= 65` |
 | `OR` | Logical OR | `data.hh_village_name = 'kopria' OR data.hh_village_name = 'chare'` |
-| `()` | Grouping | `(data.sex = 'male' AND data.p_age_participant_estimate >= 18) OR data.sex = 'female'` |
+| `NOT` | Logical NOT | `NOT (age_from_dob(data.dob) >= 18 AND age_from_dob(data.dob) <= 65)` |
+| `()` | Grouping | `(age_from_dob(data.dob) >= 18 AND age_from_dob(data.dob) <= 30) OR age_from_dob(data.dob) >= 50` |
+
+**Special Functions:**
+- `age_from_dob(data.dob)` - Calculates age from date of birth field. Use for accurate age filtering.
 
 ### Parameter Filtering vs WHERE Clauses
 
@@ -546,33 +510,23 @@ Equivalent to: `WHERE data.sex = 'male' AND data.p_hh_res_validation = 'kopria'`
 }
 ```
 
-**Combined:**
+**Combined (Static Filters + WHERE Clause):**
 ```json
 {
   "params": {
     "sex": "female",
-    "whereClause": "data.p_age_participant_estimate >= 18"
+    "whereClause": "age_from_dob(data.dob) >= 18"
   }
 }
 ```
-Equivalent to: `WHERE data.sex = 'female' AND data.p_age_participant_estimate >= 18`
+Equivalent to: `WHERE data.sex = 'female' AND age_from_dob(data.dob) >= 18`
 
-### Template Syntax
+**WHERE Clause Format:**
+- WHERE clauses using `data.field = 'value'` format are automatically converted to `json_extract(data, '$.field') = 'value'` format internally.
+- `age_from_dob()` conditions are filtered in JavaScript after fetching observations.
+- Static filter parameters (like `sex: "male"`) are automatically converted to the correct SQL format.
 
-Use `{{data.fieldName}}` to reference form data:
-
-```json
-{
-  "params": {
-    "hh_village_name": "{{data.village}}"
-  }
-}
-```
-
-**How it works:**
-1. User fills in `village` field
-2. Template resolves: `{{data.village}}` → `"kopria"`
-3. Query filters: `WHERE data.hh_village_name = 'kopria'`
+**Note:** Template syntax (`{{data.fieldName}}`) is not supported. Use static filter values only.
 
 ### Query Optimization Tips
 
@@ -581,10 +535,10 @@ Use `{{data.fieldName}}` to reference form data:
 {"distinct": true}  // Returns ["kopria", "chare"] instead of 100 duplicates
 ```
 
-✅ **Filter early in cascading:**
+✅ **Filter at query level:**
 ```json
 // Good - filters at query level
-{"params": {"p_hh_res_validation": "{{data.village}}"}}
+{"params": {"p_hh_res_validation": "kopria"}}
 
 // Bad - loads all then filters in UI
 {"params": {}}
@@ -595,7 +549,7 @@ Use `{{data.fieldName}}` to reference form data:
 {
   "params": {
     "sex": "female",
-    "p_hh_res_validation": "{{data.village}}",
+    "p_hh_res_validation": "kopria",
     "whereClause": "data.p_age_participant_estimate >= 18"
   }
 }
@@ -639,37 +593,25 @@ Use `{{data.fieldName}}` to reference form data:
 
 **Possible Causes:**
 
-1. **Template not resolving**
-   - Check: Is parent field selected? `{{data.village}}` needs `village` filled in
-   - Solution: Select parent field first
-
-2. **Filter field name mismatch**
+1. **Filter field name mismatch**
    - Check: Does param name match database field?
    - Example: Using `village_name` but database has `hh_village_name`
    - Solution: Use correct field name from form schema
 
-3. **Value mismatch (case-sensitive)**
+2. **Value mismatch (case-sensitive)**
    - Check: Do values match exactly?
    - Example: "Kopria" vs "kopria"
    - Solution: Ensure consistent casing
+
+3. **Filter value not matching any records**
+   - Check: Do any observations have this exact value?
+   - Solution: Verify filter value exists in database
 
 **Debug:**
 Check console for resolved WHERE clause:
 ```
 [builtinExtensions] Built WHERE clause: data.hh_village_name = 'kopria'
 ```
-
-### Problem: Dropdown Doesn't Update When Parent Changes
-
-**Possible Causes:**
-
-1. **Template syntax error**
-   - Correct: `{{data.village}}`
-   - Incorrect: `{{village}}` (missing `data.`)
-
-2. **Field name typo**
-   - Check: Does `{{data.village}}` match actual parent field name?
-   - Solution: Match template to exact field name
 
 ### Problem: "Failed to load form" Error
 
@@ -720,15 +662,6 @@ cd formulus
 npx react-native start
 ```
 
-**Temporary Debug Fields:**
-```json
-{
-  "debug_value": {
-    "type": "string",
-    "title": "Debug: {{data.village}}"
-  }
-}
-```
 
 ---
 
@@ -742,7 +675,6 @@ npx react-native start
 - [ ] `labelField` is human-readable
 - [ ] `distinct` set appropriately
 - [ ] `params` filter fields exist
-- [ ] Template syntax correct: `{{data.field}}`
 - [ ] Tested with real data
 - [ ] Console shows expected results
 - [ ] Performance < 1 second load time
@@ -751,11 +683,11 @@ npx react-native start
 
 ✅ **Do:**
 - Use `distinct: true` for unique values
-- Filter early in cascading dropdowns
 - Use parameter filtering for simple cases
 - Use meaningful `labelField`
 - Test with actual data
 - Use `valueField: "observationId"` for record references
+- Use static filter values
 
 ❌ **Don't:**
 - Query all observations without filtering
@@ -763,6 +695,7 @@ npx react-native start
 - Forget `data.` prefix in field paths
 - Use typos in field names
 - Query non-existent form types
+- Use template parameters (`{{data.field}}`) - not supported
 
 ### Migration from Static Enums
 
@@ -804,11 +737,11 @@ npx react-native start
 |---------------|---------------------|
 | Linked tables with SQL | `x-dynamicEnum` with `query` |
 | Select person prompt | `query: "hh_person"` with filters |
-| Cascading selects | `params` with templates |
 | Choice filters | `params` or `whereClause` |
 | `query()` function | `getDynamicChoiceList` |
-| `?` SQL parameters | `{{data.field}}` templates |
 | `_id` column | `observationId` field |
+
+**Note:** Cascading selects (template parameters) are not supported.
 
 ---
 
@@ -817,10 +750,11 @@ npx react-native start
 Dynamic Choice Lists provide:
 
 ✅ Data-driven dropdowns from local observations  
-✅ Cascading filters (village → subvillage → household → person)  
-✅ Real-time queries with template parameters  
+✅ Filtered queries with static parameters  
 ✅ ODK-X feature parity (select person, ranking)  
 ✅ Production-ready with error handling  
+
+**Note:** Cascading dropdowns (template parameters) are not supported.  
 
 ### Key Files
 

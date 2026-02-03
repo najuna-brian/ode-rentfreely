@@ -112,18 +112,20 @@ const DynamicEnumControl: React.FC<ControlProps> = ({
   visible = true,
 }) => {
   const { functions } = useFormEvaluation();
-  const jsonFormsContext = useJsonForms();
-  const formData = jsonFormsContext?.data || {};
+  const ctx = useJsonForms();
   
   const [choices, setChoices] = useState<Array<{ const: any; title: string }>>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [localSchema, setLocalSchema] = useState(schema);
-
-  // Get x-dynamicEnum configuration
+  
+  // Get x-dynamicEnum configuration first
   const dynamicConfig = useMemo(() => {
     return (schema as any)?.['x-dynamicEnum'] as DynamicEnumConfig | undefined;
   }, [schema]);
+  
+  // Get current form data for template parameter resolution
+  const currentFormData = ctx?.core?.data || {};
 
   // Handle value change - must be defined before any early returns
   const handleValueChange = useCallback(
@@ -174,9 +176,9 @@ const DynamicEnumControl: React.FC<ControlProps> = ({
     setError(null);
 
     try {
-      // Resolve template parameters
+      // Resolve template parameters (if any - they will be ignored if unresolved)
       const resolvedParams = dynamicConfig.params
-        ? resolveTemplateParams(dynamicConfig.params, formData as Record<string, any>)
+        ? resolveTemplateParams(dynamicConfig.params, currentFormData as Record<string, any>)
         : {};
 
       // Add configuration for valueField, labelField, and distinct
@@ -191,7 +193,7 @@ const DynamicEnumControl: React.FC<ControlProps> = ({
       };
 
       // Call the function with correct signature: (queryName, params, formData)
-      const result = await func(dynamicConfig.query, paramsWithConfig, formData);
+      const result = await func(dynamicConfig.query, paramsWithConfig, currentFormData);
 
       if (!Array.isArray(result)) {
         throw new Error(`Function returned ${typeof result}, expected array`);
@@ -212,7 +214,7 @@ const DynamicEnumControl: React.FC<ControlProps> = ({
     } finally {
       setLoading(false);
     }
-  }, [dynamicConfig, functions, path]); // Removed formData from deps to prevent infinite loop
+  }, [dynamicConfig, functions, path, localSchema, currentFormData]); // Use currentFormData instead
 
   // Load choices on mount and when config changes
   useEffect(() => {
@@ -220,27 +222,7 @@ const DynamicEnumControl: React.FC<ControlProps> = ({
       loadChoices();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dynamicConfig?.query, JSON.stringify(dynamicConfig?.params), visible, enabled]); // Removed loadChoices from deps
-
-  // Re-load when form data changes ONLY if params reference form data
-  useEffect(() => {
-    if (!dynamicConfig?.params) return;
-    
-    // Check if any param uses template syntax
-    const hasTemplates = Object.values(dynamicConfig.params).some(
-      v => typeof v === 'string' && v.includes('{{')
-    );
-    
-    if (hasTemplates) {
-      // Debounce to avoid too many reloads
-      const timeoutId = setTimeout(() => {
-        loadChoices();
-      }, 300);
-      
-      return () => clearTimeout(timeoutId);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [JSON.stringify(formData)]); // Only depend on formData, not loadChoices
+  }, [dynamicConfig?.query, JSON.stringify(dynamicConfig?.params), visible, enabled]);
 
   // Early returns after all hooks
   if (!visible) {

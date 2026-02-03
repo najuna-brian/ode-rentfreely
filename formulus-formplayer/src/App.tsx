@@ -212,6 +212,7 @@ function App() {
   const [data, setData] = useState<FormData>({});
   const [schema, setSchema] = useState<FormSchema | null>(null);
   const [uischema, setUISchema] = useState<FormUISchema | null>(null);
+
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [showFinalizeMessage, setShowFinalizeMessage] = useState(false);
@@ -708,6 +709,17 @@ function App() {
   }
 
   if (loadError || !schema || !uischema) {
+    // Log error but don't display it - user has logs for debugging
+    if (loadError) {
+      console.error('[Formplayer] Load error:', loadError);
+    }
+    if (!schema) {
+      console.warn('[Formplayer] Schema not loaded yet');
+    }
+    if (!uischema) {
+      console.warn('[Formplayer] UI schema not loaded yet');
+    }
+    // Show loading state instead of error
     return (
       <Box
         sx={{
@@ -718,11 +730,9 @@ function App() {
           height: '100dvh',
         }}
       >
-        <Typography variant="h6" color="error">
-          Failed to load form
-        </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          {loadError || 'Please try again or contact support if the problem persists.'}
+        <CircularProgress />
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          Loading form...
         </Typography>
       </Box>
     );
