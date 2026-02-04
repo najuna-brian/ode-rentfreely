@@ -1,30 +1,30 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { withJsonFormsControlProps } from "@jsonforms/react";
+import React, { useState, useCallback, useEffect } from 'react';
+import { withJsonFormsControlProps } from '@jsonforms/react';
 import {
   ControlProps,
   rankWith,
   schemaTypeIs,
   and,
   schemaMatches,
-} from "@jsonforms/core";
-import { TextField, Box, Typography, Alert, Button } from "@mui/material";
-import { CalendarToday } from "@mui/icons-material";
-import QuestionShell from "../components/QuestionShell";
+} from '@jsonforms/core';
+import { TextField, Box, Typography, Alert, Button } from '@mui/material';
+import { CalendarToday } from '@mui/icons-material';
+import QuestionShell from '../components/QuestionShell';
 import {
   adateToStorageFormat,
   storageFormatToAdate,
   displayAdate,
   todayAdate,
   yesterdayAdate,
-} from "../utils/adateUtils";
+} from '../utils/adateUtils';
 
 // Tester function - determines when this renderer should be used
 export const adateQuestionTester = rankWith(
   5, // Priority (higher = more specific)
   and(
-    schemaTypeIs("string"), // Expects string data type
-    schemaMatches((schema) => schema.format === "adate") // Matches format
-  )
+    schemaTypeIs('string'), // Expects string data type
+    schemaMatches(schema => schema.format === 'adate'), // Matches format
+  ),
 );
 
 const AdateQuestionRenderer: React.FC<ControlProps> = ({
@@ -37,16 +37,16 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
   visible = true,
 }) => {
   // State for date components
-  const [day, setDay] = useState<string>("");
-  const [month, setMonth] = useState<string>("");
-  const [year, setYear] = useState<string>("");
+  const [day, setDay] = useState<string>('');
+  const [month, setMonth] = useState<string>('');
+  const [year, setYear] = useState<string>('');
   const [dayUnknown, setDayUnknown] = useState<boolean>(false);
   const [monthUnknown, setMonthUnknown] = useState<boolean>(false);
   const [yearUnknown, setYearUnknown] = useState<boolean>(false);
 
   // Initialize from data
   useEffect(() => {
-    if (data && typeof data === "string") {
+    if (data && typeof data === 'string') {
       // Convert storage format to adate format for editing
       const adateFormat = storageFormatToAdate(data);
       if (adateFormat) {
@@ -57,23 +57,23 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
 
         if (dayMatch) {
           // eslint-disable-next-line react-hooks/set-state-in-effect
-          setDayUnknown(dayMatch[1] === "NS");
-          setDay(dayMatch[1] === "NS" ? "" : dayMatch[1]);
+          setDayUnknown(dayMatch[1] === 'NS');
+          setDay(dayMatch[1] === 'NS' ? '' : dayMatch[1]);
         }
         if (monthMatch) {
-          setMonthUnknown(monthMatch[1] === "NS");
-          setMonth(monthMatch[1] === "NS" ? "" : monthMatch[1]);
+          setMonthUnknown(monthMatch[1] === 'NS');
+          setMonth(monthMatch[1] === 'NS' ? '' : monthMatch[1]);
         }
         if (yearMatch) {
-          setYearUnknown(yearMatch[1] === "NS");
-          setYear(yearMatch[1] === "NS" ? "" : yearMatch[1]);
+          setYearUnknown(yearMatch[1] === 'NS');
+          setYear(yearMatch[1] === 'NS' ? '' : yearMatch[1]);
         }
       }
     } else {
       // Initialize empty
-      setDay("");
-      setMonth("");
-      setYear("");
+      setDay('');
+      setMonth('');
+      setYear('');
       setDayUnknown(false);
       setMonthUnknown(false);
       setYearUnknown(false);
@@ -82,9 +82,9 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
 
   // Update form data when components change
   const updateFormData = useCallback(() => {
-    const dayValue = dayUnknown ? "NS" : day;
-    const monthValue = monthUnknown ? "NS" : month;
-    const yearValue = yearUnknown ? "NS" : year;
+    const dayValue = dayUnknown ? 'NS' : day;
+    const monthValue = monthUnknown ? 'NS' : month;
+    const yearValue = yearUnknown ? 'NS' : year;
 
     // Build adate string
     const adateString = `D:${dayValue},M:${monthValue},Y:${yearValue}`;
@@ -94,7 +94,7 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
     if (storageFormat) {
       handleChange(path, storageFormat);
     } else {
-      handleChange(path, "");
+      handleChange(path, '');
     }
   }, [
     day,
@@ -112,7 +112,7 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
       if (
-        value === "" ||
+        value === '' ||
         (/^\d+$/.test(value) &&
           parseInt(value, 10) >= 1 &&
           parseInt(value, 10) <= 31)
@@ -121,7 +121,7 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
         updateFormData();
       }
     },
-    [updateFormData]
+    [updateFormData],
   );
 
   // Handle month change
@@ -129,7 +129,7 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
       if (
-        value === "" ||
+        value === '' ||
         (/^\d+$/.test(value) &&
           parseInt(value, 10) >= 1 &&
           parseInt(value, 10) <= 12)
@@ -138,19 +138,19 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
         updateFormData();
       }
     },
-    [updateFormData]
+    [updateFormData],
   );
 
   // Handle year change
   const handleYearChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
       const value = event.target.value;
-      if (value === "" || /^\d{4}$/.test(value)) {
+      if (value === '' || /^\d{4}$/.test(value)) {
         setYear(value);
         updateFormData();
       }
     },
-    [updateFormData]
+    [updateFormData],
   );
 
   // Handle quick date buttons
@@ -193,38 +193,35 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
 
   const hasError =
     errors && (Array.isArray(errors) ? errors.length > 0 : errors.length > 0);
-  const displayValue = data ? displayAdate(data) : "";
+  const displayValue = data ? displayAdate(data) : '';
   const errorMessage = hasError
     ? Array.isArray(errors)
-      ? errors.join(", ")
+      ? errors.join(', ')
       : String(errors)
     : undefined;
 
   return (
     <QuestionShell
-      title={schema.title || "Approximate Date"}
+      title={schema.title || 'Approximate Date'}
       description={schema.description}
-      required={schema.required?.includes(path.split(".").pop() || "")}
-      error={errorMessage}
-    >
+      required={schema.required?.includes(path.split('.').pop() || '')}
+      error={errorMessage}>
       <Box sx={{ mb: 2 }}>
         {/* Quick date buttons */}
-        <Box sx={{ display: "flex", gap: 1, mb: 2 }}>
+        <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
           <Button
             variant="outlined"
             size="small"
             startIcon={<CalendarToday />}
             onClick={handleToday}
-            disabled={!enabled}
-          >
+            disabled={!enabled}>
             Today
           </Button>
           <Button
             variant="outlined"
             size="small"
             onClick={handleYesterday}
-            disabled={!enabled}
-          >
+            disabled={!enabled}>
             Yesterday
           </Button>
         </Box>
@@ -232,21 +229,19 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
         {/* Date input fields */}
         <Box
           sx={{
-            display: "flex",
+            display: 'flex',
             gap: 2,
-            alignItems: "flex-start",
-            flexWrap: "wrap",
-          }}
-        >
+            alignItems: 'flex-start',
+            flexWrap: 'wrap',
+          }}>
           {/* Day */}
           <Box
             sx={{
-              display: "flex",
-              flexDirection: "column",
+              display: 'flex',
+              flexDirection: 'column',
               gap: 1,
               minWidth: 120,
-            }}
-          >
+            }}>
             <TextField
               label="Day"
               value={day}
@@ -257,17 +252,17 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
               size="small"
               fullWidth
             />
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <input
                 type="checkbox"
                 checked={dayUnknown}
-                onChange={(e) => {
+                onChange={e => {
                   setDayUnknown(e.target.checked);
-                  if (e.target.checked) setDay("");
+                  if (e.target.checked) setDay('');
                   updateFormData();
                 }}
                 disabled={!enabled}
-                style={{ cursor: enabled ? "pointer" : "not-allowed" }}
+                style={{ cursor: enabled ? 'pointer' : 'not-allowed' }}
               />
               <Typography variant="caption">Unknown</Typography>
             </Box>
@@ -276,12 +271,11 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
           {/* Month */}
           <Box
             sx={{
-              display: "flex",
-              flexDirection: "column",
+              display: 'flex',
+              flexDirection: 'column',
               gap: 1,
               minWidth: 120,
-            }}
-          >
+            }}>
             <TextField
               label="Month"
               value={month}
@@ -292,17 +286,17 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
               size="small"
               fullWidth
             />
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <input
                 type="checkbox"
                 checked={monthUnknown}
-                onChange={(e) => {
+                onChange={e => {
                   setMonthUnknown(e.target.checked);
-                  if (e.target.checked) setMonth("");
+                  if (e.target.checked) setMonth('');
                   updateFormData();
                 }}
                 disabled={!enabled}
-                style={{ cursor: enabled ? "pointer" : "not-allowed" }}
+                style={{ cursor: enabled ? 'pointer' : 'not-allowed' }}
               />
               <Typography variant="caption">Unknown</Typography>
             </Box>
@@ -311,12 +305,11 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
           {/* Year */}
           <Box
             sx={{
-              display: "flex",
-              flexDirection: "column",
+              display: 'flex',
+              flexDirection: 'column',
               gap: 1,
               minWidth: 120,
-            }}
-          >
+            }}>
             <TextField
               label="Year"
               value={year}
@@ -327,17 +320,17 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
               size="small"
               fullWidth
             />
-            <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
               <input
                 type="checkbox"
                 checked={yearUnknown}
-                onChange={(e) => {
+                onChange={e => {
                   setYearUnknown(e.target.checked);
-                  if (e.target.checked) setYear("");
+                  if (e.target.checked) setYear('');
                   updateFormData();
                 }}
                 disabled={!enabled}
-                style={{ cursor: enabled ? "pointer" : "not-allowed" }}
+                style={{ cursor: enabled ? 'pointer' : 'not-allowed' }}
               />
               <Typography variant="caption">Unknown</Typography>
             </Box>
@@ -345,8 +338,8 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
         </Box>
 
         {/* Display current value */}
-        {displayValue && displayValue !== "n/a" && (
-          <Box sx={{ mt: 2, p: 1.5, bgcolor: "grey.50", borderRadius: 1 }}>
+        {displayValue && displayValue !== 'n/a' && (
+          <Box sx={{ mt: 2, p: 1.5, bgcolor: 'grey.50', borderRadius: 1 }}>
             <Typography variant="body2" color="text.secondary">
               Current value: <strong>{displayValue}</strong>
             </Typography>
@@ -356,7 +349,7 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
         {/* Validation errors */}
         {hasError && (
           <Alert severity="error" sx={{ mt: 2 }}>
-            {Array.isArray(errors) ? errors.join(", ") : String(errors)}
+            {Array.isArray(errors) ? errors.join(', ') : String(errors)}
           </Alert>
         )}
       </Box>

@@ -1,12 +1,12 @@
-import React, { useState, useEffect, useRef, useCallback } from "react";
-import { withJsonFormsControlProps } from "@jsonforms/react";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { withJsonFormsControlProps } from '@jsonforms/react';
 import {
   ControlProps,
   rankWith,
   schemaTypeIs,
   and,
   schemaMatches,
-} from "@jsonforms/core";
+} from '@jsonforms/core';
 import {
   Box,
   Typography,
@@ -14,19 +14,19 @@ import {
   CardMedia,
   CardContent,
   IconButton,
-} from "@mui/material";
-import { PhotoCamera, Delete, Refresh } from "@mui/icons-material";
-import FormulusClient from "../services/FormulusInterface";
-import { CameraResult } from "../types/FormulusInterfaceDefinition";
-import QuestionShell from "../components/QuestionShell";
+} from '@mui/material';
+import { PhotoCamera, Delete, Refresh } from '@mui/icons-material';
+import FormulusClient from '../services/FormulusInterface';
+import { CameraResult } from '../types/FormulusInterfaceDefinition';
+import QuestionShell from '../components/QuestionShell';
 
 // Tester function to identify photo question types
 export const photoQuestionTester = rankWith(
   5, // High priority for photo questions
   and(
-    schemaTypeIs("object"),
-    schemaMatches((schema) => schema.format === "photo")
-  )
+    schemaTypeIs('object'),
+    schemaMatches(schema => schema.format === 'photo'),
+  ),
 );
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
@@ -51,36 +51,36 @@ const PhotoQuestionRenderer: React.FC<PhotoQuestionProps> = ({
   const setSafeError = useCallback((errorMessage: string | null) => {
     if (errorMessage === null || errorMessage === undefined) {
       setError(null);
-    } else if (typeof errorMessage === "string" && errorMessage.length > 0) {
+    } else if (typeof errorMessage === 'string' && errorMessage.length > 0) {
       setError(errorMessage);
     } else {
       console.warn(
-        "Invalid error message detected:",
+        'Invalid error message detected:',
         errorMessage,
-        "Type:",
-        typeof errorMessage
+        'Type:',
+        typeof errorMessage,
       );
-      setError("An unknown error occurred");
+      setError('An unknown error occurred');
     }
   }, []);
   const formulusClient = useRef<FormulusClient>(FormulusClient.getInstance());
 
   // Extract field ID from the path for use with the camera interface
-  const fieldId = path.replace(/\//g, "_").replace(/^_/, "") || "photo_field";
+  const fieldId = path.replace(/\//g, '_').replace(/^_/, '') || 'photo_field';
 
   // Get the current photo data from the form data (now JSON format)
   const currentPhotoData = data || null;
 
   // Set photo URL from stored data if available
   useEffect(() => {
-    console.log("Photo data changed:", currentPhotoData);
+    console.log('Photo data changed:', currentPhotoData);
     if (currentPhotoData?.uri) {
       // For WebView, we need to handle file:// URLs differently
       // In development/mock mode, file URLs might work, but in production we need a different approach
-      console.log("Setting photo URL from stored data:", currentPhotoData.uri);
+      console.log('Setting photo URL from stored data:', currentPhotoData.uri);
       setPhotoUrl(currentPhotoData.uri);
     } else {
-      console.log("No photo URI found, clearing photoUrl state");
+      console.log('No photo URI found, clearing photoUrl state');
       setPhotoUrl(null);
     }
   }, [currentPhotoData]);
@@ -93,16 +93,16 @@ const PhotoQuestionRenderer: React.FC<PhotoQuestionProps> = ({
     setSafeError(null);
 
     try {
-      console.log("Requesting camera for field:", fieldId);
+      console.log('Requesting camera for field:', fieldId);
 
       // Use the new Promise-based camera API
       const cameraResult: CameraResult =
         await formulusClient.current.requestCamera(fieldId);
 
-      console.log("Camera result received:", cameraResult);
+      console.log('Camera result received:', cameraResult);
 
       // Check if the result was successful
-      if (cameraResult.status === "success" && cameraResult.data) {
+      if (cameraResult.status === 'success' && cameraResult.data) {
         // Store photo data in form - use file URI for display
         const displayUri = cameraResult.data.uri;
 
@@ -114,7 +114,7 @@ const PhotoQuestionRenderer: React.FC<PhotoQuestionProps> = ({
           timestamp: cameraResult.data.timestamp,
           metadata: cameraResult.data.metadata,
         };
-        console.log("Created photo data object for sync protocol:", {
+        console.log('Created photo data object for sync protocol:', {
           id: photoData.id,
           filename: photoData.filename,
           uri: photoData.uri,
@@ -123,21 +123,21 @@ const PhotoQuestionRenderer: React.FC<PhotoQuestionProps> = ({
         });
 
         // Update the form data with the photo data
-        console.log("Updating form data with photo data...");
+        console.log('Updating form data with photo data...');
         handleChange(path, photoData);
 
         // Set the photo URL for display using the file URI
         console.log(
-          "Setting photo URL for display:",
-          displayUri.substring(0, 50) + "..."
+          'Setting photo URL for display:',
+          displayUri.substring(0, 50) + '...',
         );
         setPhotoUrl(displayUri);
 
         // Clear any previous errors on successful photo capture
-        console.log("Clearing error state after successful photo capture");
+        console.log('Clearing error state after successful photo capture');
         setSafeError(null);
 
-        console.log("Photo captured successfully:", photoData);
+        console.log('Photo captured successfully:', photoData);
       } else {
         // Handle non-success results
         const errorMessage =
@@ -145,28 +145,28 @@ const PhotoQuestionRenderer: React.FC<PhotoQuestionProps> = ({
         throw new Error(errorMessage);
       }
     } catch (err: any) {
-      console.error("Error during camera request:", err);
+      console.error('Error during camera request:', err);
 
       // Handle different types of camera errors
-      if (err && typeof err === "object" && "status" in err) {
+      if (err && typeof err === 'object' && 'status' in err) {
         const cameraError = err as CameraResult;
-        if (cameraError.status === "cancelled") {
+        if (cameraError.status === 'cancelled') {
           // Don't show error for cancellation, just reset loading state
-          console.log("Camera operation cancelled by user");
+          console.log('Camera operation cancelled by user');
           setSafeError(null);
-        } else if (cameraError.status === "error") {
-          const errorMessage = cameraError.message || "Camera error occurred";
-          console.log("Setting camera error message:", errorMessage);
+        } else if (cameraError.status === 'error') {
+          const errorMessage = cameraError.message || 'Camera error occurred';
+          console.log('Setting camera error message:', errorMessage);
           setSafeError(errorMessage);
         } else {
-          setSafeError("Unknown camera error");
+          setSafeError('Unknown camera error');
         }
       } else {
         const errorMessage =
           err?.message ||
           err?.toString() ||
-          "Failed to capture photo. Please try again.";
-        console.log("Setting error message:", errorMessage);
+          'Failed to capture photo. Please try again.';
+        console.log('Setting error message:', errorMessage);
         setSafeError(errorMessage);
       }
     } finally {
@@ -181,16 +181,16 @@ const PhotoQuestionRenderer: React.FC<PhotoQuestionProps> = ({
     setPhotoUrl(null);
     handleChange(path, undefined);
     setSafeError(null);
-    console.log("Photo deleted for field:", fieldId);
+    console.log('Photo deleted for field:', fieldId);
   }, [fieldId, handleChange, path, enabled, setSafeError]);
 
   // Get display label from schema or uischema
-  const label = (uischema as any)?.label || schema.title || "Photo";
+  const label = (uischema as any)?.label || schema.title || 'Photo';
   const description = schema.description;
   const isRequired = Boolean(
     (uischema as any)?.options?.required ??
-      (schema as any)?.options?.required ??
-      false
+    (schema as any)?.options?.required ??
+    false,
   );
 
   const validationError =
@@ -205,31 +205,28 @@ const PhotoQuestionRenderer: React.FC<PhotoQuestionProps> = ({
       helperText={
         currentPhotoData?.filename
           ? `File: ${currentPhotoData.filename}`
-          : "Capture a clear photo."
+          : 'Capture a clear photo.'
       }
       metadata={
-        process.env.NODE_ENV === "development" ? (
+        process.env.NODE_ENV === 'development' ? (
           <Box
             sx={{
               p: 1,
-              bgcolor: "background.paper",
+              bgcolor: 'background.paper',
               borderRadius: 1,
-              border: "1px solid",
-              borderColor: "divider",
-            }}
-          >
+              border: '1px solid',
+              borderColor: 'divider',
+            }}>
             <Typography
               variant="caption"
               component="div"
-              color="text.secondary"
-            >
+              color="text.secondary">
               Debug Info:
             </Typography>
             <Typography
               variant="caption"
               component="pre"
-              sx={{ fontSize: "0.7rem", color: "text.secondary" }}
-            >
+              sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>
               {JSON.stringify(
                 {
                   fieldId,
@@ -249,45 +246,41 @@ const PhotoQuestionRenderer: React.FC<PhotoQuestionProps> = ({
                   error,
                 },
                 null,
-                2
+                2,
               )}
             </Typography>
           </Box>
         ) : undefined
-      }
-    >
+      }>
       {currentPhotoData && currentPhotoData.filename && photoUrl ? (
-        <Card sx={{ maxWidth: "100%" }}>
+        <Card sx={{ maxWidth: '100%' }}>
           <CardMedia
             component="img"
             height="200"
             image={photoUrl}
             alt="Captured photo"
-            sx={{ objectFit: "cover" }}
+            sx={{ objectFit: 'cover' }}
           />
           <CardContent>
             <Box
               sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}>
               <Typography
                 variant="body2"
                 color="text.secondary"
-                sx={{ flex: 1, mr: 1 }}
-              >
+                sx={{ flex: 1, mr: 1 }}>
                 {currentPhotoData.filename}
               </Typography>
-              <Box sx={{ display: "flex", gap: 0.5 }}>
+              <Box sx={{ display: 'flex', gap: 0.5 }}>
                 <IconButton
                   onClick={handleTakePhoto}
                   disabled={!enabled || isLoading}
                   color="primary"
                   size="small"
-                  aria-label="Retake photo"
-                >
+                  aria-label="Retake photo">
                   <Refresh />
                 </IconButton>
                 <IconButton
@@ -295,8 +288,7 @@ const PhotoQuestionRenderer: React.FC<PhotoQuestionProps> = ({
                   disabled={!enabled}
                   color="error"
                   size="small"
-                  aria-label="Delete photo"
-                >
+                  aria-label="Delete photo">
                   <Delete />
                 </IconButton>
               </Box>
@@ -306,14 +298,13 @@ const PhotoQuestionRenderer: React.FC<PhotoQuestionProps> = ({
       ) : (
         <Box
           sx={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
             py: { xs: 4, sm: 5 },
             px: 2,
-          }}
-        >
+          }}>
           <IconButton
             onClick={handleTakePhoto}
             disabled={!enabled || isLoading}
@@ -322,26 +313,24 @@ const PhotoQuestionRenderer: React.FC<PhotoQuestionProps> = ({
             sx={{
               width: { xs: 56, sm: 64 },
               height: { xs: 56, sm: 64 },
-              backgroundColor: "primary.main",
-              color: "white",
-              "&:hover": {
-                backgroundColor: "primary.dark",
+              backgroundColor: 'primary.main',
+              color: 'white',
+              '&:hover': {
+                backgroundColor: 'primary.dark',
               },
-              "&:disabled": {
-                backgroundColor: "action.disabledBackground",
-                color: "action.disabled",
+              '&:disabled': {
+                backgroundColor: 'action.disabledBackground',
+                color: 'action.disabled',
               },
             }}
-            aria-label="Take photo"
-          >
+            aria-label="Take photo">
             <PhotoCamera sx={{ fontSize: { xs: 28, sm: 32 } }} />
           </IconButton>
           <Typography
             variant="body2"
             color="text.secondary"
-            sx={{ mt: 2, textAlign: "center" }}
-          >
-            {isLoading ? "Opening camera..." : "Tap to capture photo"}
+            sx={{ mt: 2, textAlign: 'center' }}>
+            {isLoading ? 'Opening camera...' : 'Tap to capture photo'}
           </Typography>
         </Box>
       )}

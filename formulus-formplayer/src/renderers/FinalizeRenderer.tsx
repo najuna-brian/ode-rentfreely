@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo } from 'react';
 import {
   Box,
   Button,
@@ -8,14 +8,14 @@ import {
   Paper,
   Divider,
   Link,
-} from "@mui/material";
-import { JsonFormsRendererRegistryEntry } from "@jsonforms/core";
-import { withJsonFormsControlProps, useJsonForms } from "@jsonforms/react";
-import { ControlProps } from "@jsonforms/core";
-import { ErrorObject } from "ajv";
-import { useFormContext } from "../App";
-import EditIcon from "@mui/icons-material/Edit";
-import { displayAdate } from "../utils/adateUtils";
+} from '@mui/material';
+import { JsonFormsRendererRegistryEntry } from '@jsonforms/core';
+import { withJsonFormsControlProps, useJsonForms } from '@jsonforms/react';
+import { ControlProps } from '@jsonforms/core';
+import { ErrorObject } from 'ajv';
+import { useFormContext } from '../App';
+import EditIcon from '@mui/icons-material/Edit';
+import { displayAdate } from '../utils/adateUtils';
 
 interface SummaryItem {
   label: string;
@@ -39,96 +39,94 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
     return (
       fieldSchema.title ||
       fieldSchema.description ||
-      fieldPath.split("/").pop() ||
+      fieldPath.split('/').pop() ||
       fieldPath
     );
   };
 
   // Helper function to format field value based on type
   const formatFieldValue = (value: any, fieldSchema: any): string => {
-    if (value === null || value === undefined || value === "") {
-      return "Not provided";
+    if (value === null || value === undefined || value === '') {
+      return 'Not provided';
     }
 
     // Handle special formats
     if (fieldSchema?.format) {
       switch (fieldSchema.format) {
-        case "photo":
-          if (typeof value === "object" && value.uri) {
-            return `Photo: ${value.filename || "Captured"}`;
+        case 'photo':
+          if (typeof value === 'object' && value.uri) {
+            return `Photo: ${value.filename || 'Captured'}`;
           }
-          return "Photo captured";
-        case "qrcode":
-          if (typeof value === "object" && value.data) {
+          return 'Photo captured';
+        case 'qrcode':
+          if (typeof value === 'object' && value.data) {
             return `QR Code: ${value.data}`;
           }
-          return typeof value === "string"
+          return typeof value === 'string'
             ? `QR Code: ${value}`
-            : "QR Code scanned";
-        case "signature":
-          if (typeof value === "object" && value.uri) {
-            return "Signature captured";
+            : 'QR Code scanned';
+        case 'signature':
+          if (typeof value === 'object' && value.uri) {
+            return 'Signature captured';
           }
-          return "Signature provided";
-        case "select_file":
-          if (typeof value === "object" && value.filename) {
+          return 'Signature provided';
+        case 'select_file':
+          if (typeof value === 'object' && value.filename) {
             return `File: ${value.filename}`;
           }
-          return "File selected";
-        case "audio":
-          if (typeof value === "object" && value.filename) {
+          return 'File selected';
+        case 'audio':
+          if (typeof value === 'object' && value.filename) {
             const duration = value.metadata?.duration
               ? ` (${Math.round(value.metadata.duration)}s)`
-              : "";
+              : '';
             return `Audio: ${value.filename}${duration}`;
           }
-          return "Audio recorded";
-        case "gps":
-          if (typeof value === "object" && value.latitude && value.longitude) {
-            return `Location: ${value.latitude.toFixed(
-              6
-            )}, ${value.longitude.toFixed(6)}`;
+          return 'Audio recorded';
+        case 'gps':
+          if (typeof value === 'object' && value.latitude && value.longitude) {
+            return `Location: ${value.latitude.toFixed(6)}, ${value.longitude.toFixed(6)}`;
           }
-          return "GPS location captured";
-        case "video":
-          if (typeof value === "object" && value.filename) {
+          return 'GPS location captured';
+        case 'video':
+          if (typeof value === 'object' && value.filename) {
             return `Video: ${value.filename}`;
           }
-          return "Video captured";
-        case "date":
+          return 'Video captured';
+        case 'date':
           return new Date(value).toLocaleDateString();
-        case "date-time":
+        case 'date-time':
           return new Date(value).toLocaleString();
-        case "time":
+        case 'time':
           return value;
-        case "adate":
+        case 'adate':
           return displayAdate(value);
       }
     }
 
     // Handle arrays
     if (Array.isArray(value)) {
-      if (value.length === 0) return "None";
+      if (value.length === 0) return 'None';
       return value
         .map((item, idx) => {
-          if (typeof item === "object") {
+          if (typeof item === 'object') {
             return `${idx + 1}. ${JSON.stringify(item)}`;
           }
           return String(item);
         })
-        .join(", ");
+        .join(', ');
     }
 
     // Handle objects
-    if (typeof value === "object") {
+    if (typeof value === 'object') {
       // Check if it's a nested object with properties
-      if (Object.keys(value).length === 0) return "Empty";
+      if (Object.keys(value).length === 0) return 'Empty';
       return JSON.stringify(value, null, 2);
     }
 
     // Handle booleans
-    if (typeof value === "boolean") {
-      return value ? "Yes" : "No";
+    if (typeof value === 'boolean') {
+      return value ? 'Yes' : 'No';
     }
 
     // Default: convert to string
@@ -142,7 +140,7 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
 
       // Normalize the field path (remove #/properties/ prefix and convert / to .)
       const normalizePath = (path: string) => {
-        return path.replace(/^#\/properties\//, "").replace(/\//g, ".");
+        return path.replace(/^#\/properties\//, '').replace(/\//g, '.');
       };
 
       const fieldName = normalizePath(fieldPath);
@@ -150,17 +148,17 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
 
       for (let i = 0; i < screens.length; i++) {
         const screen = screens[i];
-        if (screen.type === "Finalize") continue;
+        if (screen.type === 'Finalize') continue;
 
-        if ("elements" in screen && (screen as any).elements) {
+        if ('elements' in screen && (screen as any).elements) {
           const hasField = screen.elements.some((el: any) => {
             if (el.scope) {
               const scopePath = normalizePath(el.scope);
               // Exact match or field is nested under scope, or scope is nested under field
               return (
                 scopePath === fieldName ||
-                fieldName.startsWith(scopePath + ".") ||
-                scopePath.startsWith(fieldName + ".")
+                fieldName.startsWith(scopePath + '.') ||
+                scopePath.startsWith(fieldName + '.')
               );
             }
             return false;
@@ -183,11 +181,11 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
     const extractFields = (
       schemaObj: any,
       dataObj: any,
-      basePath: string = ""
+      basePath: string = '',
     ) => {
       if (!schemaObj || !schemaObj.properties) return;
 
-      Object.keys(schemaObj.properties).forEach((key) => {
+      Object.keys(schemaObj.properties).forEach(key => {
         const fieldSchema = schemaObj.properties[key];
         const fieldPath = basePath ? `${basePath}/${key}` : key;
         const fieldValue = dataObj?.[key];
@@ -197,9 +195,9 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
         const isEmpty =
           fieldValue === null ||
           fieldValue === undefined ||
-          fieldValue === "" ||
+          fieldValue === '' ||
           (Array.isArray(fieldValue) && fieldValue.length === 0) ||
-          (typeof fieldValue === "object" &&
+          (typeof fieldValue === 'object' &&
             !Array.isArray(fieldValue) &&
             Object.keys(fieldValue).length === 0);
 
@@ -211,9 +209,9 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
 
         // Handle nested objects
         if (
-          fieldSchema.type === "object" &&
+          fieldSchema.type === 'object' &&
           fieldSchema.properties &&
-          typeof fieldValue === "object" &&
+          typeof fieldValue === 'object' &&
           !Array.isArray(fieldValue)
         ) {
           extractFields(fieldSchema, fieldValue, fieldPath);
@@ -239,7 +237,7 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
 
   const formatErrorPath = (path: string) => {
     // Remove leading slash and convert to readable format
-    return path.replace(/^\//, "").replace(/\//g, " > ");
+    return path.replace(/^\//, '').replace(/\//g, ' > ');
   };
 
   const formatErrorMessage = (error: ErrorObject) => {
@@ -249,12 +247,12 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
     // Title case the path and add spaces before capitalized letters
     const formattedPath = path
       ? path
-          .split(" ")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join(" ")
-          .replace(/([A-Z])/g, " $1")
+          .split(' ')
+          .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(' ')
+          .replace(/([A-Z])/g, ' $1')
           .trim()
-      : "";
+      : '';
     return formattedPath
       ? `${formattedPath} ${customMessage || error.message}`
       : customMessage || error.message;
@@ -264,7 +262,7 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
 
   const handleErrorClick = (path: string) => {
     // Dispatch a custom event that SwipeLayoutRenderer will listen for
-    const event = new CustomEvent("navigateToError", {
+    const event = new CustomEvent('navigateToError', {
       detail: { path },
     });
     window.dispatchEvent(event);
@@ -273,7 +271,7 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
   const handleFieldEdit = (item: SummaryItem) => {
     if (item.pageIndex >= 0) {
       // Navigate to the page containing this field
-      const navigateEvent = new CustomEvent("navigateToPage", {
+      const navigateEvent = new CustomEvent('navigateToPage', {
         detail: { page: item.pageIndex },
       });
       window.dispatchEvent(navigateEvent);
@@ -286,13 +284,13 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
   const handleFinalize = () => {
     if (!formInitData) {
       console.error(
-        "formInitData is not available from context, cannot submit form"
+        'formInitData is not available from context, cannot submit form',
       );
       return;
     }
     if (!hasErrors) {
-      console.log("Dispatching finalizeForm event to submit data via App.tsx");
-      const event = new CustomEvent("finalizeForm", {
+      console.log('Dispatching finalizeForm event to submit data via App.tsx');
+      const event = new CustomEvent('finalizeForm', {
         detail: { formInitData, data },
       });
       window.dispatchEvent(event);
@@ -301,8 +299,7 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
 
   return (
     <Box
-      sx={{ p: 3, height: "100%", display: "flex", flexDirection: "column" }}
-    >
+      sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
       {hasErrors ? (
         <>
           <Typography variant="h5" color="error" gutterBottom>
@@ -311,12 +308,11 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
           <Paper sx={{ mb: 3, p: 2 }}>
             <Box
               sx={{
-                display: "flex",
-                flexDirection: "column",
+                display: 'flex',
+                flexDirection: 'column',
                 gap: 1,
-                alignItems: "center",
-              }}
-            >
+                alignItems: 'center',
+              }}>
               {errors.map((error: ErrorObject, index: number) => (
                 <Button
                   key={index}
@@ -324,30 +320,28 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
                   color="error"
                   onClick={() => handleErrorClick(error.instancePath)}
                   sx={{
-                    justifyContent: "center",
-                    textAlign: "center",
-                    textTransform: "none",
+                    justifyContent: 'center',
+                    textAlign: 'center',
+                    textTransform: 'none',
                     py: 1.5,
                     px: 2,
-                    width: "100%",
-                    borderColor: "error.main",
-                    whiteSpace: "normal",
-                    wordBreak: "break-word",
-                    "&:hover": {
-                      borderColor: "error.dark",
-                      backgroundColor: "error.light",
+                    width: '100%',
+                    borderColor: 'error.main',
+                    whiteSpace: 'normal',
+                    wordBreak: 'break-word',
+                    '&:hover': {
+                      borderColor: 'error.dark',
+                      backgroundColor: 'error.light',
                     },
-                  }}
-                >
+                  }}>
                   <Typography
                     variant="body2"
                     sx={{
-                      textAlign: "center",
-                      width: "100%",
-                      whiteSpace: "normal",
-                      wordBreak: "break-word",
-                    }}
-                  >
+                      textAlign: 'center',
+                      width: '100%',
+                      whiteSpace: 'normal',
+                      wordBreak: 'break-word',
+                    }}>
                     {formatErrorMessage(error)}
                   </Typography>
                 </Button>
@@ -366,12 +360,11 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
         <Box
           sx={{
             flex: 1,
-            overflow: "hidden",
-            display: "flex",
-            flexDirection: "column",
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
             mb: 3,
-          }}
-        >
+          }}>
           <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
             FORM SUMMARY
           </Typography>
@@ -379,68 +372,61 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
             variant="body2"
             color="text.secondary"
             gutterBottom
-            sx={{ mb: 2 }}
-          >
+            sx={{ mb: 2 }}>
             Review all your entered data below. Click on any field to edit it.
           </Typography>
           <Paper
             sx={{
               flex: 1,
-              overflow: "auto",
+              overflow: 'auto',
               p: 2,
-              maxHeight: "100%",
-              backgroundColor: "transparent", // Remove background - let it be transparent
-              boxShadow: "none", // Remove shadow since there's no background
-            }}
-          >
+              maxHeight: '100%',
+              backgroundColor: 'transparent', // Remove background - let it be transparent
+              boxShadow: 'none', // Remove shadow since there's no background
+            }}>
             <List
               sx={{
-                width: "100%",
-                backgroundColor: "transparent", // Ensure List is transparent
-              }}
-            >
+                width: '100%',
+                backgroundColor: 'transparent', // Ensure List is transparent
+              }}>
               {summaryItems.map((item, index) => (
                 <React.Fragment key={index}>
                   <ListItem
                     sx={{
-                      flexDirection: "column",
-                      alignItems: "stretch",
+                      flexDirection: 'column',
+                      alignItems: 'stretch',
                       py: 1.5,
                       px: 0,
-                      backgroundColor: "transparent", // Ensure items are transparent
-                      "&:hover": {
-                        backgroundColor: "action.hover",
+                      backgroundColor: 'transparent', // Ensure items are transparent
+                      '&:hover': {
+                        backgroundColor: 'action.hover',
                         borderRadius: 1,
                       },
-                    }}
-                  >
+                    }}>
                     <Box
                       sx={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "flex-start",
-                        width: "100%",
-                      }}
-                    >
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                        width: '100%',
+                      }}>
                       <Box sx={{ flex: 1, minWidth: 0, mr: 2 }}>
                         <Typography
                           variant="subtitle2"
                           sx={{
                             fontWeight: 600,
                             mb: 0.5,
-                            wordBreak: "break-word",
-                          }}
-                        >
+                            wordBreak: 'break-word',
+                          }}>
                           {item.label}
                         </Typography>
                         <Typography
                           variant="body2"
                           color="text.secondary"
                           sx={{
-                            wordBreak: "break-word",
-                            whiteSpace: "pre-wrap",
-                          }}
-                        >
+                            wordBreak: 'break-word',
+                            whiteSpace: 'pre-wrap',
+                          }}>
                           {formatFieldValue(item.value, {
                             type: item.type,
                             format: item.format,
@@ -453,18 +439,17 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
                           variant="body2"
                           onClick={() => handleFieldEdit(item)}
                           sx={{
-                            display: "flex",
-                            alignItems: "center",
+                            display: 'flex',
+                            alignItems: 'center',
                             gap: 0.5,
-                            cursor: "pointer",
-                            textDecoration: "none",
-                            color: "primary.main",
-                            "&:hover": {
-                              textDecoration: "underline",
+                            cursor: 'pointer',
+                            textDecoration: 'none',
+                            color: 'primary.main',
+                            '&:hover': {
+                              textDecoration: 'underline',
                             },
                             flexShrink: 0,
-                          }}
-                        >
+                          }}>
                           <EditIcon sx={{ fontSize: 16 }} />
                           Edit
                         </Link>
@@ -481,15 +466,14 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
         </Box>
       )}
 
-      <Box sx={{ mt: "auto", pt: 2 }}>
+      <Box sx={{ mt: 'auto', pt: 2 }}>
         <Button
           variant="contained"
           color="primary"
           size="large"
           fullWidth
           onClick={handleFinalize}
-          disabled={Boolean(hasErrors)}
-        >
+          disabled={Boolean(hasErrors)}>
           Finalize
         </Button>
       </Box>
@@ -498,7 +482,7 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
 };
 
 export const finalizeTester = (uischema: any) =>
-  uischema.type === "Finalize" ? 3 : -1;
+  uischema.type === 'Finalize' ? 3 : -1;
 
 export const finalizeRenderer: JsonFormsRendererRegistryEntry = {
   tester: finalizeTester,

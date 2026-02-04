@@ -1,5 +1,5 @@
-import React, { ReactNode } from "react";
-import { Box, Typography, Alert, Stack, Divider } from "@mui/material";
+import React, { ReactNode } from 'react';
+import { Box, Typography, Alert, Stack, Divider } from '@mui/material';
 
 /**
  * Simple HTML sanitizer that removes dangerous tags and attributes.
@@ -9,18 +9,18 @@ const sanitizeHtml = (html: string): string => {
   // Remove script tags and their content
   let sanitized = html.replace(
     /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
-    ""
+    '',
   );
   // Remove style tags and their content
   sanitized = sanitized.replace(
     /<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi,
-    ""
+    '',
   );
   // Remove event handlers (onclick, onerror, etc.)
-  sanitized = sanitized.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, "");
-  sanitized = sanitized.replace(/\s*on\w+\s*=\s*[^\s>]+/gi, "");
+  sanitized = sanitized.replace(/\s*on\w+\s*=\s*["'][^"']*["']/gi, '');
+  sanitized = sanitized.replace(/\s*on\w+\s*=\s*[^\s>]+/gi, '');
   // Remove javascript: URLs
-  sanitized = sanitized.replace(/javascript:/gi, "");
+  sanitized = sanitized.replace(/javascript:/gi, '');
   // Remove data: URLs in href/src (potential XSS vector)
   sanitized = sanitized.replace(/\s*href\s*=\s*["']?\s*data:/gi, ' href="');
   sanitized = sanitized.replace(/\s*src\s*=\s*["']?\s*data:/gi, ' src="');
@@ -46,8 +46,8 @@ const renderHtmlContent = (content: string | undefined): React.ReactNode => {
       return <span dangerouslySetInnerHTML={{ __html: sanitized }} />;
     } catch (error) {
       // If sanitization fails, strip all HTML tags
-      console.error("Error rendering HTML content:", error);
-      return content.replace(/<[^>]*>/g, "");
+      console.error('Error rendering HTML content:', error);
+      return content.replace(/<[^>]*>/g, '');
     }
   }
 
@@ -69,7 +69,7 @@ export interface QuestionShellProps {
 const normalizeError = (error?: string | string[] | null): string | null => {
   if (!error) return null;
   if (Array.isArray(error)) {
-    return error.filter(Boolean).join(", ") || null;
+    return error.filter(Boolean).join(', ') || null;
   }
   return error;
 };
@@ -89,19 +89,18 @@ const QuestionShell: React.FC<QuestionShellProps> = ({
   return (
     <Box
       sx={{
-        width: "100%",
-        display: "flex",
-        flexDirection: "column",
+        width: '100%',
+        display: 'flex',
+        flexDirection: 'column',
         gap: 1.5,
-      }}
-    >
+      }}>
       {(title || description) && (
         <Stack spacing={0.5}>
           {title && (
             <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.3 }}>
               {renderHtmlContent(title)}
               {required && (
-                <Box component="span" sx={{ color: "error.main", ml: 0.5 }}>
+                <Box component="span" sx={{ color: 'error.main', ml: 0.5 }}>
                   *
                 </Box>
               )}
@@ -116,19 +115,18 @@ const QuestionShell: React.FC<QuestionShellProps> = ({
       )}
 
       {normalizedError && (
-        <Alert severity="error" sx={{ width: "100%", mb: -1 }}>
+        <Alert severity="error" sx={{ width: '100%', mb: -1 }}>
           {normalizedError}
         </Alert>
       )}
 
       <Box
         sx={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
+          width: '100%',
+          display: 'flex',
+          flexDirection: 'column',
           gap: 1,
-        }}
-      >
+        }}>
         {children}
       </Box>
 
@@ -136,7 +134,7 @@ const QuestionShell: React.FC<QuestionShellProps> = ({
         <Stack spacing={1}>
           {helperText && (
             <Typography variant="body2" color="text.secondary">
-              {typeof helperText === "string"
+              {typeof helperText === 'string'
                 ? renderHtmlContent(helperText)
                 : helperText}
             </Typography>

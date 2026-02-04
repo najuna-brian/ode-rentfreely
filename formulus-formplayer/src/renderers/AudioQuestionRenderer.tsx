@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
-import { withJsonFormsControlProps } from "@jsonforms/react";
-import { ControlProps, rankWith, formatIs } from "@jsonforms/core";
+import React, { useState, useRef, useEffect } from 'react';
+import { withJsonFormsControlProps } from '@jsonforms/react';
+import { ControlProps, rankWith, formatIs } from '@jsonforms/core';
 import {
   Box,
   Typography,
@@ -8,7 +8,7 @@ import {
   IconButton,
   LinearProgress,
   Chip,
-} from "@mui/material";
+} from '@mui/material';
 import {
   Mic as MicIcon,
   Stop as StopIcon,
@@ -16,10 +16,10 @@ import {
   Pause as PauseIcon,
   Delete as DeleteIcon,
   Refresh as RefreshIcon,
-} from "@mui/icons-material";
-import FormulusClient from "../services/FormulusInterface";
-import { AudioResult } from "../types/FormulusInterfaceDefinition";
-import QuestionShell from "../components/QuestionShell";
+} from '@mui/icons-material';
+import FormulusClient from '../services/FormulusInterface';
+import { AudioResult } from '../types/FormulusInterfaceDefinition';
+import QuestionShell from '../components/QuestionShell';
 
 interface AudioQuestionRendererProps extends ControlProps {
   data: any;
@@ -28,7 +28,7 @@ interface AudioQuestionRendererProps extends ControlProps {
 }
 
 interface AudioData {
-  type: "audio";
+  type: 'audio';
   filename: string;
   uri: string;
   timestamp: string;
@@ -57,7 +57,7 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
   const progressInterval = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const audioData: AudioData | null =
-    data && typeof data === "object" && data.type === "audio" ? data : null;
+    data && typeof data === 'object' && data.type === 'audio' ? data : null;
   const hasAudio = !!audioData;
 
   // Clean up intervals on unmount
@@ -92,20 +92,20 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
     };
 
     const handleError = () => {
-      setError("Failed to load audio file");
+      setError('Failed to load audio file');
       setIsPlaying(false);
     };
 
-    audio.addEventListener("loadedmetadata", handleLoadedMetadata);
-    audio.addEventListener("timeupdate", handleTimeUpdate);
-    audio.addEventListener("ended", handleEnded);
-    audio.addEventListener("error", handleError);
+    audio.addEventListener('loadedmetadata', handleLoadedMetadata);
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('error', handleError);
 
     return () => {
-      audio.removeEventListener("loadedmetadata", handleLoadedMetadata);
-      audio.removeEventListener("timeupdate", handleTimeUpdate);
-      audio.removeEventListener("ended", handleEnded);
-      audio.removeEventListener("error", handleError);
+      audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
+      audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('error', handleError);
     };
   }, [audioData]);
 
@@ -114,28 +114,28 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
     setIsLoading(true);
 
     try {
-      const fieldId = path.replace(/\./g, "_");
-      console.log("Requesting audio recording for field:", fieldId);
+      const fieldId = path.replace(/\./g, '_');
+      console.log('Requesting audio recording for field:', fieldId);
 
       const result: AudioResult =
         await FormulusClient.getInstance().requestAudio(fieldId);
 
-      if (result.status === "success" && result.data) {
-        console.log("Audio recording successful:", result);
+      if (result.status === 'success' && result.data) {
+        console.log('Audio recording successful:', result);
         handleChange(path, result.data);
-      } else if (result.status === "cancelled") {
-        console.log("Audio recording cancelled");
+      } else if (result.status === 'cancelled') {
+        console.log('Audio recording cancelled');
         // Don't show error for cancellation
       } else {
-        console.error("Audio recording failed:", result);
-        setError(result.message || "Audio recording failed");
+        console.error('Audio recording failed:', result);
+        setError(result.message || 'Audio recording failed');
       }
     } catch (error: any) {
-      console.error("Audio recording error:", error);
-      if (error.status === "cancelled") {
+      console.error('Audio recording error:', error);
+      if (error.status === 'cancelled') {
         // Don't show error for cancellation
       } else {
-        setError(error.message || "Failed to record audio");
+        setError(error.message || 'Failed to record audio');
       }
     } finally {
       setIsLoading(false);
@@ -163,9 +163,9 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
             setCurrentTime(audio.currentTime);
           }, 100);
         })
-        .catch((error) => {
-          console.error("Failed to play audio:", error);
-          setError("Failed to play audio");
+        .catch(error => {
+          console.error('Failed to play audio:', error);
+          setError('Failed to play audio');
         });
     }
   };
@@ -199,7 +199,7 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
   const formatTime = (seconds: number): string => {
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
   const getFileSizeString = (bytes: number): string => {
@@ -212,7 +212,7 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
 
   const validationError =
     errors && Array.isArray(errors) && errors.length > 0
-      ? errors.map((error: any) => error.message || String(error)).join(", ")
+      ? errors.map((error: any) => error.message || String(error)).join(', ')
       : null;
 
   return (
@@ -221,31 +221,28 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
       description={schema.description}
       required={Boolean(
         (uischema as any)?.options?.required ??
-          (schema as any)?.options?.required
+        (schema as any)?.options?.required,
       )}
       error={error || validationError}
-      helperText="Record clear audio. You can re-record or delete as needed."
-    >
+      helperText="Record clear audio. You can re-record or delete as needed.">
       <Paper
         variant="outlined"
         sx={{
           p: 3,
           borderRadius: 2,
-          backgroundColor: hasAudio ? "background.paper" : "grey.50",
-        }}
-      >
+          backgroundColor: hasAudio ? 'background.paper' : 'grey.50',
+        }}>
         {!hasAudio ? (
           // Recording State
           <Box
             sx={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              justifyContent: "center",
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
               py: { xs: 4, sm: 5 },
               px: 2,
-            }}
-          >
+            }}>
             <IconButton
               onClick={handleRecord}
               disabled={isLoading}
@@ -255,32 +252,30 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
                 width: { xs: 56, sm: 64 },
                 height: { xs: 56, sm: 64 },
                 backgroundColor: isLoading
-                  ? "action.disabledBackground"
-                  : "primary.main",
-                color: "white",
-                "&:hover": {
+                  ? 'action.disabledBackground'
+                  : 'primary.main',
+                color: 'white',
+                '&:hover': {
                   backgroundColor: isLoading
-                    ? "action.disabledBackground"
-                    : "primary.dark",
+                    ? 'action.disabledBackground'
+                    : 'primary.dark',
                 },
-                "&:disabled": {
-                  backgroundColor: "action.disabledBackground",
-                  color: "action.disabled",
+                '&:disabled': {
+                  backgroundColor: 'action.disabledBackground',
+                  color: 'action.disabled',
                 },
               }}
-              aria-label="Record audio"
-            >
+              aria-label="Record audio">
               <MicIcon sx={{ fontSize: { xs: 28, sm: 32 } }} />
             </IconButton>
             <Typography
               variant="body2"
               color="text.secondary"
-              sx={{ mt: 2, textAlign: "center" }}
-            >
-              {isLoading ? "Recording..." : "Tap to record audio"}
+              sx={{ mt: 2, textAlign: 'center' }}>
+              {isLoading ? 'Recording...' : 'Tap to record audio'}
             </Typography>
             {isLoading && (
-              <LinearProgress sx={{ mt: 2, width: "100%", maxWidth: 200 }} />
+              <LinearProgress sx={{ mt: 2, width: '100%', maxWidth: 200 }} />
             )}
           </Box>
         ) : (
@@ -295,7 +290,7 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
                 🎵 {audioData.filename}
               </Typography>
 
-              <Box sx={{ display: "flex", gap: 1, flexWrap: "wrap", mb: 2 }}>
+              <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mb: 2 }}>
                 <Chip
                   label={`${formatTime(audioData.metadata.duration)}`}
                   size="small"
@@ -323,11 +318,10 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
               />
               <Box
                 sx={{
-                  display: "flex",
-                  justifyContent: "space-between",
+                  display: 'flex',
+                  justifyContent: 'space-between',
                   mt: 0.5,
-                }}
-              >
+                }}>
                 <Typography variant="caption" color="text.secondary">
                   {formatTime(currentTime)}
                 </Typography>
@@ -339,16 +333,14 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
 
             {/* Control Buttons */}
             <Box
-              sx={{ display: "flex", gap: 1, justifyContent: "center", mb: 2 }}
-            >
+              sx={{ display: 'flex', gap: 1, justifyContent: 'center', mb: 2 }}>
               <IconButton
                 onClick={handlePlay}
                 sx={{
-                  backgroundColor: "primary.main",
-                  color: "white",
-                  "&:hover": { backgroundColor: "primary.dark" },
-                }}
-              >
+                  backgroundColor: 'primary.main',
+                  color: 'white',
+                  '&:hover': { backgroundColor: 'primary.dark' },
+                }}>
                 {isPlaying ? <PauseIcon /> : <PlayIcon />}
               </IconButton>
 
@@ -356,50 +348,46 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
                 onClick={handleStop}
                 disabled={!isPlaying && currentTime === 0}
                 sx={{
-                  backgroundColor: "grey.600",
-                  color: "white",
-                  "&:hover": { backgroundColor: "grey.700" },
-                  "&:disabled": {
-                    backgroundColor: "grey.300",
-                    color: "grey.500",
+                  backgroundColor: 'grey.600',
+                  color: 'white',
+                  '&:hover': { backgroundColor: 'grey.700' },
+                  '&:disabled': {
+                    backgroundColor: 'grey.300',
+                    color: 'grey.500',
                   },
-                }}
-              >
+                }}>
                 <StopIcon />
               </IconButton>
             </Box>
 
             {/* Action Buttons */}
-            <Box sx={{ display: "flex", gap: 1, justifyContent: "center" }}>
+            <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
               <IconButton
                 onClick={handleRecord}
                 disabled={isLoading}
                 color="primary"
                 size="small"
-                aria-label="Re-record"
-              >
+                aria-label="Re-record">
                 <RefreshIcon />
               </IconButton>
               <IconButton
                 onClick={handleDelete}
                 color="error"
                 size="small"
-                aria-label="Delete"
-              >
+                aria-label="Delete">
                 <DeleteIcon />
               </IconButton>
             </Box>
 
             {/* Development Info */}
-            {process.env.NODE_ENV === "development" && (
+            {process.env.NODE_ENV === 'development' && (
               <Box
                 sx={{
                   mt: 2,
                   p: 1,
-                  backgroundColor: "grey.100",
+                  backgroundColor: 'grey.100',
                   borderRadius: 1,
-                }}
-              >
+                }}>
                 <Typography variant="caption" color="text.secondary">
                   <strong>Dev Info:</strong> {audioData.uri}
                 </Typography>
@@ -415,7 +403,7 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
 // Tester function to determine when this renderer should be used
 export const audioQuestionTester = rankWith(
   10, // High priority
-  formatIs("audio")
+  formatIs('audio'),
 );
 
 export default withJsonFormsControlProps(AudioQuestionRenderer);
