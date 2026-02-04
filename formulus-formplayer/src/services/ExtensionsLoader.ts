@@ -96,6 +96,9 @@ export async function loadExtensions(
         const loadedFunction = await loadFunction(funcMeta, basePath);
         if (loadedFunction) {
           result.functions.set(funcMeta.name, loadedFunction);
+          console.log(
+            `[ExtensionsLoader] Registered extension function "${funcMeta.name}" from module "${funcMeta.module}" (metadata key: ${key})`,
+          );
         }
       } catch (error) {
         result.errors.push({

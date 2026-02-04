@@ -291,6 +291,11 @@ func (s *Service) generateManifest() (*Manifest, error) {
 		// Use forward slashes for consistency across platforms
 		relPath = filepath.ToSlash(relPath)
 
+		// Include app/forms/ in the manifest. Some bundles (e.g. AnthroCollect) put
+		// form schemas only under app/forms/<formType>/schema.json. The Formulus
+		// client downloads these via downloadAppFiles (prefix "app/") and
+		// FormService loads them from DocumentDirectoryPath/app/forms/.
+
 		// Get file info
 		fileInfo, err := d.Info()
 		if err != nil {

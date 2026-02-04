@@ -18,9 +18,22 @@
         if (api && typeof api.getVersion === 'function') {
           try {
             const version = api.getVersion();
-            console.log('Formulus version:', version);
-            document.body.insertAdjacentHTML('beforeend', '<p>Formulus version: ' + version + '</p>');
-            cb();
+            
+            // Check if it's a Promise
+            if (version instanceof Promise) {
+              version.then(function(v) {
+                console.log('Formulus version:', v);
+                document.body.insertAdjacentHTML('beforeend', '<p>Formulus version: ' + v + '</p>');
+                cb();
+              }).catch(function(err) {
+                console.error('Error awaiting version:', err);
+                document.body.insertAdjacentHTML('beforeend', '<p style="color: #999;">Formulus API: Error</p>');
+              });
+            } else {
+              console.log('Formulus version:', version);
+              document.body.insertAdjacentHTML('beforeend', '<p>Formulus version: ' + version + '</p>');
+              cb();
+            }
           } catch (err) {
             console.error('Error getting Formulus version:', err);
             document.body.insertAdjacentHTML('beforeend', '<p style="color: #999;">Formulus API: Error</p>');

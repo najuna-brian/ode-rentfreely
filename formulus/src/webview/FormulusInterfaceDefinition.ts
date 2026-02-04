@@ -317,6 +317,24 @@ export interface FormulusInterface {
   ): Promise<FormObservation[]>;
 
   /**
+   * Get observations with optional WHERE clause filtering (for dynamic choice lists).
+   * Supports format: data.field = 'value' AND data.other = 'value'
+   * Age filtering via age_from_dob(data.dob) is handled client-side in formplayer.
+   * @param options - Query options
+   * @param options.formType - Form type to query
+   * @param options.isDraft - Include drafts (default false)
+   * @param options.includeDeleted - Include deleted (default false)
+   * @param options.whereClause - SQL-like WHERE clause for filtering (e.g. "data.sex = 'male'")
+   * @returns {Promise<FormObservation[]>} Array of filtered observations
+   */
+  getObservationsByQuery(options: {
+    formType: string;
+    isDraft?: boolean;
+    includeDeleted?: boolean;
+    whereClause?: string | null;
+  }): Promise<FormObservation[]>;
+
+  /**
    * Submit a completed form
    * @param {string} formType - The identifier of the formtype
    * @param {Object} finalData - The final form data to submit

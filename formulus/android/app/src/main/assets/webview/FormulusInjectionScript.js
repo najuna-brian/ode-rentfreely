@@ -1,6 +1,6 @@
 // Auto-generated from FormulusInterfaceDefinition.ts
 // Do not edit directly - this file will be overwritten
-// Last generated: 2025-11-23T17:39:01.171Z
+// Last generated: 2026-01-23T01:14:57.364Z
 
 (function () {
   // Enhanced API availability detection and recovery
@@ -107,6 +107,60 @@
   // Set up message listener
   document.addEventListener('message', handleMessage);
   window.addEventListener('message', handleMessage);
+
+  // Helper to filter observations using a limited subset of the SQL-like whereClause
+  // produced by queryHelpers.buildWhereClause (json_extract(data, '$.field') = 'value' AND ...)
+  function filterObservationsByWhereClause(observations, whereClause) {
+    if (!whereClause || whereClause === '1=1') {
+      return observations;
+    }
+
+    try {
+      const conditionStrings = whereClause.split(/\s+AND\s+/i);
+      const conditions = [];
+
+      const regex =
+        /json_extract\(data,\s*'\$\.(.+?)'\)\s*=\s*'(.*)'/;
+
+      for (const cond of conditionStrings) {
+        const match = cond.match(regex);
+        if (match) {
+          const path = match[1];
+          const rawValue = match[2];
+          const value = rawValue.replace(/''/g, "'");
+          conditions.push({ path, value });
+        }
+      }
+
+      if (conditions.length === 0) {
+        return observations;
+      }
+
+      const getNested = (obj, path) => {
+        const parts = path.split('.');
+        let cur = obj;
+        for (const p of parts) {
+          if (!cur || typeof cur !== 'object') return undefined;
+          cur = cur[p];
+        }
+        return cur;
+      };
+
+      return observations.filter(obs =>
+        conditions.every(({ path, value }) => {
+          const actual = getNested(obs.data || {}, path);
+          return actual !== undefined && String(actual) === String(value);
+        }),
+      );
+    } catch (e) {
+      console.warn(
+        'filterObservationsByWhereClause: Failed to apply whereClause filter, returning unfiltered observations.',
+        whereClause,
+        e,
+      );
+      return observations;
+    }
+  }
 
   // Initialize the formulus interface
   globalThis.formulus = {
@@ -354,6 +408,35 @@
           }),
         );
       });
+    },
+
+    // getObservationsByQuery: options: { formType: string; whereClause?: string; isDraft?: boolean; includeDeleted?: boolean } => Promise<FormObservation[]>
+    // NOTE: This is implemented entirely in the WebView layer by calling getObservations
+    // and then applying a lightweight filter based on the generated whereClause string.
+    // This avoids additional native bridge work while still supporting dynamic choice lists.
+    getObservationsByQuery: function (options) {
+      try {
+        const formType = options?.formType;
+        const whereClause = options?.whereClause || '1=1';
+        const isDraft =
+          typeof options?.isDraft === 'boolean' ? options.isDraft : false;
+        const includeDeleted =
+          typeof options?.includeDeleted === 'boolean'
+            ? options.includeDeleted
+            : false;
+
+        return globalThis.formulus
+          .getObservations(formType, isDraft, includeDeleted)
+          .then(observations =>
+            filterObservationsByWhereClause(observations, whereClause),
+          );
+      } catch (e) {
+        console.error(
+          'getObservationsByQuery: Failed to execute query, returning empty list.',
+          e,
+        );
+        return Promise.resolve([]);
+      }
     },
 
     // submitObservation: formType: string, finalData: Record<string, any> => Promise<string>
@@ -1215,6 +1298,66 @@
         );
       });
     },
+
+    // getCurrentUser:  => Promise<{ username: string; displayName?: string; }>
+    getCurrentUser: function () {
+      return new Promise((resolve, reject) => {
+        const messageId =
+          'msg_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+
+        // Add response handler for methods that return values
+
+        const callback = event => {
+          try {
+            let data;
+            if (typeof event.data === 'string') {
+              data = JSON.parse(event.data);
+            } else if (typeof event.data === 'object' && event.data !== null) {
+              data = event.data; // Already an object
+            } else {
+              // console.warn('getCurrentUser callback: Received response with unexpected data type:', typeof event.data, event.data);
+              window.removeEventListener('message', callback); // Clean up listener
+              reject(
+                new Error(
+                  'getCurrentUser callback: Received response with unexpected data type. Raw: ' +
+                    String(event.data),
+                ),
+              );
+              return;
+            }
+            if (
+              data.type === 'getCurrentUser_response' &&
+              data.messageId === messageId
+            ) {
+              window.removeEventListener('message', callback);
+              if (data.error) {
+                reject(new Error(data.error));
+              } else {
+                resolve(data.result);
+              }
+            }
+          } catch (e) {
+            console.error(
+              "'getCurrentUser' callback: Error processing response:",
+              e,
+              'Raw event.data:',
+              event.data,
+            );
+            window.removeEventListener('message', callback); // Ensure listener is removed on error too
+            reject(e);
+          }
+        };
+        window.addEventListener('message', callback);
+
+        // Send the message to React Native
+        globalThis.ReactNativeWebView.postMessage(
+          JSON.stringify({
+            type: 'getCurrentUser',
+            messageId,
+          }),
+        );
+      });
+    },
   };
 
   // Register the callback handler with the window object
@@ -1245,8 +1388,6 @@
       }),
     );
   }
-
-  // Add TypeScript type information
 
   // Make the API available globally in browser environments
   if (typeof window !== 'undefined') {

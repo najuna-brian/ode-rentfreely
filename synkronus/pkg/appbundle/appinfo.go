@@ -65,6 +65,21 @@ func (s *Service) generateAppInfo(zipReader *zip.Reader, version string) ([]byte
 				uiSchemas[formName] = file
 			}
 
+		// AnthroCollect-style bundles: forms under app/forms/
+		case strings.HasPrefix(file.Name, "app/forms/") && strings.HasSuffix(file.Name, "/schema.json"):
+			parts := strings.Split(file.Name, "/")
+			if len(parts) == 4 {
+				formName := parts[2]
+				formSchemas[formName] = file
+			}
+
+		case strings.HasPrefix(file.Name, "app/forms/") && strings.HasSuffix(file.Name, "/ui.json"):
+			parts := strings.Split(file.Name, "/")
+			if len(parts) == 4 {
+				formName := parts[2]
+				uiSchemas[formName] = file
+			}
+
 		case strings.HasPrefix(file.Name, "renderers/") && strings.HasSuffix(file.Name, "/renderer.jsx"):
 			parts := strings.Split(file.Name, "/")
 			if len(parts) == 3 {
