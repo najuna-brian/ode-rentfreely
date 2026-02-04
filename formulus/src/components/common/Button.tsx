@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 import {
   TouchableOpacity,
   Text,
@@ -6,14 +6,14 @@ import {
   ActivityIndicator,
   ViewStyle,
   TextStyle,
-} from "react-native";
-import { colors } from "../../theme/colors";
+} from 'react-native';
+import { colors } from '../../theme/colors';
 
 export interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: "primary" | "secondary" | "tertiary";
-  size?: "small" | "medium" | "large";
+  variant?: 'primary' | 'secondary' | 'tertiary';
+  size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
   loading?: boolean;
   fullWidth?: boolean;
@@ -26,8 +26,8 @@ export interface ButtonProps {
 const Button: React.FC<ButtonProps> = ({
   title,
   onPress,
-  variant = "primary",
-  size = "medium",
+  variant = 'primary',
+  size = 'medium',
   disabled = false,
   loading = false,
   fullWidth = false,
@@ -61,13 +61,12 @@ const Button: React.FC<ButtonProps> = ({
       testID={testID}
       accessibilityLabel={accessibilityLabel || title}
       accessibilityRole="button"
-      accessibilityState={{ disabled: disabled || loading }}
-    >
+      accessibilityState={{ disabled: disabled || loading }}>
       {loading ? (
         <ActivityIndicator
           size="small"
           color={
-            variant === "primary"
+            variant === 'primary'
               ? colors.neutral.white
               : colors.semantic.info.ios
           }
@@ -82,9 +81,9 @@ const Button: React.FC<ButtonProps> = ({
 const styles = StyleSheet.create({
   button: {
     borderRadius: 12,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
   },
   button_primary: {
     backgroundColor: colors.semantic.info.ios,
@@ -113,14 +112,14 @@ const styles = StyleSheet.create({
     minHeight: 56,
   },
   button_fullWidth: {
-    width: "100%",
+    width: '100%',
   },
   button_disabled: {
     opacity: 0.5,
   },
   text: {
-    fontWeight: "600",
-    textAlign: "center",
+    fontWeight: '600',
+    textAlign: 'center',
   },
   text_primary: {
     color: colors.neutral.white,

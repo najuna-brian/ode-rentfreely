@@ -15,7 +15,7 @@ Returns the current health status of the service
 ### Example
 
 ```typescript
-import { HealthApi, Configuration } from "./api";
+import { HealthApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new HealthApi(configuration);

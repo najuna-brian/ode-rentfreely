@@ -1,5 +1,5 @@
-import { useState, useEffect, useCallback } from "react";
-import { FormService, FormSpec } from "../services/FormService";
+import { useState, useEffect, useCallback } from 'react';
+import { FormService, FormSpec } from '../services/FormService';
 
 interface UseFormsResult {
   forms: FormSpec[];
@@ -30,21 +30,21 @@ export const useForms = (): UseFormsResult => {
       for (const form of formSpecs) {
         try {
           const observations = await formService.getObservationsByFormType(
-            form.id
+            form.id,
           );
           counts[form.id] = observations.length;
         } catch (err) {
           console.error(
             `Failed to load observations for form ${form.id}:`,
-            err
+            err,
           );
           counts[form.id] = 0;
         }
       }
       setObservationCounts(counts);
     } catch (err) {
-      console.error("Failed to load forms:", err);
-      setError(err instanceof Error ? err.message : "Failed to load forms");
+      console.error('Failed to load forms:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load forms');
     } finally {
       setLoading(false);
     }
@@ -53,7 +53,7 @@ export const useForms = (): UseFormsResult => {
   useEffect(() => {
     loadForms();
     const formServicePromise = FormService.getInstance();
-    formServicePromise.then((service) => {
+    formServicePromise.then(service => {
       service.onCacheInvalidated(() => {
         loadForms();
       });
@@ -64,7 +64,7 @@ export const useForms = (): UseFormsResult => {
     (formId: string): number => {
       return observationCounts[formId] || 0;
     },
-    [observationCounts]
+    [observationCounts],
   );
 
   return {

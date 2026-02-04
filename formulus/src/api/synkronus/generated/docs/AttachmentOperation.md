@@ -14,7 +14,7 @@
 ## Example
 
 ```typescript
-import { AttachmentOperation } from "./api";
+import { AttachmentOperation } from './api';
 
 const instance: AttachmentOperation = {
   operation,

@@ -11,7 +11,7 @@
 ## Example
 
 ```typescript
-import { SyncPushRequest } from "./api";
+import { SyncPushRequest } from './api';
 
 const instance: SyncPushRequest = {
   transmission_id,

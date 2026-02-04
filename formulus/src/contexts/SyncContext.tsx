@@ -4,12 +4,12 @@ import React, {
   useState,
   useCallback,
   ReactNode,
-} from "react";
+} from 'react';
 
 export interface SyncProgress {
   current: number;
   total: number;
-  phase: "pull" | "push" | "attachments_download" | "attachments_upload";
+  phase: 'pull' | 'push' | 'attachments_download' | 'attachments_upload';
   details?: string;
 }
 
@@ -52,14 +52,14 @@ export const SyncProvider: React.FC<SyncProviderProps> = ({ children }) => {
   }, []);
 
   const updateProgress = useCallback((progress: SyncProgress) => {
-    setSyncState((prev) => ({
+    setSyncState(prev => ({
       ...prev,
       progress,
     }));
   }, []);
 
   const finishSync = useCallback((error?: string) => {
-    setSyncState((prev) => ({
+    setSyncState(prev => ({
       ...prev,
       isActive: false,
       canCancel: false,
@@ -70,17 +70,17 @@ export const SyncProvider: React.FC<SyncProviderProps> = ({ children }) => {
   }, []);
 
   const cancelSync = useCallback(() => {
-    setSyncState((prev) => ({
+    setSyncState(prev => ({
       ...prev,
       isActive: false,
       canCancel: false,
-      error: "Sync cancelled by user",
+      error: 'Sync cancelled by user',
       progress: undefined,
     }));
   }, []);
 
   const clearError = useCallback(() => {
-    setSyncState((prev) => ({
+    setSyncState(prev => ({
       ...prev,
       error: undefined,
     }));
@@ -101,7 +101,7 @@ export const SyncProvider: React.FC<SyncProviderProps> = ({ children }) => {
 export const useSyncContext = (): SyncContextType => {
   const context = useContext(SyncContext);
   if (!context) {
-    throw new Error("useSyncContext must be used within a SyncProvider");
+    throw new Error('useSyncContext must be used within a SyncProvider');
   }
   return context;
 };

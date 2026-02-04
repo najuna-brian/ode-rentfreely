@@ -15,7 +15,7 @@ Optional geolocation data for the observation
 ## Example
 
 ```typescript
-import { ObservationGeolocation } from "./api";
+import { ObservationGeolocation } from './api';
 
 const instance: ObservationGeolocation = {
   latitude,

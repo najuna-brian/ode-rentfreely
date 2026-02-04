@@ -11,7 +11,7 @@
 ## Example
 
 ```typescript
-import { GetHealth503Response } from "./api";
+import { GetHealth503Response } from './api';
 
 const instance: GetHealth503Response = {
   status,

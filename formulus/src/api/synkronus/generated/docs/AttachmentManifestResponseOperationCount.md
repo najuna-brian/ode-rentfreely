@@ -12,7 +12,7 @@ Count of operations by type
 ## Example
 
 ```typescript
-import { AttachmentManifestResponseOperationCount } from "./api";
+import { AttachmentManifestResponseOperationCount } from './api';
 
 const instance: AttachmentManifestResponseOperationCount = {
   download,

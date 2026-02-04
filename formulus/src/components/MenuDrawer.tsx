@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -6,17 +6,17 @@ import {
   Modal,
   TouchableOpacity,
   ScrollView,
-} from "react-native";
+} from 'react-native';
 import {
   SafeAreaView,
   useSafeAreaInsets,
-} from "react-native-safe-area-context";
-import Icon from "@react-native-vector-icons/material-design-icons";
-import { getUserInfo, UserInfo, UserRole } from "../api/synkronus/Auth";
-import { colors } from "../theme/colors";
+} from 'react-native-safe-area-context';
+import Icon from '@react-native-vector-icons/material-design-icons';
+import { getUserInfo, UserInfo, UserRole } from '../api/synkronus/Auth';
+import { colors } from '../theme/colors';
 
 interface MenuItem {
-  icon: React.ComponentProps<typeof Icon>["name"];
+  icon: React.ComponentProps<typeof Icon>['name'];
   label: string;
   screen: string;
   minRole?: UserRole; // Minimum role required to see this item
@@ -31,14 +31,14 @@ interface MenuDrawerProps {
 }
 
 const ROLE_LEVELS: Record<UserRole, number> = {
-  "read-only": 1,
-  "read-write": 2,
+  'read-only': 1,
+  'read-write': 2,
   admin: 3,
 };
 
 const hasMinRole = (
   userRole: UserRole | undefined,
-  minRole: UserRole
+  minRole: UserRole,
 ): boolean => {
   if (!userRole) return false;
   return ROLE_LEVELS[userRole] >= ROLE_LEVELS[minRole];
@@ -64,38 +64,38 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
 
   const menuItems: MenuItem[] = [
     {
-      icon: "clipboard-list",
-      label: "Form Management",
-      screen: "FormManagement",
-      minRole: "admin",
+      icon: 'clipboard-list',
+      label: 'Form Management',
+      screen: 'FormManagement',
+      minRole: 'admin',
     },
     {
-      icon: "cog",
-      label: "App Settings",
-      screen: "Settings",
+      icon: 'cog',
+      label: 'App Settings',
+      screen: 'Settings',
     },
     {
-      icon: "information",
-      label: "About",
-      screen: "About",
+      icon: 'information',
+      label: 'About',
+      screen: 'About',
     },
     {
-      icon: "help-circle",
-      label: "Help & Support",
-      screen: "Help",
+      icon: 'help-circle',
+      label: 'Help & Support',
+      screen: 'Help',
     },
   ];
 
-  const visibleItems = menuItems.filter((item) => {
+  const visibleItems = menuItems.filter(item => {
     if (!item.minRole) return true;
     return hasMinRole(userInfo?.role, item.minRole);
   });
 
   const getRoleBadgeStyle = (role: UserRole) => {
     switch (role) {
-      case "admin":
+      case 'admin':
         return styles.roleBadgeAdmin;
-      case "read-write":
+      case 'read-write':
         return styles.roleBadgeReadWrite;
       default:
         return styles.roleBadgeReadOnly;
@@ -107,8 +107,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
       visible={visible}
       transparent
       animationType="slide"
-      onRequestClose={allowClose ? onClose : undefined}
-    >
+      onRequestClose={allowClose ? onClose : undefined}>
       <View style={styles.overlay}>
         {allowClose && (
           <TouchableOpacity
@@ -120,8 +119,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
         <View style={[styles.drawer, { bottom: bottomPadding }]}>
           <SafeAreaView
             style={styles.safeArea}
-            edges={["top", "left", "right"]}
-          >
+            edges={['top', 'left', 'right']}>
             <View style={styles.header}>
               <Text style={styles.headerTitle}>Menu</Text>
               {allowClose && (
@@ -140,8 +138,10 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 <View style={styles.userInfo}>
                   <Text style={styles.userName}>{userInfo.username}</Text>
                   <View
-                    style={[styles.roleBadge, getRoleBadgeStyle(userInfo.role)]}
-                  >
+                    style={[
+                      styles.roleBadge,
+                      getRoleBadgeStyle(userInfo.role),
+                    ]}>
                     <Text style={styles.roleBadgeText}>{userInfo.role}</Text>
                   </View>
                 </View>
@@ -167,8 +167,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 <TouchableOpacity
                   key={index}
                   style={styles.menuItem}
-                  onPress={() => onNavigate(item.screen)}
-                >
+                  onPress={() => onNavigate(item.screen)}>
                   <Icon
                     name={item.icon}
                     size={24}
@@ -183,8 +182,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
               <View style={styles.footer}>
                 <TouchableOpacity
                   style={styles.logoutButton}
-                  onPress={onLogout}
-                >
+                  onPress={onLogout}>
                   <Icon
                     name="logout"
                     size={24}
@@ -210,10 +208,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.ui.background,
   },
   drawer: {
-    position: "absolute",
+    position: 'absolute',
     right: 0,
     top: 0,
-    width: "80%",
+    width: '80%',
     maxWidth: 320,
     backgroundColor: colors.neutral.white,
     shadowColor: colors.neutral.black,
@@ -226,24 +224,24 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors.ui.gray.light,
   },
   headerTitle: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: colors.neutral.black,
   },
   closeButton: {
     padding: 4,
   },
   userSection: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 16,
     backgroundColor: colors.ui.gray.lightest,
     borderBottomWidth: 1,
@@ -254,8 +252,8 @@ const styles = StyleSheet.create({
     height: 50,
     borderRadius: 25,
     backgroundColor: colors.semantic.info.ios,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   userAvatarInactive: {
     backgroundColor: colors.ui.gray.medium,
@@ -266,13 +264,13 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
     color: colors.neutral[800],
     marginBottom: 4,
   },
   userNameInactive: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
     color: colors.neutral[500],
     marginBottom: 4,
   },
@@ -281,7 +279,7 @@ const styles = StyleSheet.create({
     color: colors.neutral[600],
   },
   roleBadge: {
-    alignSelf: "flex-start",
+    alignSelf: 'flex-start',
     paddingHorizontal: 8,
     paddingVertical: 2,
     borderRadius: 10,
@@ -298,14 +296,14 @@ const styles = StyleSheet.create({
   roleBadgeText: {
     color: colors.neutral.white,
     fontSize: 11,
-    fontWeight: "600",
+    fontWeight: '600',
   },
   menuList: {
     flex: 1,
   },
   menuItem: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors.neutral[100],
@@ -322,15 +320,15 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   logoutButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 12,
   },
   logoutText: {
     marginLeft: 16,
     fontSize: 16,
     color: colors.semantic.error.ios,
-    fontWeight: "500",
+    fontWeight: '500',
   },
 });
 

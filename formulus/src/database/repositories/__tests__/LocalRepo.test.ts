@@ -1,4 +1,4 @@
-import { LocalRepoInterface, Observation } from "../LocalRepoInterface";
+import { LocalRepoInterface, Observation } from '../LocalRepoInterface';
 
 /**
  * Mock implementation of LocalRepoInterface for testing
@@ -15,8 +15,8 @@ class MockLocalRepo implements LocalRepoInterface {
     const newObservation: Observation = {
       id,
       observationId: id, // Use the same ID for observationId
-      formType: observation.formType || "",
-      formVersion: observation.formVersion || "1.0",
+      formType: observation.formType || '',
+      formVersion: observation.formVersion || '1.0',
       data: observation.data || {},
       deleted: observation.deleted || false,
       createdAt: now,
@@ -34,13 +34,13 @@ class MockLocalRepo implements LocalRepoInterface {
 
   async getObservationsByFormId(formId: string): Promise<Observation[]> {
     return Array.from(this.observations.values()).filter(
-      (obs) => obs.formType === formId && !obs.deleted
+      obs => obs.formType === formId && !obs.deleted,
     );
   }
 
   async updateObservation(
     id: string,
-    observation: Partial<Observation>
+    observation: Partial<Observation>,
   ): Promise<boolean> {
     const existingObservation = this.observations.get(id);
     if (!existingObservation) {
@@ -90,7 +90,7 @@ class MockLocalRepo implements LocalRepoInterface {
   }
 }
 
-describe("LocalRepo", () => {
+describe('LocalRepo', () => {
   let repo: LocalRepoInterface;
 
   beforeEach(() => {
@@ -98,12 +98,12 @@ describe("LocalRepo", () => {
     repo = new MockLocalRepo();
   });
 
-  test("saveObservation should create a new observation and return its ID", async () => {
+  test('saveObservation should create a new observation and return its ID', async () => {
     // Arrange
     const testObservation: Partial<Observation> = {
-      formType: "test-form",
-      formVersion: "1.0",
-      data: { field1: "value1", field2: "value2" },
+      formType: 'test-form',
+      formVersion: '1.0',
+      data: { field1: 'value1', field2: 'value2' },
       deleted: false,
     };
 
@@ -122,37 +122,37 @@ describe("LocalRepo", () => {
 
     // Check data was properly saved and can be parsed
     const parsedData =
-      typeof savedObservation?.data === "string"
+      typeof savedObservation?.data === 'string'
         ? JSON.parse(savedObservation?.data)
         : savedObservation?.data;
     expect(parsedData).toEqual(testObservation.data);
   });
 
-  test("getObservation should return null for non-existent ID", async () => {
+  test('getObservation should return null for non-existent ID', async () => {
     // Act
-    const observation = await repo.getObservation("non-existent-id");
+    const observation = await repo.getObservation('non-existent-id');
 
     // Assert
     expect(observation).toBeNull();
   });
 
-  test("getObservationsByFormId should return observations for a specific form type", async () => {
+  test('getObservationsByFormId should return observations for a specific form type', async () => {
     // Arrange
-    const formType1 = "form-type-1";
-    const formType2 = "form-type-2";
+    const formType1 = 'form-type-1';
+    const formType2 = 'form-type-2';
 
     // Create test observations
     await repo.saveObservation({
       formType: formType1,
-      data: { test: "data1" },
+      data: { test: 'data1' },
     });
     await repo.saveObservation({
       formType: formType1,
-      data: { test: "data2" },
+      data: { test: 'data2' },
     });
     await repo.saveObservation({
       formType: formType2,
-      data: { test: "data3" },
+      data: { test: 'data3' },
     });
 
     // Act
@@ -164,12 +164,12 @@ describe("LocalRepo", () => {
     expect(observations[1].formType).toBe(formType1);
   });
 
-  test("updateObservation should modify an existing observation", async () => {
+  test('updateObservation should modify an existing observation', async () => {
     // Arrange
     const testObservation: Partial<Observation> = {
-      formType: "test-form",
-      formVersion: "1.0",
-      data: { field1: "original" },
+      formType: 'test-form',
+      formVersion: '1.0',
+      data: { field1: 'original' },
       deleted: false,
     };
 
@@ -177,7 +177,7 @@ describe("LocalRepo", () => {
 
     // Act
     const updateSuccess = await repo.updateObservation(id, {
-      data: { field1: "updated" },
+      data: { field1: 'updated' },
     });
 
     // Assert
@@ -186,18 +186,18 @@ describe("LocalRepo", () => {
     // Verify the observation was updated
     const updatedObservation = await repo.getObservation(id);
     const parsedData =
-      typeof updatedObservation?.data === "string"
+      typeof updatedObservation?.data === 'string'
         ? JSON.parse(updatedObservation?.data)
         : updatedObservation?.data;
 
-    expect(parsedData.field1).toBe("updated");
+    expect(parsedData.field1).toBe('updated');
   });
 
-  test("deleteObservation should mark an observation as deleted", async () => {
+  test('deleteObservation should mark an observation as deleted', async () => {
     // Arrange
     const testObservation: Partial<Observation> = {
-      formType: "test-form",
-      data: { field1: "value1" },
+      formType: 'test-form',
+      data: { field1: 'value1' },
     };
 
     const id = await repo.saveObservation(testObservation);
@@ -213,11 +213,11 @@ describe("LocalRepo", () => {
     expect(deletedObservation?.deleted).toBe(true);
   });
 
-  test("markObservationAsSynced should update the syncedAt field", async () => {
+  test('markObservationAsSynced should update the syncedAt field', async () => {
     // Arrange
     const testObservation: Partial<Observation> = {
-      formType: "test-form",
-      data: { field1: "value1" },
+      formType: 'test-form',
+      data: { field1: 'value1' },
     };
 
     const id = await repo.saveObservation(testObservation);

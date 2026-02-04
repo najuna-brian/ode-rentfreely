@@ -5,15 +5,15 @@ import {
   AttachmentOperation,
   DefaultApiSyncPushRequest,
   SyncPushRequest,
-} from "./generated";
-import { Observation } from "../../database/models/Observation";
-import { ObservationMapper } from "../../mappers/ObservationMapper";
-import RNFS from "react-native-fs";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { getApiAuthToken } from "./Auth";
-import { databaseService } from "../../database/DatabaseService";
-import randomId from "@nozbe/watermelondb/utils/common/randomId";
-import { clientIdService } from "../../services/ClientIdService";
+} from './generated';
+import { Observation } from '../../database/models/Observation';
+import { ObservationMapper } from '../../mappers/ObservationMapper';
+import RNFS from 'react-native-fs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { getApiAuthToken } from './Auth';
+import { databaseService } from '../../database/DatabaseService';
+import randomId from '@nozbe/watermelondb/utils/common/randomId';
+import { clientIdService } from '../../services/ClientIdService';
 
 interface DownloadResult {
   success: boolean;
@@ -28,8 +28,8 @@ class SynkronusApi {
 
   async getApi(): Promise<DefaultApi> {
     // Always check current serverUrl from storage to handle changes
-    const rawSettings = await AsyncStorage.getItem("@settings");
-    if (!rawSettings) throw new Error("Missing app settings");
+    const rawSettings = await AsyncStorage.getItem('@settings');
+    if (!rawSettings) throw new Error('Missing app settings');
 
     const { serverUrl } = JSON.parse(rawSettings);
 
@@ -48,8 +48,8 @@ class SynkronusApi {
       this.config = new Configuration({
         basePath: serverUrl,
         accessToken: async () => {
-          const token = await AsyncStorage.getItem("@token");
-          return token || "";
+          const token = await AsyncStorage.getItem('@token');
+          return token || '';
         },
       });
     }
@@ -62,7 +62,7 @@ class SynkronusApi {
     // Ensure config is loaded by calling getApi first
     await this.getApi();
     if (!this.config) {
-      throw new Error("Configuration not initialized");
+      throw new Error('Configuration not initialized');
     }
     return this.config;
   }
@@ -82,8 +82,8 @@ class SynkronusApi {
         console.error(`Failed to remove files from ${path}: ${error}`);
       }
     };
-    await removeIfExists(RNFS.DocumentDirectoryPath + "/app/");
-    await removeIfExists(RNFS.DocumentDirectoryPath + "/forms/");
+    await removeIfExists(RNFS.DocumentDirectoryPath + '/app/');
+    await removeIfExists(RNFS.DocumentDirectoryPath + '/forms/');
   }
 
   /**
@@ -93,13 +93,13 @@ class SynkronusApi {
   async downloadFormSpecs(
     manifest: AppBundleManifest,
     outputRootDirectory: string,
-    progressCallback?: (progressPercent: number) => void
+    progressCallback?: (progressPercent: number) => void,
   ): Promise<DownloadResult[]> {
     return await this.downloadFilesByPrefix(
       manifest,
       outputRootDirectory,
-      "forms/",
-      progressCallback
+      'forms/',
+      progressCallback,
     );
   }
 
@@ -109,13 +109,13 @@ class SynkronusApi {
   async downloadAppFiles(
     manifest: AppBundleManifest,
     outputRootDirectory: string,
-    progressCallback?: (progressPercent: number) => void
+    progressCallback?: (progressPercent: number) => void,
   ): Promise<DownloadResult[]> {
     return await this.downloadFilesByPrefix(
       manifest,
       outputRootDirectory,
-      "app/",
-      progressCallback
+      'app/',
+      progressCallback,
     );
   }
 
@@ -123,24 +123,22 @@ class SynkronusApi {
     manifest: AppBundleManifest,
     outputRootDirectory: string,
     prefix: string,
-    progressCallback?: (progressPercent: number) => void
+    progressCallback?: (progressPercent: number) => void,
   ): Promise<DownloadResult[]> {
     console.debug(
-      `Downloading files with prefix "${prefix}" to: ${outputRootDirectory}`
+      `Downloading files with prefix "${prefix}" to: ${outputRootDirectory}`,
     );
 
     const config = await this.getConfig();
-    const filesToDownload = manifest.files.filter((file) =>
-      file.path.startsWith(prefix)
+    const filesToDownload = manifest.files.filter(file =>
+      file.path.startsWith(prefix),
     );
     const urls = filesToDownload.map(
-      (file) =>
-        `${config.basePath}/app-bundle/download/${encodeURIComponent(
-          file.path
-        )}`
+      file =>
+        `${config.basePath}/app-bundle/download/${encodeURIComponent(file.path)}`,
     );
     const localFiles = filesToDownload.map(
-      (file) => `${outputRootDirectory}/${file.path}`
+      file => `${outputRootDirectory}/${file.path}`,
     );
 
     return this.downloadRawFiles(urls, localFiles, progressCallback);
@@ -156,12 +154,12 @@ class SynkronusApi {
   }
 
   private getAttachmentsDownloadManifest(
-    observations: Observation[]
+    observations: Observation[],
   ): string[] {
     const attachmentPaths: string[] = [];
 
     for (const observation of observations) {
-      if (observation.data && typeof observation.data === "object") {
+      if (observation.data && typeof observation.data === 'object') {
         // Recursively search for attachment fields in the observation data
         this.extractAttachmentPaths(observation.data, attachmentPaths);
       }
@@ -176,16 +174,16 @@ class SynkronusApi {
   private async processAttachmentManifest(): Promise<void> {
     try {
       const lastAttachmentVersion =
-        Number(await AsyncStorage.getItem("@last_attachment_version")) || 0;
+        Number(await AsyncStorage.getItem('@last_attachment_version')) || 0;
       const clientId = await clientIdService.getClientId();
 
       if (!clientId) {
-        console.warn("No client ID available, skipping attachment sync");
+        console.warn('No client ID available, skipping attachment sync');
         return;
       }
 
       console.debug(
-        `Getting attachment manifest since version ${lastAttachmentVersion}`
+        `Getting attachment manifest since version ${lastAttachmentVersion}`,
       );
 
       const api = await this.getApi();
@@ -201,26 +199,24 @@ class SynkronusApi {
       // Handle null operations array (server returns null when no operations)
       const operations = manifest.operations || [];
       console.debug(
-        `Received attachment manifest: ${operations.length} operations at version ${manifest.current_version}`
+        `Received attachment manifest: ${operations.length} operations at version ${manifest.current_version}`,
       );
 
       if (operations.length === 0) {
-        console.debug("No attachment operations to perform");
+        console.debug('No attachment operations to perform');
         await AsyncStorage.setItem(
-          "@last_attachment_version",
-          manifest.current_version.toString()
+          '@last_attachment_version',
+          manifest.current_version.toString(),
         );
         return;
       }
 
       // Process operations
-      const downloadOps = operations.filter(
-        (op) => op.operation === "download"
-      );
-      const deleteOps = operations.filter((op) => op.operation === "delete");
+      const downloadOps = operations.filter(op => op.operation === 'download');
+      const deleteOps = operations.filter(op => op.operation === 'delete');
 
       console.debug(
-        `Processing ${downloadOps.length} downloads, ${deleteOps.length} deletions`
+        `Processing ${downloadOps.length} downloads, ${deleteOps.length} deletions`,
       );
 
       // Process deletions first
@@ -231,14 +227,14 @@ class SynkronusApi {
 
       // Update last processed version
       await AsyncStorage.setItem(
-        "@last_attachment_version",
-        manifest.current_version.toString()
+        '@last_attachment_version',
+        manifest.current_version.toString(),
       );
       console.debug(
-        `Attachment sync completed at version ${manifest.current_version}`
+        `Attachment sync completed at version ${manifest.current_version}`,
       );
     } catch (error) {
-      console.error("Failed to process attachment manifest:", error);
+      console.error('Failed to process attachment manifest:', error);
       throw error; // Let the error bubble up so we can fix the root cause
     }
   }
@@ -247,7 +243,7 @@ class SynkronusApi {
    * Process attachment deletion operations
    */
   private async processAttachmentDeletions(
-    deleteOps: AttachmentOperation[]
+    deleteOps: AttachmentOperation[],
   ): Promise<void> {
     const attachmentsDirectory = `${RNFS.DocumentDirectoryPath}/attachments`;
 
@@ -265,7 +261,7 @@ class SynkronusApi {
       } catch (error) {
         console.error(
           `Failed to delete attachment ${op.attachment_id}:`,
-          error
+          error,
         );
       }
     }
@@ -275,16 +271,16 @@ class SynkronusApi {
    * Process attachment download operations using manifest URLs
    */
   private async processAttachmentDownloads(
-    downloadOps: AttachmentOperation[]
+    downloadOps: AttachmentOperation[],
   ): Promise<void> {
     const attachmentsDirectory = `${RNFS.DocumentDirectoryPath}/attachments`;
     await RNFS.mkdir(attachmentsDirectory);
 
-    const urls = downloadOps.map((op) =>
-      op.download_url ? op.download_url : ""
+    const urls = downloadOps.map(op =>
+      op.download_url ? op.download_url : '',
     );
     const localPaths = downloadOps.map(
-      (op) => `${attachmentsDirectory}/${op.attachment_id}`
+      op => `${attachmentsDirectory}/${op.attachment_id}`,
     );
 
     const results = await this.downloadRawFiles(urls, localPaths);
@@ -293,11 +289,11 @@ class SynkronusApi {
       const op = downloadOps[index];
       if (result.success) {
         console.debug(
-          `Downloaded attachment: ${op.attachment_id} (${result.bytesWritten} bytes)`
+          `Downloaded attachment: ${op.attachment_id} (${result.bytesWritten} bytes)`,
         );
       } else {
         console.error(
-          `Failed to download attachment ${op.attachment_id}: ${result.message}`
+          `Failed to download attachment ${op.attachment_id}: ${result.message}`,
         );
       }
     });
@@ -314,15 +310,15 @@ class SynkronusApi {
       // Get all files in pending_upload directory
       const files = await RNFS.readDir(pendingUploadDirectory);
       const attachmentIds = files
-        .filter((file) => file.isFile())
-        .map((file) => file.name)
-        .filter((filename) => this.isAttachmentPath(filename));
+        .filter(file => file.isFile())
+        .map(file => file.name)
+        .filter(filename => this.isAttachmentPath(filename));
 
       return attachmentIds;
     } catch (error) {
       console.error(
-        "Failed to read pending_upload attachments directory:",
-        error
+        'Failed to read pending_upload attachments directory:',
+        error,
       );
       return [];
     }
@@ -330,12 +326,12 @@ class SynkronusApi {
 
   private extractAttachmentPaths(
     data: unknown,
-    attachmentPaths: string[]
+    attachmentPaths: string[],
   ): void {
-    if (!data || typeof data !== "object") return;
+    if (!data || typeof data !== 'object') return;
 
     for (const value of Object.values(data)) {
-      if (typeof value === "string") {
+      if (typeof value === 'string') {
         // Check if this looks like an attachment path (GUID-style filename)
         // Based on PhotoQuestionRenderer pattern: GUID-style filenames
         if (this.isAttachmentPath(value)) {
@@ -344,13 +340,13 @@ class SynkronusApi {
       } else if (Array.isArray(value)) {
         // Handle arrays of attachments
         for (const item of value) {
-          if (typeof item === "string" && this.isAttachmentPath(item)) {
+          if (typeof item === 'string' && this.isAttachmentPath(item)) {
             attachmentPaths.push(item);
-          } else if (typeof item === "object") {
+          } else if (typeof item === 'object') {
             this.extractAttachmentPaths(item, attachmentPaths);
           }
         }
-      } else if (typeof value === "object") {
+      } else if (typeof value === 'object') {
         // Recursively search nested objects
         this.extractAttachmentPaths(value, attachmentPaths);
       }
@@ -382,7 +378,7 @@ class SynkronusApi {
       this.fastGetToken_cachedToken = authToken;
       return authToken;
     }
-    throw new Error("Unable to retrieve auth token");
+    throw new Error('Unable to retrieve auth token');
   }
 
   public clearTokenCache(): void {
@@ -395,20 +391,20 @@ class SynkronusApi {
   private async downloadRawFiles(
     urls: string[],
     localFilePaths: string[],
-    progressCallback?: (progressPercent: number) => void
+    progressCallback?: (progressPercent: number) => void,
   ): Promise<DownloadResult[]> {
     const results: DownloadResult[] = [];
     if (urls.length !== localFilePaths.length) {
       throw new Error(
-        "URLs and local file paths arrays must have the same length"
+        'URLs and local file paths arrays must have the same length',
       );
     }
     const totalFiles = urls.length;
-    console.debug("URLS:", urls);
-    console.debug("Local file paths:", localFilePaths);
+    console.debug('URLS:', urls);
+    console.debug('Local file paths:', localFilePaths);
     const singleFileCallback = (
       currentIndex: number,
-      progress: RNFS.DownloadProgressCallbackResult
+      progress: RNFS.DownloadProgressCallbackResult,
     ) => {
       const fileProgress = progress.bytesWritten / progress.contentLength;
       const overallProgress =
@@ -416,8 +412,8 @@ class SynkronusApi {
 
       console.debug(
         `Downloading file: ${urls[currentIndex]} ${Math.round(
-          fileProgress * 100
-        )}%`
+          fileProgress * 100,
+        )}%`,
       );
       progressCallback?.(Math.round(overallProgress));
     };
@@ -431,10 +427,10 @@ class SynkronusApi {
           url,
           localFilePath,
           (progress: RNFS.DownloadProgressCallbackResult) =>
-            singleFileCallback(i, progress)
+            singleFileCallback(i, progress),
         );
         console.debug(
-          `Downloaded file: ${localFilePath} (size: ${result.bytesWritten})`
+          `Downloaded file: ${localFilePath} (size: ${result.bytesWritten})`,
         );
         results.push(result);
       } catch (error) {
@@ -449,15 +445,15 @@ class SynkronusApi {
       const progressPercent = Math.round((i / totalFiles) * 100);
       progressCallback?.(progressPercent);
     }
-    console.debug("Files downloaded");
+    console.debug('Files downloaded');
     return results;
   }
   private async downloadRawFile(
     url: string,
     localFilePath: string,
     progressCallback?: (
-      progressPercent: RNFS.DownloadProgressCallbackResult
-    ) => void
+      progressPercent: RNFS.DownloadProgressCallbackResult,
+    ) => void,
   ): Promise<DownloadResult> {
     if (await RNFS.exists(localFilePath)) {
       return {
@@ -470,7 +466,7 @@ class SynkronusApi {
       // Ensure parent folder exists
       const parentDir = localFilePath.substring(
         0,
-        localFilePath.lastIndexOf("/")
+        localFilePath.lastIndexOf('/'),
       );
       if (!(await RNFS.exists(parentDir))) {
         await RNFS.mkdir(parentDir);
@@ -489,7 +485,7 @@ class SynkronusApi {
       background: true,
       progressInterval: 500, // fire at most every 500ms if progressCallback is provided
       progressDivider: progressCallback ? 1 : 100, // fire at most on every percentage change if progressCallback is provided
-      progress: (progress) => {
+      progress: progress => {
         if (progressCallback) {
           progressCallback(progress);
         }
@@ -498,7 +494,7 @@ class SynkronusApi {
 
     if (result.statusCode !== 200) {
       console.error(
-        `Failed to download file from ${url}: ${result.statusCode}`
+        `Failed to download file from ${url}: ${result.statusCode}`,
       );
       return {
         success: false,
@@ -509,7 +505,7 @@ class SynkronusApi {
     }
 
     console.debug(
-      `Successfully downloaded and saved (binary): ${localFilePath} (${result.bytesWritten} bytes)`
+      `Successfully downloaded and saved (binary): ${localFilePath} (${result.bytesWritten} bytes)`,
     );
     return {
       success: true,
@@ -521,37 +517,37 @@ class SynkronusApi {
 
   private async downloadAttachments(attachments: string[]) {
     if (attachments.length === 0) {
-      console.debug("No attachments to download");
+      console.debug('No attachments to download');
       return [];
     }
 
-    console.debug("Starting attachments download...", attachments);
+    console.debug('Starting attachments download...', attachments);
     const downloadDirectory = `${RNFS.DocumentDirectoryPath}/attachments`;
     await RNFS.mkdir(downloadDirectory);
 
     const config = await this.getConfig();
     const urls = attachments.map(
-      (attachment) =>
-        `${config.basePath}/attachments/${encodeURIComponent(attachment)}`
+      attachment =>
+        `${config.basePath}/attachments/${encodeURIComponent(attachment)}`,
     );
     const localFilePaths = attachments.map(
-      (attachment) => `${downloadDirectory}/${attachment}`
+      attachment => `${downloadDirectory}/${attachment}`,
     );
 
     const results = await this.downloadRawFiles(urls, localFilePaths);
-    console.debug("Attachments downloaded", results);
+    console.debug('Attachments downloaded', results);
     return results;
   }
 
   private async uploadAttachments(
-    attachments: string[]
+    attachments: string[],
   ): Promise<DownloadResult[]> {
     if (attachments.length === 0) {
-      console.debug("No attachments to upload");
+      console.debug('No attachments to upload');
       return [];
     }
 
-    console.debug("Starting attachments upload...", attachments);
+    console.debug('Starting attachments upload...', attachments);
     const pendingUploadDirectory = `${RNFS.DocumentDirectoryPath}/attachments/pending_upload`;
     const attachmentsDirectory = `${RNFS.DocumentDirectoryPath}/attachments`;
     const api = await this.getApi();
@@ -569,7 +565,7 @@ class SynkronusApi {
         const fileExists = await RNFS.exists(pendingFilePath);
         if (!fileExists) {
           console.warn(
-            `Attachment file not found in pending_upload directory: ${pendingFilePath}`
+            `Attachment file not found in pending_upload directory: ${pendingFilePath}`,
           );
           results.push({
             success: false,
@@ -599,7 +595,7 @@ class SynkronusApi {
 
         // Upload the file
         console.debug(
-          `Uploading attachment: ${attachmentId} (${fileStats.size} bytes)`
+          `Uploading attachment: ${attachmentId} (${fileStats.size} bytes)`,
         );
         await api.uploadAttachment({ attachmentId, file });
 
@@ -626,25 +622,25 @@ class SynkronusApi {
       }
     }
 
-    console.debug("Attachments upload completed", results);
+    console.debug('Attachments upload completed', results);
     return results;
   }
 
   private getMimeTypeFromFilename(filename: string): string {
-    const extension = filename.toLowerCase().split(".").pop();
+    const extension = filename.toLowerCase().split('.').pop();
     const mimeTypes: Record<string, string> = {
-      jpg: "image/jpeg",
-      jpeg: "image/jpeg",
-      png: "image/png",
-      gif: "image/gif",
-      bmp: "image/bmp",
-      webp: "image/webp",
-      pdf: "application/pdf",
-      doc: "application/msword",
-      docx: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      gif: 'image/gif',
+      bmp: 'image/bmp',
+      webp: 'image/webp',
+      pdf: 'application/pdf',
+      doc: 'application/msword',
+      docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     };
 
-    return mimeTypes[extension || ""] || "application/octet-stream";
+    return mimeTypes[extension || ''] || 'application/octet-stream';
   }
 
   /**
@@ -656,7 +652,7 @@ class SynkronusApi {
   async saveNewAttachment(
     attachmentId: string,
     fileData: string,
-    isBase64: boolean = true
+    isBase64: boolean = true,
   ): Promise<string> {
     const attachmentsDirectory = `${RNFS.DocumentDirectoryPath}/attachments`;
     const pendingUploadDirectory = `${RNFS.DocumentDirectoryPath}/attachments/pending_upload`;
@@ -667,7 +663,7 @@ class SynkronusApi {
 
     const mainFilePath = `${attachmentsDirectory}/${attachmentId}`;
     const pendingFilePath = `${pendingUploadDirectory}/${attachmentId}`;
-    const encoding = isBase64 ? "base64" : "utf8";
+    const encoding = isBase64 ? 'base64' : 'utf8';
 
     // Save to both locations
     await Promise.all([
@@ -676,7 +672,7 @@ class SynkronusApi {
     ]);
 
     console.debug(
-      `Saved new attachment: ${attachmentId} (available immediately, queued for upload)`
+      `Saved new attachment: ${attachmentId} (available immediately, queued for upload)`,
     );
 
     // Return the path that should be stored in observation data
@@ -695,7 +691,7 @@ class SynkronusApi {
    * Check if a specific attachment exists in the main attachments folder and/or upload queue
    */
   async attachmentExists(
-    attachmentId: string
+    attachmentId: string,
   ): Promise<{ available: boolean; pendingUpload: boolean }> {
     const mainPath = `${RNFS.DocumentDirectoryPath}/attachments/${attachmentId}`;
     const pendingUploadPath = `${RNFS.DocumentDirectoryPath}/attachments/pending_upload/${attachmentId}`;
@@ -717,7 +713,7 @@ class SynkronusApi {
    */
   private async pullObservations(includeAttachments: boolean = false) {
     const clientId = await clientIdService.getClientId();
-    let since = Number(await AsyncStorage.getItem("@last_seen_version"));
+    let since = Number(await AsyncStorage.getItem('@last_seen_version'));
     if (!since) since = 0;
 
     const repo = databaseService.getLocalRepo();
@@ -737,7 +733,7 @@ class SynkronusApi {
         },
       });
 
-      console.debug("Pull response: ", res.data);
+      console.debug('Pull response: ', res.data);
 
       // 1. Pull and map changes from the API
       const domainObservations = res.data.records
@@ -753,7 +749,7 @@ class SynkronusApi {
         await this.processAttachmentManifest();
       }
 
-      console.debug("Pulled observations: ", domainObservations);
+      console.debug('Pulled observations: ', domainObservations);
 
       // Update since version for next iteration using change_cutoff
       if (res.data.has_more && res.data.change_cutoff) {
@@ -764,8 +760,8 @@ class SynkronusApi {
 
     // Only when all observations are pulled and ingested by WatermelonDB, update the last seen version
     await AsyncStorage.setItem(
-      "@last_seen_version",
-      res.data.current_version.toString()
+      '@last_seen_version',
+      res.data.current_version.toString(),
     );
     return res.data.current_version;
   }
@@ -791,7 +787,7 @@ class SynkronusApi {
         const attachments = await this.getAttachmentsUploadManifest();
         console.debug(
           `Found ${attachments.length} pending attachments to upload:`,
-          attachments
+          attachments,
         );
 
         if (attachments.length > 0) {
@@ -799,41 +795,41 @@ class SynkronusApi {
 
           // Check for upload failures
           const failedUploads = attachmentUploadResults.filter(
-            (result) => !result.success
+            result => !result.success,
           );
           if (failedUploads.length > 0) {
             console.warn(
               `${failedUploads.length} attachment uploads failed:`,
-              failedUploads
+              failedUploads,
             );
             // Continue with observation sync even if some attachments failed
             // The server should handle missing attachments gracefully
           }
 
           const successfulUploads = attachmentUploadResults.filter(
-            (result) => result.success
+            result => result.success,
           );
           console.debug(
-            `Successfully uploaded ${successfulUploads.length}/${attachments.length} attachments`
+            `Successfully uploaded ${successfulUploads.length}/${attachments.length} attachments`,
           );
         }
       }
 
       // 3. Check if we have observations to push
       if (localChanges.length === 0) {
-        console.debug("No local changes to push");
+        console.debug('No local changes to push');
 
         // If we uploaded attachments, report that
         if (includeAttachments && attachmentUploadResults.length > 0) {
           const successfulUploads = attachmentUploadResults.filter(
-            (result) => result.success
+            result => result.success,
           );
           console.debug(
-            `Push completed: 0 observations, ${successfulUploads.length}/${attachmentUploadResults.length} attachments uploaded`
+            `Push completed: 0 observations, ${successfulUploads.length}/${attachmentUploadResults.length} attachments uploaded`,
           );
         }
 
-        return Number(await AsyncStorage.getItem("@last_seen_version")) || 0;
+        return Number(await AsyncStorage.getItem('@last_seen_version')) || 0;
       }
 
       // 3. Push observations to server
@@ -848,43 +844,43 @@ class SynkronusApi {
       };
 
       console.debug(
-        `Pushing ${localChanges.length} observations with transmission ID: ${transmissionId}`
+        `Pushing ${localChanges.length} observations with transmission ID: ${transmissionId}`,
       );
       const res = await api.syncPush(request);
       console.debug(
-        `Successfully pushed ${localChanges.length} observations. Server version: ${res.data.current_version}`
+        `Successfully pushed ${localChanges.length} observations. Server version: ${res.data.current_version}`,
       );
 
       // 4. Update local database sync status
       await repo.markObservationsAsSynced(
-        localChanges.map((record) => record.observationId)
+        localChanges.map(record => record.observationId),
       );
       console.debug(`Marked ${localChanges.length} observations as synced`);
 
       // 5. Update last seen version
       await AsyncStorage.setItem(
-        "@last_seen_version",
-        res.data.current_version.toString()
+        '@last_seen_version',
+        res.data.current_version.toString(),
       );
 
       // 6. Log summary
       if (includeAttachments && attachmentUploadResults.length > 0) {
         const successfulUploads = attachmentUploadResults.filter(
-          (result) => result.success
+          result => result.success,
         ).length;
         const totalUploads = attachmentUploadResults.length;
         console.debug(
-          `Push completed: ${localChanges.length} observations, ${successfulUploads}/${totalUploads} attachments uploaded`
+          `Push completed: ${localChanges.length} observations, ${successfulUploads}/${totalUploads} attachments uploaded`,
         );
       } else {
         console.debug(
-          `Push completed: ${localChanges.length} observations (attachments not included)`
+          `Push completed: ${localChanges.length} observations (attachments not included)`,
         );
       }
 
       return res.data.current_version;
     } catch (error: unknown) {
-      console.error("Failed to push observations:", error);
+      console.error('Failed to push observations:', error);
       throw new Error(`Push failed: ${error}`);
     }
   }
@@ -895,13 +891,13 @@ class SynkronusApi {
   async syncObservations(includeAttachments: boolean = false) {
     console.debug(
       includeAttachments
-        ? "Syncing observations with attachments"
-        : "Syncing observations"
+        ? 'Syncing observations with attachments'
+        : 'Syncing observations',
     );
     const version = await this.pullObservations(includeAttachments);
-    console.debug("Pull completed @ data version " + version);
+    console.debug('Pull completed @ data version ' + version);
     await this.pushObservations(includeAttachments);
-    console.debug("Push completed");
+    console.debug('Push completed');
     return version;
   }
 }

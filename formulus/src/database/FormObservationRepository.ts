@@ -1,7 +1,7 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Observation, ObservationData } from "./models/Observation";
-import { geolocationService } from "../services/GeolocationService";
-import { ToastService } from "../services/ToastService";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Observation, ObservationData } from './models/Observation';
+import { geolocationService } from '../services/GeolocationService';
+import { ToastService } from '../services/ToastService';
 
 /**
  * Repository interface for form observations
@@ -12,7 +12,7 @@ export interface LocalRepoInterface {
   getObservationsByFormType(formType: string): Promise<Observation[]>;
   updateObservation(
     observationId: string,
-    data: ObservationData
+    data: ObservationData,
   ): Promise<boolean>;
   deleteObservation(observationId: string): Promise<boolean>;
   markObservationAsSynced(observationId: string): Promise<boolean>;
@@ -23,8 +23,8 @@ export interface LocalRepoInterface {
  * This provides a simpler implementation while we work on the WatermelonDB integration
  */
 export class FormObservationRepository implements LocalRepoInterface {
-  private readonly STORAGE_KEY_PREFIX = "formulus:observation:";
-  private readonly INDEX_KEY = "formulus:observations:index";
+  private readonly STORAGE_KEY_PREFIX = 'formulus:observation:';
+  private readonly INDEX_KEY = 'formulus:observations:index';
 
   /**
    * Save a completed form observation with geolocation capture
@@ -34,7 +34,7 @@ export class FormObservationRepository implements LocalRepoInterface {
    */
   async saveObservation(
     formType: string,
-    data: ObservationData
+    data: ObservationData,
   ): Promise<string> {
     try {
       // Generate a unique ID for the observation
@@ -48,16 +48,16 @@ export class FormObservationRepository implements LocalRepoInterface {
         geolocation =
           await geolocationService.getCurrentLocationForObservation();
         if (geolocation) {
-          console.debug("Captured geolocation for observation:", id);
+          console.debug('Captured geolocation for observation:', id);
           ToastService.showGeolocationCaptured();
         } else {
-          console.debug("No geolocation available for observation:", id);
+          console.debug('No geolocation available for observation:', id);
           ToastService.showGeolocationUnavailable();
         }
       } catch (geoError) {
         console.warn(
-          "Failed to capture geolocation for observation:",
-          geoError
+          'Failed to capture geolocation for observation:',
+          geoError,
         );
         ToastService.showGeolocationUnavailable();
       }
@@ -66,7 +66,7 @@ export class FormObservationRepository implements LocalRepoInterface {
       const observation: Observation = {
         observationId: id,
         formType,
-        formVersion: "",
+        formVersion: '',
         createdAt: new Date(),
         updatedAt: new Date(),
         syncedAt: null,
@@ -78,7 +78,7 @@ export class FormObservationRepository implements LocalRepoInterface {
       // Save the observation to AsyncStorage
       await AsyncStorage.setItem(
         `${this.STORAGE_KEY_PREFIX}${id}`,
-        JSON.stringify(observation)
+        JSON.stringify(observation),
       );
 
       // Update the index
@@ -86,7 +86,7 @@ export class FormObservationRepository implements LocalRepoInterface {
 
       return id;
     } catch (error) {
-      console.error("Error saving observation:", error);
+      console.error('Error saving observation:', error);
       throw error;
     }
   }
@@ -99,7 +99,7 @@ export class FormObservationRepository implements LocalRepoInterface {
   async getObservation(id: string): Promise<Observation | null> {
     try {
       const data = await AsyncStorage.getItem(
-        `${this.STORAGE_KEY_PREFIX}${id}`
+        `${this.STORAGE_KEY_PREFIX}${id}`,
       );
 
       if (!data) {
@@ -114,7 +114,7 @@ export class FormObservationRepository implements LocalRepoInterface {
 
       return observation;
     } catch (error) {
-      console.error("Error getting observation:", error);
+      console.error('Error getting observation:', error);
       return null;
     }
   }
@@ -146,7 +146,7 @@ export class FormObservationRepository implements LocalRepoInterface {
 
       return observations;
     } catch (error) {
-      console.error("Error getting observations by form ID:", error);
+      console.error('Error getting observations by form ID:', error);
       return [];
     }
   }
@@ -174,12 +174,12 @@ export class FormObservationRepository implements LocalRepoInterface {
       // Save the updated observation
       await AsyncStorage.setItem(
         `${this.STORAGE_KEY_PREFIX}${id}`,
-        JSON.stringify(observation)
+        JSON.stringify(observation),
       );
 
       return true;
     } catch (error) {
-      console.error("Error updating observation:", error);
+      console.error('Error updating observation:', error);
       return false;
     }
   }
@@ -206,7 +206,7 @@ export class FormObservationRepository implements LocalRepoInterface {
 
       return true;
     } catch (error) {
-      console.error("Error deleting observation:", error);
+      console.error('Error deleting observation:', error);
       return false;
     }
   }
@@ -231,12 +231,12 @@ export class FormObservationRepository implements LocalRepoInterface {
       // Save the updated observation
       await AsyncStorage.setItem(
         `${this.STORAGE_KEY_PREFIX}${id}`,
-        JSON.stringify(observation)
+        JSON.stringify(observation),
       );
 
       return true;
     } catch (error) {
-      console.error("Error marking observation as synced:", error);
+      console.error('Error marking observation as synced:', error);
       return false;
     }
   }
@@ -255,7 +255,7 @@ export class FormObservationRepository implements LocalRepoInterface {
 
       return JSON.parse(data) as Record<string, string>;
     } catch (error) {
-      console.error("Error getting index:", error);
+      console.error('Error getting index:', error);
       return {};
     }
   }
@@ -276,7 +276,7 @@ export class FormObservationRepository implements LocalRepoInterface {
       // Save the updated index
       await AsyncStorage.setItem(this.INDEX_KEY, JSON.stringify(index));
     } catch (error) {
-      console.error("Error adding to index:", error);
+      console.error('Error adding to index:', error);
     }
   }
 
@@ -295,7 +295,7 @@ export class FormObservationRepository implements LocalRepoInterface {
       // Save the updated index
       await AsyncStorage.setItem(this.INDEX_KEY, JSON.stringify(index));
     } catch (error) {
-      console.error("Error removing from index:", error);
+      console.error('Error removing from index:', error);
     }
   }
 }

@@ -11,7 +11,7 @@
 ## Example
 
 ```typescript
-import { DatabaseInfo } from "./api";
+import { DatabaseInfo } from './api';
 
 const instance: DatabaseInfo = {
   type,

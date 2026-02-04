@@ -10,7 +10,7 @@
 ## Example
 
 ```typescript
-import { AttachmentManifestRequest } from "./api";
+import { AttachmentManifestRequest } from './api';
 
 const instance: AttachmentManifestRequest = {
   client_id,

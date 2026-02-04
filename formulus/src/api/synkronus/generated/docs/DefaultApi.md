@@ -34,7 +34,7 @@ Change password for the currently authenticated user
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration, ChangePasswordRequest } from "./api";
+import { DefaultApi, Configuration, ChangePasswordRequest } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -44,7 +44,7 @@ let xApiVersion: string; //Optional API version header using semantic versioning
 
 const { status, data } = await apiInstance.changePassword(
   changePasswordRequest,
-  xApiVersion
+  xApiVersion,
 );
 ```
 
@@ -85,7 +85,7 @@ const { status, data } = await apiInstance.changePassword(
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration } from "./api";
+import { DefaultApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -133,7 +133,7 @@ Create a new user with specified username, password, and role
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration, CreateUserRequest } from "./api";
+import { DefaultApi, Configuration, CreateUserRequest } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -143,7 +143,7 @@ let xApiVersion: string; //Optional API version header using semantic versioning
 
 const { status, data } = await apiInstance.createUser(
   createUserRequest,
-  xApiVersion
+  xApiVersion,
 );
 ```
 
@@ -188,7 +188,7 @@ Delete a user by username
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration } from "./api";
+import { DefaultApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -238,7 +238,7 @@ const { status, data } = await apiInstance.deleteUser(username, xApiVersion);
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration } from "./api";
+import { DefaultApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -252,7 +252,7 @@ const { status, data } = await apiInstance.downloadAppBundleFile(
   path,
   preview,
   ifNoneMatch,
-  xApiVersion
+  xApiVersion,
 );
 ```
 
@@ -294,7 +294,7 @@ const { status, data } = await apiInstance.downloadAppBundleFile(
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration } from "./api";
+import { DefaultApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -342,7 +342,7 @@ Compares two versions of the app bundle and returns detailed changes
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration } from "./api";
+import { DefaultApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -354,7 +354,7 @@ let xApiVersion: string; //Optional API version header using semantic versioning
 const { status, data } = await apiInstance.getAppBundleChanges(
   current,
   target,
-  xApiVersion
+  xApiVersion,
 );
 ```
 
@@ -397,7 +397,7 @@ const { status, data } = await apiInstance.getAppBundleChanges(
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration } from "./api";
+import { DefaultApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -441,7 +441,7 @@ const { status, data } = await apiInstance.getAppBundleManifest(xApiVersion);
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration } from "./api";
+import { DefaultApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -487,7 +487,7 @@ Returns a manifest of attachment changes (new, updated, deleted) since a specifi
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration, AttachmentManifestRequest } from "./api";
+import { DefaultApi, Configuration, AttachmentManifestRequest } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -497,7 +497,7 @@ let xApiVersion: string; //Optional API version header using semantic versioning
 
 const { status, data } = await apiInstance.getAttachmentManifest(
   attachmentManifestRequest,
-  xApiVersion
+  xApiVersion,
 );
 ```
 
@@ -541,7 +541,7 @@ Returns detailed version information about the server, including build informati
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration } from "./api";
+import { DefaultApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -584,7 +584,7 @@ Retrieve a list of all users in the system. Admin access required.
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration } from "./api";
+import { DefaultApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -632,7 +632,7 @@ Obtain a JWT token by providing username and password
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration, LoginRequest } from "./api";
+import { DefaultApi, Configuration, LoginRequest } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -680,7 +680,7 @@ No authorization required
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration } from "./api";
+import { DefaultApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -732,7 +732,7 @@ Obtain a new JWT token using a refresh token
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration, RefreshTokenRequest } from "./api";
+import { DefaultApi, Configuration, RefreshTokenRequest } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -742,7 +742,7 @@ let xApiVersion: string; //Optional API version header using semantic versioning
 
 const { status, data } = await apiInstance.refreshToken(
   refreshTokenRequest,
-  xApiVersion
+  xApiVersion,
 );
 ```
 
@@ -785,7 +785,7 @@ Reset password for a specified user
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration, ResetUserPasswordRequest } from "./api";
+import { DefaultApi, Configuration, ResetUserPasswordRequest } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -795,7 +795,7 @@ let xApiVersion: string; //Optional API version header using semantic versioning
 
 const { status, data } = await apiInstance.resetUserPassword(
   resetUserPasswordRequest,
-  xApiVersion
+  xApiVersion,
 );
 ```
 
@@ -838,7 +838,7 @@ const { status, data } = await apiInstance.resetUserPassword(
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration } from "./api";
+import { DefaultApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -848,7 +848,7 @@ let xApiVersion: string; //Optional API version header using semantic versioning
 
 const { status, data } = await apiInstance.switchAppBundleVersion(
   version,
-  xApiVersion
+  xApiVersion,
 );
 ```
 
@@ -893,7 +893,7 @@ Retrieves records that have changed since a specified version. **Pagination Patt
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration, SyncPullRequest } from "./api";
+import { DefaultApi, Configuration, SyncPullRequest } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -907,7 +907,7 @@ const { status, data } = await apiInstance.syncPull(
   syncPullRequest,
   schemaType,
   limit,
-  xApiVersion
+  xApiVersion,
 );
 ```
 
@@ -948,7 +948,7 @@ const { status, data } = await apiInstance.syncPull(
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration, SyncPushRequest } from "./api";
+import { DefaultApi, Configuration, SyncPushRequest } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);
@@ -958,7 +958,7 @@ let xApiVersion: string; //Optional API version header using semantic versioning
 
 const { status, data } = await apiInstance.syncPush(
   syncPushRequest,
-  xApiVersion
+  xApiVersion,
 );
 ```
 
@@ -997,7 +997,7 @@ const { status, data } = await apiInstance.syncPush(
 ### Example
 
 ```typescript
-import { DefaultApi, Configuration } from "./api";
+import { DefaultApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DefaultApi(configuration);

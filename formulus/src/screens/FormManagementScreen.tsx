@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -8,21 +8,21 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Icon from "@react-native-vector-icons/material-design-icons";
-import { FormService, FormSpec } from "../services";
-import { Observation } from "../database/models/Observation";
-import { openFormplayerFromNative } from "../webview/FormulusMessageHandlers";
-import { ObservationCard, EmptyState } from "../components/common";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { MainAppStackParamList } from "../types/NavigationTypes";
-import { colors } from "../theme/colors";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from '@react-native-vector-icons/material-design-icons';
+import { FormService, FormSpec } from '../services';
+import { Observation } from '../database/models/Observation';
+import { openFormplayerFromNative } from '../webview/FormulusMessageHandlers';
+import { ObservationCard, EmptyState } from '../components/common';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MainAppStackParamList } from '../types/NavigationTypes';
+import { colors } from '../theme/colors';
 
 type FormManagementScreenNavigationProp = StackNavigationProp<
   MainAppStackParamList,
-  "ObservationDetail"
+  'ObservationDetail'
 >;
 
 /**
@@ -48,7 +48,7 @@ const FormManagementScreen = () => {
         const specs = service.getFormSpecs();
         setFormSpecs(specs);
       } catch (error) {
-        console.error("Failed to initialize FormService:", error);
+        console.error('Failed to initialize FormService:', error);
       }
     };
 
@@ -65,7 +65,7 @@ const FormManagementScreen = () => {
   // Function to load form types and observations
   const loadData = async () => {
     if (!formService) {
-      Alert.alert("Error", "FormService is not initialized");
+      Alert.alert('Error', 'FormService is not initialized');
       return;
     }
     try {
@@ -80,15 +80,15 @@ const FormManagementScreen = () => {
 
       for (const formType of types) {
         const formObservations = await formService.getObservationsByFormType(
-          formType.id
+          formType.id,
         );
         observationsMap[formType.id] = formObservations;
       }
 
       setObservations(observationsMap);
     } catch (error) {
-      console.error("Error loading form data:", error);
-      Alert.alert("Error", "Failed to load form data");
+      console.error('Error loading form data:', error);
+      Alert.alert('Error', 'Failed to load form data');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -105,52 +105,52 @@ const FormManagementScreen = () => {
     try {
       const result = await openFormplayerFromNative(formType.id, {}, {});
       if (
-        result.status === "form_submitted" ||
-        result.status === "form_updated"
+        result.status === 'form_submitted' ||
+        result.status === 'form_updated'
       ) {
         await loadData();
       }
     } catch (error) {
       console.error(
-        "Error while opening Formplayer for new observation:",
-        error
+        'Error while opening Formplayer for new observation:',
+        error,
       );
-      Alert.alert("Error", "Failed to open form for new observation");
+      Alert.alert('Error', 'Failed to open form for new observation');
     }
   };
 
   // Handle editing an observation using the promise-based Formplayer API
   const handleEditObservation = async (
     formType: FormSpec,
-    observation: Observation
+    observation: Observation,
   ) => {
     try {
       const result = await openFormplayerFromNative(
         formType.id,
         {},
-        typeof observation.data === "string"
+        typeof observation.data === 'string'
           ? JSON.parse(observation.data)
           : observation.data,
-        observation.observationId
+        observation.observationId,
       );
       if (
-        result.status === "form_submitted" ||
-        result.status === "form_updated"
+        result.status === 'form_submitted' ||
+        result.status === 'form_updated'
       ) {
         await loadData();
       }
     } catch (error) {
       console.error(
-        "Error while opening Formplayer for editing observation:",
-        error
+        'Error while opening Formplayer for editing observation:',
+        error,
       );
-      Alert.alert("Error", "Failed to open form for editing observation");
+      Alert.alert('Error', 'Failed to open form for editing observation');
     }
   };
 
   // Handle viewing an observation
   const handleViewObservation = (observation: Observation) => {
-    navigation.navigate("ObservationDetail", {
+    navigation.navigate('ObservationDetail', {
       observationId: observation.observationId,
     });
   };
@@ -158,32 +158,32 @@ const FormManagementScreen = () => {
   // Handle deleting an observation
   const handleDeleteObservation = async (
     formTypeId: string,
-    observation: Observation
+    observation: Observation,
   ) => {
     if (!formService) {
-      Alert.alert("Error", "FormService is not initialized");
+      Alert.alert('Error', 'FormService is not initialized');
       return;
     }
     try {
       Alert.alert(
-        "Confirm Delete",
-        "Are you sure you want to delete this observation?",
+        'Confirm Delete',
+        'Are you sure you want to delete this observation?',
         [
-          { text: "Cancel", style: "cancel" },
+          { text: 'Cancel', style: 'cancel' },
           {
-            text: "Delete",
-            style: "destructive",
+            text: 'Delete',
+            style: 'destructive',
             onPress: async () => {
               setLoading(true);
               await formService.deleteObservation(observation.observationId);
               await loadData();
             },
           },
-        ]
+        ],
       );
     } catch (error) {
-      console.error("Error deleting observation:", error);
-      Alert.alert("Error", "Failed to delete observation");
+      console.error('Error deleting observation:', error);
+      Alert.alert('Error', 'Failed to delete observation');
       setLoading(false);
     }
   };
@@ -191,30 +191,30 @@ const FormManagementScreen = () => {
   // Handle database reset
   const handleResetDatabase = async () => {
     if (!formService) {
-      Alert.alert("Error", "FormService is not initialized");
+      Alert.alert('Error', 'FormService is not initialized');
       return;
     }
     try {
       Alert.alert(
-        "Reset Database",
-        "Are you sure you want to delete ALL observations? This action cannot be undone.",
+        'Reset Database',
+        'Are you sure you want to delete ALL observations? This action cannot be undone.',
         [
-          { text: "Cancel", style: "cancel" },
+          { text: 'Cancel', style: 'cancel' },
           {
-            text: "Reset Database",
-            style: "destructive",
+            text: 'Reset Database',
+            style: 'destructive',
             onPress: async () => {
               setLoading(true);
               await formService.resetDatabase();
               await loadData();
-              Alert.alert("Success", "Database has been reset successfully.");
+              Alert.alert('Success', 'Database has been reset successfully.');
             },
           },
-        ]
+        ],
       );
     } catch (error) {
-      console.error("Error resetting database:", error);
-      Alert.alert("Error", "Failed to reset database");
+      console.error('Error resetting database:', error);
+      Alert.alert('Error', 'Failed to reset database');
       setLoading(false);
     }
   };
@@ -231,7 +231,7 @@ const FormManagementScreen = () => {
   // Render an observation item
   const renderObservationItem = (
     observation: Observation,
-    formType: FormSpec
+    formType: FormSpec,
   ) => {
     return (
       <ObservationCard
@@ -255,8 +255,7 @@ const FormManagementScreen = () => {
         <TouchableOpacity
           style={styles.formTypeHeader}
           onPress={() => toggleExpanded(item.id)}
-          activeOpacity={0.7}
-        >
+          activeOpacity={0.7}>
           <View style={styles.formTypeInfo}>
             <View style={styles.iconContainer}>
               <Icon
@@ -276,8 +275,8 @@ const FormManagementScreen = () => {
                 <Text style={styles.version}>v{item.schemaVersion}</Text>
                 <View style={styles.countBadge}>
                   <Text style={styles.countText}>
-                    {formObservations.length}{" "}
-                    {formObservations.length === 1 ? "entry" : "entries"}
+                    {formObservations.length}{' '}
+                    {formObservations.length === 1 ? 'entry' : 'entries'}
                   </Text>
                 </View>
               </View>
@@ -286,16 +285,15 @@ const FormManagementScreen = () => {
           <View style={styles.formTypeActions}>
             <TouchableOpacity
               style={styles.addButton}
-              onPress={(e) => {
+              onPress={e => {
                 e.stopPropagation();
                 handleAddObservation(item);
-              }}
-            >
+              }}>
               <Icon name="plus" size={20} color={colors.neutral.white} />
               <Text style={styles.buttonText}>Add</Text>
             </TouchableOpacity>
             <Icon
-              name={isExpanded ? "chevron-up" : "chevron-down"}
+              name={isExpanded ? 'chevron-up' : 'chevron-down'}
               size={24}
               color={colors.neutral[500]}
             />
@@ -305,8 +303,8 @@ const FormManagementScreen = () => {
         {isExpanded && (
           <View style={styles.observationsWrapper}>
             {formObservations.length > 0 ? (
-              formObservations.map((observation) =>
-                renderObservationItem(observation, item)
+              formObservations.map(observation =>
+                renderObservationItem(observation, item),
               )
             ) : (
               <View style={styles.noObservationsContainer}>
@@ -339,7 +337,7 @@ const FormManagementScreen = () => {
       <View style={styles.header}>
         <Text style={styles.title}>Form Management</Text>
         <Text style={styles.subtitle}>
-          {formSpecs.length} form{formSpecs.length !== 1 ? "s" : ""} available
+          {formSpecs.length} form{formSpecs.length !== 1 ? 's' : ''} available
         </Text>
       </View>
 
@@ -348,7 +346,7 @@ const FormManagementScreen = () => {
           <FlatList
             data={formSpecs}
             renderItem={renderFormSpecItem}
-            keyExtractor={(item) => item.id}
+            keyExtractor={item => item.id}
             style={styles.formTypesList}
             contentContainerStyle={styles.listContent}
             refreshControl={
@@ -362,8 +360,7 @@ const FormManagementScreen = () => {
           <View style={styles.footer}>
             <TouchableOpacity
               style={styles.resetButton}
-              onPress={handleResetDatabase}
-            >
+              onPress={handleResetDatabase}>
               <Icon
                 name="database-remove"
                 size={20}
@@ -397,7 +394,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: colors.neutral[800],
     marginBottom: 4,
   },
@@ -416,7 +413,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral.white,
     borderRadius: 12,
     marginHorizontal: 16,
-    overflow: "hidden",
+    overflow: 'hidden',
     shadowColor: colors.neutral.black,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -424,22 +421,22 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   formTypeHeader: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     padding: 16,
   },
   formTypeInfo: {
     flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   iconContainer: {
     width: 48,
     height: 48,
     borderRadius: 24,
     backgroundColor: colors.semantic.info.light,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginRight: 12,
   },
   textContainer: {
@@ -447,7 +444,7 @@ const styles = StyleSheet.create({
   },
   formTypeName: {
     fontSize: 16,
-    fontWeight: "600",
+    fontWeight: '600',
     color: colors.neutral[800],
     marginBottom: 4,
   },
@@ -457,8 +454,8 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   metaContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   version: {
@@ -474,16 +471,16 @@ const styles = StyleSheet.create({
   countText: {
     fontSize: 11,
     color: colors.semantic.info.ios,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   formTypeActions: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 8,
   },
   addButton: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.semantic.info.ios,
     paddingHorizontal: 12,
     paddingVertical: 6,
@@ -492,7 +489,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: colors.neutral.white,
-    fontWeight: "600",
+    fontWeight: '600',
     fontSize: 14,
   },
   observationsWrapper: {
@@ -510,9 +507,9 @@ const styles = StyleSheet.create({
     borderTopColor: colors.ui.gray.light,
   },
   resetButton: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: colors.semantic.error.ios,
     padding: 12,
     borderRadius: 8,
@@ -520,8 +517,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loadingText: {
     marginTop: 12,

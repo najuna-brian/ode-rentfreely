@@ -3,8 +3,8 @@
  */
 
 // Mock all native modules BEFORE any imports
-jest.mock("react-native-keychain");
-jest.mock("@react-native-async-storage/async-storage", () => ({
+jest.mock('react-native-keychain');
+jest.mock('@react-native-async-storage/async-storage', () => ({
   __esModule: true,
   default: {
     getItem: jest.fn(),
@@ -13,8 +13,8 @@ jest.mock("@react-native-async-storage/async-storage", () => ({
     multiRemove: jest.fn(),
   },
 }));
-jest.mock("react-native-fs", () => ({
-  DocumentDirectoryPath: "/test/path",
+jest.mock('react-native-fs', () => ({
+  DocumentDirectoryPath: '/test/path',
   exists: jest.fn(),
   mkdir: jest.fn(),
   unlink: jest.fn(),
@@ -22,107 +22,107 @@ jest.mock("react-native-fs", () => ({
   writeFile: jest.fn(),
 }));
 jest.mock(
-  "../../database/DatabaseService",
+  '../../database/DatabaseService',
   () => ({
     databaseService: {
       getLocalRepo: jest.fn(),
     },
   }),
-  { virtual: true }
+  { virtual: true },
 );
 jest.mock(
-  "../../services/ClientIdService",
+  '../../services/ClientIdService',
   () => ({
     clientIdService: {
-      getClientId: jest.fn().mockResolvedValue("test-client-id"),
+      getClientId: jest.fn().mockResolvedValue('test-client-id'),
     },
   }),
-  { virtual: true }
+  { virtual: true },
 );
-jest.mock("../index", () => ({
+jest.mock('../index', () => ({
   synkronusApi: {
     getApi: jest.fn(),
     clearTokenCache: jest.fn(),
   },
 }));
 
-import { jest, describe, test, expect, beforeEach } from "@jest/globals";
-import * as Keychain from "react-native-keychain";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { autoLogin, isUnauthorizedError } from "../Auth";
-import { synkronusApi } from "../index";
+import { jest, describe, test, expect, beforeEach } from '@jest/globals';
+import * as Keychain from 'react-native-keychain';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { autoLogin, isUnauthorizedError } from '../Auth';
+import { synkronusApi } from '../index';
 
-describe("Auth - Auto-Login", () => {
+describe('Auth - Auto-Login', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  describe("isUnauthorizedError", () => {
-    test("should detect Axios 401 error", () => {
+  describe('isUnauthorizedError', () => {
+    test('should detect Axios 401 error', () => {
       const error = {
         response: { status: 401 },
       };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
-    test("should detect direct status 401", () => {
+    test('should detect direct status 401', () => {
       const error = { status: 401 };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
-    test("should detect statusCode 401", () => {
+    test('should detect statusCode 401', () => {
       const error = { statusCode: 401 };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
-    test("should detect ProblemDetail format 401", () => {
+    test('should detect ProblemDetail format 401', () => {
       const error = { data: { status: 401 } };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
-    test("should detect 401 in error message", () => {
-      const error = { message: "Request failed with status code 401" };
+    test('should detect 401 in error message', () => {
+      const error = { message: 'Request failed with status code 401' };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
     test('should detect "unauthorized" in error message', () => {
-      const error = { message: "Unauthorized access" };
+      const error = { message: 'Unauthorized access' };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
-    test("should detect UNAUTHORIZED error code", () => {
-      const error = { code: "UNAUTHORIZED" };
+    test('should detect UNAUTHORIZED error code', () => {
+      const error = { code: 'UNAUTHORIZED' };
       expect(isUnauthorizedError(error)).toBe(true);
     });
 
-    test("should return false for non-401 errors", () => {
+    test('should return false for non-401 errors', () => {
       const error = { response: { status: 404 } };
       expect(isUnauthorizedError(error)).toBe(false);
     });
 
-    test("should return false for null/undefined", () => {
+    test('should return false for null/undefined', () => {
       expect(isUnauthorizedError(null)).toBe(false);
       expect(isUnauthorizedError(undefined)).toBe(false);
     });
   });
 
-  describe("autoLogin", () => {
+  describe('autoLogin', () => {
     const mockCredentials = {
-      username: "testuser",
-      password: "testpass",
+      username: 'testuser',
+      password: 'testpass',
     };
 
-    test("should successfully auto-login with stored credentials", async () => {
+    test('should successfully auto-login with stored credentials', async () => {
       // Mock Keychain to return credentials
       (Keychain.getGenericPassword as jest.Mock).mockResolvedValue(
-        mockCredentials
+        mockCredentials,
       );
 
       // Mock AsyncStorage to return settings
       (AsyncStorage.getItem as jest.Mock).mockImplementation((key: string) => {
-        if (key === "@settings") {
+        if (key === '@settings') {
           return Promise.resolve(
-            JSON.stringify({ serverUrl: "https://test.server" })
+            JSON.stringify({ serverUrl: 'https://test.server' }),
           );
         }
         return Promise.resolve(null);
@@ -132,8 +132,8 @@ describe("Auth - Auto-Login", () => {
       const mockApi = {
         login: jest.fn().mockResolvedValue({
           data: {
-            token: "new-token",
-            refreshToken: "new-refresh-token",
+            token: 'new-token',
+            refreshToken: 'new-refresh-token',
             expiresAt: Date.now() + 3600000,
           },
         }),
@@ -155,7 +155,7 @@ describe("Auth - Auto-Login", () => {
       expect(result?.username).toBe(mockCredentials.username);
     });
 
-    test("should return null when no credentials are stored", async () => {
+    test('should return null when no credentials are stored', async () => {
       (Keychain.getGenericPassword as jest.Mock).mockResolvedValue(false);
 
       const result = await autoLogin();
@@ -165,9 +165,9 @@ describe("Auth - Auto-Login", () => {
       expect(result).toBeNull();
     });
 
-    test("should return null when credentials have no username", async () => {
+    test('should return null when credentials have no username', async () => {
       (Keychain.getGenericPassword as jest.Mock).mockResolvedValue({
-        password: "testpass",
+        password: 'testpass',
       });
 
       const result = await autoLogin();
@@ -177,9 +177,9 @@ describe("Auth - Auto-Login", () => {
       expect(result).toBeNull();
     });
 
-    test("should return null when credentials have no password", async () => {
+    test('should return null when credentials have no password', async () => {
       (Keychain.getGenericPassword as jest.Mock).mockResolvedValue({
-        username: "testuser",
+        username: 'testuser',
       });
 
       const result = await autoLogin();
@@ -189,28 +189,28 @@ describe("Auth - Auto-Login", () => {
       expect(result).toBeNull();
     });
 
-    test("should throw error when login fails", async () => {
+    test('should throw error when login fails', async () => {
       (Keychain.getGenericPassword as jest.Mock).mockResolvedValue(
-        mockCredentials
+        mockCredentials,
       );
 
       const mockApi = {
-        login: jest.fn().mockRejectedValue(new Error("Invalid credentials")),
+        login: jest.fn().mockRejectedValue(new Error('Invalid credentials')),
       };
       (synkronusApi.getApi as jest.Mock).mockResolvedValue(mockApi);
       (synkronusApi.clearTokenCache as jest.Mock).mockReturnValue(undefined);
 
       await expect(autoLogin()).rejects.toThrow(
-        "Auto-login failed: Invalid credentials. Please login manually."
+        'Auto-login failed: Invalid credentials. Please login manually.',
       );
 
       expect(Keychain.getGenericPassword).toHaveBeenCalledTimes(1);
       expect(mockApi.login).toHaveBeenCalled();
     });
 
-    test("should handle unknown error during login", async () => {
+    test('should handle unknown error during login', async () => {
       (Keychain.getGenericPassword as jest.Mock).mockResolvedValue(
-        mockCredentials
+        mockCredentials,
       );
 
       const mockApi = {
@@ -220,7 +220,7 @@ describe("Auth - Auto-Login", () => {
       (synkronusApi.clearTokenCache as jest.Mock).mockReturnValue(undefined);
 
       await expect(autoLogin()).rejects.toThrow(
-        "Auto-login failed: Unknown error. Please login manually."
+        'Auto-login failed: Unknown error. Please login manually.',
       );
     });
   });

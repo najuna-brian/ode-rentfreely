@@ -10,7 +10,7 @@
 ## Example
 
 ```typescript
-import { ProblemDetailErrorsInner } from "./api";
+import { ProblemDetailErrorsInner } from './api';
 
 const instance: ProblemDetailErrorsInner = {
   field,

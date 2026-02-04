@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from "react";
-import { StyleSheet, View, ActivityIndicator, Platform } from "react-native";
-import RNFS from "react-native-fs";
+import React, { useEffect, useState, useRef } from 'react';
+import { StyleSheet, View, ActivityIndicator, Platform } from 'react-native';
+import RNFS from 'react-native-fs';
 import CustomAppWebView, {
   CustomAppWebViewHandle,
-} from "../components/CustomAppWebView";
-import { colors } from "../theme/colors";
+} from '../components/CustomAppWebView';
+import { colors } from '../theme/colors';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const HomeScreen = ({ navigation }: { navigation: any }) => {
@@ -15,27 +15,27 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
   const checkAndSetAppUri = async () => {
     try {
       const filePath = `${RNFS.DocumentDirectoryPath}/app/index.html`;
-      console.log("[HomeScreen] Checking for custom app at:", filePath);
+      console.log('[HomeScreen] Checking for custom app at:', filePath);
       const fileExists = await RNFS.exists(filePath);
-      console.log("[HomeScreen] Custom app exists:", fileExists);
+      console.log('[HomeScreen] Custom app exists:', fileExists);
 
       if (!fileExists) {
         let placeholderUri: string;
-        if (Platform.OS === "android") {
-          placeholderUri = "file:///android_asset/webview/placeholder_app.html";
+        if (Platform.OS === 'android') {
+          placeholderUri = 'file:///android_asset/webview/placeholder_app.html';
         } else {
           // On iOS, assets linked via react-native.config.js are placed in the main bundle
           placeholderUri = `file://${RNFS.MainBundlePath}/placeholder_app.html`;
         }
-        console.log("[HomeScreen] Using placeholder URI:", placeholderUri);
+        console.log('[HomeScreen] Using placeholder URI:', placeholderUri);
         setLocalUri(placeholderUri);
       } else {
         const customAppUri = `file://${filePath}`;
-        console.log("[HomeScreen] Using custom app URI:", customAppUri);
+        console.log('[HomeScreen] Using custom app URI:', customAppUri);
         setLocalUri(customAppUri);
       }
     } catch (err) {
-      console.warn("[HomeScreen] Failed to setup app URI:", err);
+      console.warn('[HomeScreen] Failed to setup app URI:', err);
     }
   };
 
@@ -46,7 +46,7 @@ const HomeScreen = ({ navigation }: { navigation: any }) => {
   }, []);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener("focus", () => {
+    const unsubscribe = navigation.addListener('focus', () => {
       Promise.resolve().then(() => {
         checkAndSetAppUri();
       });
@@ -96,8 +96,8 @@ const styles = StyleSheet.create({
   },
   loading: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

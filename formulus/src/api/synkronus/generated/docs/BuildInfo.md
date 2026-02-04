@@ -11,7 +11,7 @@
 ## Example
 
 ```typescript
-import { BuildInfo } from "./api";
+import { BuildInfo } from './api';
 
 const instance: BuildInfo = {
   commit,

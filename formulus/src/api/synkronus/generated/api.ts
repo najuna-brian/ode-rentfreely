@@ -12,9 +12,9 @@
  * Do not edit the class manually.
  */
 
-import type { Configuration } from "./configuration";
-import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from "axios";
-import globalAxios from "axios";
+import type { Configuration } from './configuration';
+import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
+import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
 import {
@@ -28,8 +28,8 @@ import {
   serializeDataIfNeeded,
   toPathString,
   createRequestFunction,
-} from "./common";
-import type { RequestArgs } from "./base";
+} from './common';
+import type { RequestArgs } from './base';
 // @ts-ignore
 import {
   BASE_PATH,
@@ -37,7 +37,7 @@ import {
   BaseAPI,
   RequiredError,
   operationServerMap,
-} from "./base";
+} from './base';
 
 /**
  *
@@ -302,8 +302,8 @@ export interface AttachmentOperation {
 }
 
 export const AttachmentOperationOperationEnum = {
-  Download: "download",
-  Delete: "delete",
+  Download: 'download',
+  Delete: 'delete',
 } as const;
 
 export type AttachmentOperationOperationEnum =
@@ -467,9 +467,9 @@ export interface CreateUserRequest {
 }
 
 export const CreateUserRequestRoleEnum = {
-  ReadOnly: "read-only",
-  ReadWrite: "read-write",
-  Admin: "admin",
+  ReadOnly: 'read-only',
+  ReadWrite: 'read-write',
+  Admin: 'admin',
 } as const;
 
 export type CreateUserRequestRoleEnum =
@@ -628,7 +628,7 @@ export interface GetHealth200Response {
 }
 
 export const GetHealth200ResponseStatusEnum = {
-  Ok: "ok",
+  Ok: 'ok',
 } as const;
 
 export type GetHealth200ResponseStatusEnum =
@@ -661,7 +661,7 @@ export interface GetHealth503Response {
 }
 
 export const GetHealth503ResponseStatusEnum = {
-  Error: "error",
+  Error: 'error',
 } as const;
 
 export type GetHealth503ResponseStatusEnum =
@@ -1187,9 +1187,9 @@ export interface UserResponse {
 }
 
 export const UserResponseRoleEnum = {
-  ReadOnly: "read-only",
-  ReadWrite: "read-write",
-  Admin: "admin",
+  ReadOnly: 'read-only',
+  ReadWrite: 'read-write',
+  Admin: 'admin',
 } as const;
 
 export type UserResponseRoleEnum =
@@ -1200,7 +1200,7 @@ export type UserResponseRoleEnum =
  * @export
  */
 export const DataExportApiAxiosParamCreator = function (
-  configuration?: Configuration
+  configuration?: Configuration,
 ) {
   return {
     /**
@@ -1210,7 +1210,7 @@ export const DataExportApiAxiosParamCreator = function (
      * @throws {RequiredError}
      */
     getParquetExportZip: async (
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/dataexport/parquet`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -1221,7 +1221,7 @@ export const DataExportApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "GET",
+        method: 'GET',
         ...baseOptions,
         ...options,
       };
@@ -1264,7 +1264,7 @@ export const DataExportApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getParquetExportZip(
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<File>
     > {
@@ -1272,7 +1272,7 @@ export const DataExportApiFp = function (configuration?: Configuration) {
         await localVarAxiosParamCreator.getParquetExportZip(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DataExportApi.getParquetExportZip"]?.[
+        operationServerMap['DataExportApi.getParquetExportZip']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -1280,7 +1280,7 @@ export const DataExportApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
   };
@@ -1293,7 +1293,7 @@ export const DataExportApiFp = function (configuration?: Configuration) {
 export const DataExportApiFactory = function (
   configuration?: Configuration,
   basePath?: string,
-  axios?: AxiosInstance
+  axios?: AxiosInstance,
 ) {
   const localVarFp = DataExportApiFp(configuration);
   return {
@@ -1306,7 +1306,7 @@ export const DataExportApiFactory = function (
     getParquetExportZip(options?: RawAxiosRequestConfig): AxiosPromise<File> {
       return localVarFp
         .getParquetExportZip(options)
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
   };
 };
@@ -1328,7 +1328,7 @@ export class DataExportApi extends BaseAPI {
   public getParquetExportZip(options?: RawAxiosRequestConfig) {
     return DataExportApiFp(this.configuration)
       .getParquetExportZip(options)
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 }
 
@@ -1337,7 +1337,7 @@ export class DataExportApi extends BaseAPI {
  * @export
  */
 export const DefaultApiAxiosParamCreator = function (
-  configuration?: Configuration
+  configuration?: Configuration,
 ) {
   return {
     /**
@@ -1351,13 +1351,13 @@ export const DefaultApiAxiosParamCreator = function (
     changePassword: async (
       changePasswordRequest: ChangePasswordRequest,
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'changePasswordRequest' is not null or undefined
       assertParamExists(
-        "changePassword",
-        "changePasswordRequest",
-        changePasswordRequest
+        'changePassword',
+        'changePasswordRequest',
+        changePasswordRequest,
       );
       const localVarPath = `/users/change-password`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -1368,7 +1368,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "POST",
+        method: 'POST',
         ...baseOptions,
         ...options,
       };
@@ -1379,10 +1379,10 @@ export const DefaultApiAxiosParamCreator = function (
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-      localVarHeaderParameter["Content-Type"] = "application/json";
+      localVarHeaderParameter['Content-Type'] = 'application/json';
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -1395,7 +1395,7 @@ export const DefaultApiAxiosParamCreator = function (
       localVarRequestOptions.data = serializeDataIfNeeded(
         changePasswordRequest,
         localVarRequestOptions,
-        configuration
+        configuration,
       );
 
       return {
@@ -1412,13 +1412,13 @@ export const DefaultApiAxiosParamCreator = function (
      */
     checkAttachmentExists: async (
       attachmentId: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'attachmentId' is not null or undefined
-      assertParamExists("checkAttachmentExists", "attachmentId", attachmentId);
+      assertParamExists('checkAttachmentExists', 'attachmentId', attachmentId);
       const localVarPath = `/attachments/{attachment_id}`.replace(
-        `{${"attachment_id"}}`,
-        encodeURIComponent(String(attachmentId))
+        `{${'attachment_id'}}`,
+        encodeURIComponent(String(attachmentId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1428,7 +1428,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "HEAD",
+        method: 'HEAD',
         ...baseOptions,
         ...options,
       };
@@ -1464,10 +1464,10 @@ export const DefaultApiAxiosParamCreator = function (
     createUser: async (
       createUserRequest: CreateUserRequest,
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'createUserRequest' is not null or undefined
-      assertParamExists("createUser", "createUserRequest", createUserRequest);
+      assertParamExists('createUser', 'createUserRequest', createUserRequest);
       const localVarPath = `/users/create`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1477,7 +1477,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "POST",
+        method: 'POST',
         ...baseOptions,
         ...options,
       };
@@ -1488,10 +1488,10 @@ export const DefaultApiAxiosParamCreator = function (
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-      localVarHeaderParameter["Content-Type"] = "application/json";
+      localVarHeaderParameter['Content-Type'] = 'application/json';
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -1504,7 +1504,7 @@ export const DefaultApiAxiosParamCreator = function (
       localVarRequestOptions.data = serializeDataIfNeeded(
         createUserRequest,
         localVarRequestOptions,
-        configuration
+        configuration,
       );
 
       return {
@@ -1523,13 +1523,13 @@ export const DefaultApiAxiosParamCreator = function (
     deleteUser: async (
       username: string,
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'username' is not null or undefined
-      assertParamExists("deleteUser", "username", username);
+      assertParamExists('deleteUser', 'username', username);
       const localVarPath = `/users/{username}`.replace(
-        `{${"username"}}`,
-        encodeURIComponent(String(username))
+        `{${'username'}}`,
+        encodeURIComponent(String(username)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1539,7 +1539,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "DELETE",
+        method: 'DELETE',
         ...baseOptions,
         ...options,
       };
@@ -1551,7 +1551,7 @@ export const DefaultApiAxiosParamCreator = function (
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -1582,13 +1582,13 @@ export const DefaultApiAxiosParamCreator = function (
       preview?: boolean,
       ifNoneMatch?: string,
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'path' is not null or undefined
-      assertParamExists("downloadAppBundleFile", "path", path);
+      assertParamExists('downloadAppBundleFile', 'path', path);
       const localVarPath = `/app-bundle/download/{path}`.replace(
-        `{${"path"}}`,
-        encodeURIComponent(String(path))
+        `{${'path'}}`,
+        encodeURIComponent(String(path)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1598,7 +1598,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "GET",
+        method: 'GET',
         ...baseOptions,
         ...options,
       };
@@ -1610,14 +1610,14 @@ export const DefaultApiAxiosParamCreator = function (
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       if (preview !== undefined) {
-        localVarQueryParameter["preview"] = preview;
+        localVarQueryParameter['preview'] = preview;
       }
 
       if (ifNoneMatch != null) {
-        localVarHeaderParameter["if-none-match"] = String(ifNoneMatch);
+        localVarHeaderParameter['if-none-match'] = String(ifNoneMatch);
       }
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -1642,13 +1642,13 @@ export const DefaultApiAxiosParamCreator = function (
      */
     downloadAttachment: async (
       attachmentId: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'attachmentId' is not null or undefined
-      assertParamExists("downloadAttachment", "attachmentId", attachmentId);
+      assertParamExists('downloadAttachment', 'attachmentId', attachmentId);
       const localVarPath = `/attachments/{attachment_id}`.replace(
-        `{${"attachment_id"}}`,
-        encodeURIComponent(String(attachmentId))
+        `{${'attachment_id'}}`,
+        encodeURIComponent(String(attachmentId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1658,7 +1658,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "GET",
+        method: 'GET',
         ...baseOptions,
         ...options,
       };
@@ -1696,7 +1696,7 @@ export const DefaultApiAxiosParamCreator = function (
       current?: string,
       target?: string,
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/app-bundle/changes`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -1707,7 +1707,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "GET",
+        method: 'GET',
         ...baseOptions,
         ...options,
       };
@@ -1719,15 +1719,15 @@ export const DefaultApiAxiosParamCreator = function (
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       if (current !== undefined) {
-        localVarQueryParameter["current"] = current;
+        localVarQueryParameter['current'] = current;
       }
 
       if (target !== undefined) {
-        localVarQueryParameter["target"] = target;
+        localVarQueryParameter['target'] = target;
       }
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -1752,7 +1752,7 @@ export const DefaultApiAxiosParamCreator = function (
      */
     getAppBundleManifest: async (
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/app-bundle/manifest`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -1763,7 +1763,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "GET",
+        method: 'GET',
         ...baseOptions,
         ...options,
       };
@@ -1775,7 +1775,7 @@ export const DefaultApiAxiosParamCreator = function (
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -1800,7 +1800,7 @@ export const DefaultApiAxiosParamCreator = function (
      */
     getAppBundleVersions: async (
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/app-bundle/versions`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -1811,7 +1811,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "GET",
+        method: 'GET',
         ...baseOptions,
         ...options,
       };
@@ -1823,7 +1823,7 @@ export const DefaultApiAxiosParamCreator = function (
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -1850,13 +1850,13 @@ export const DefaultApiAxiosParamCreator = function (
     getAttachmentManifest: async (
       attachmentManifestRequest: AttachmentManifestRequest,
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'attachmentManifestRequest' is not null or undefined
       assertParamExists(
-        "getAttachmentManifest",
-        "attachmentManifestRequest",
-        attachmentManifestRequest
+        'getAttachmentManifest',
+        'attachmentManifestRequest',
+        attachmentManifestRequest,
       );
       const localVarPath = `/attachments/manifest`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -1867,7 +1867,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "POST",
+        method: 'POST',
         ...baseOptions,
         ...options,
       };
@@ -1878,10 +1878,10 @@ export const DefaultApiAxiosParamCreator = function (
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-      localVarHeaderParameter["Content-Type"] = "application/json";
+      localVarHeaderParameter['Content-Type'] = 'application/json';
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -1894,7 +1894,7 @@ export const DefaultApiAxiosParamCreator = function (
       localVarRequestOptions.data = serializeDataIfNeeded(
         attachmentManifestRequest,
         localVarRequestOptions,
-        configuration
+        configuration,
       );
 
       return {
@@ -1909,7 +1909,7 @@ export const DefaultApiAxiosParamCreator = function (
      * @throws {RequiredError}
      */
     getVersion: async (
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/version`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -1920,7 +1920,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "GET",
+        method: 'GET',
         ...baseOptions,
         ...options,
       };
@@ -1950,7 +1950,7 @@ export const DefaultApiAxiosParamCreator = function (
      */
     listUsers: async (
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/users`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -1961,7 +1961,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "GET",
+        method: 'GET',
         ...baseOptions,
         ...options,
       };
@@ -1973,7 +1973,7 @@ export const DefaultApiAxiosParamCreator = function (
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -2000,10 +2000,10 @@ export const DefaultApiAxiosParamCreator = function (
     login: async (
       loginRequest: LoginRequest,
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'loginRequest' is not null or undefined
-      assertParamExists("login", "loginRequest", loginRequest);
+      assertParamExists('login', 'loginRequest', loginRequest);
       const localVarPath = `/auth/login`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2013,17 +2013,17 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "POST",
+        method: 'POST',
         ...baseOptions,
         ...options,
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      localVarHeaderParameter["Content-Type"] = "application/json";
+      localVarHeaderParameter['Content-Type'] = 'application/json';
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -2036,7 +2036,7 @@ export const DefaultApiAxiosParamCreator = function (
       localVarRequestOptions.data = serializeDataIfNeeded(
         loginRequest,
         localVarRequestOptions,
-        configuration
+        configuration,
       );
 
       return {
@@ -2055,7 +2055,7 @@ export const DefaultApiAxiosParamCreator = function (
     pushAppBundle: async (
       xApiVersion?: string,
       bundle?: File,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/app-bundle/push`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -2066,28 +2066,29 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "POST",
+        method: 'POST',
         ...baseOptions,
         ...options,
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
-      const localVarFormParams = new ((configuration &&
-        configuration.formDataCtor) ||
-        FormData)();
+      const localVarFormParams = new (
+        (configuration && configuration.formDataCtor) ||
+        FormData
+      )();
 
       // authentication bearerAuth required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       if (bundle !== undefined) {
-        localVarFormParams.append("bundle", bundle as any);
+        localVarFormParams.append('bundle', bundle as any);
       }
 
-      localVarHeaderParameter["Content-Type"] = "multipart/form-data";
+      localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -2115,13 +2116,13 @@ export const DefaultApiAxiosParamCreator = function (
     refreshToken: async (
       refreshTokenRequest: RefreshTokenRequest,
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'refreshTokenRequest' is not null or undefined
       assertParamExists(
-        "refreshToken",
-        "refreshTokenRequest",
-        refreshTokenRequest
+        'refreshToken',
+        'refreshTokenRequest',
+        refreshTokenRequest,
       );
       const localVarPath = `/auth/refresh`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -2132,17 +2133,17 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "POST",
+        method: 'POST',
         ...baseOptions,
         ...options,
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
 
-      localVarHeaderParameter["Content-Type"] = "application/json";
+      localVarHeaderParameter['Content-Type'] = 'application/json';
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -2155,7 +2156,7 @@ export const DefaultApiAxiosParamCreator = function (
       localVarRequestOptions.data = serializeDataIfNeeded(
         refreshTokenRequest,
         localVarRequestOptions,
-        configuration
+        configuration,
       );
 
       return {
@@ -2174,13 +2175,13 @@ export const DefaultApiAxiosParamCreator = function (
     resetUserPassword: async (
       resetUserPasswordRequest: ResetUserPasswordRequest,
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'resetUserPasswordRequest' is not null or undefined
       assertParamExists(
-        "resetUserPassword",
-        "resetUserPasswordRequest",
-        resetUserPasswordRequest
+        'resetUserPassword',
+        'resetUserPasswordRequest',
+        resetUserPasswordRequest,
       );
       const localVarPath = `/users/reset-password`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -2191,7 +2192,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "POST",
+        method: 'POST',
         ...baseOptions,
         ...options,
       };
@@ -2202,10 +2203,10 @@ export const DefaultApiAxiosParamCreator = function (
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-      localVarHeaderParameter["Content-Type"] = "application/json";
+      localVarHeaderParameter['Content-Type'] = 'application/json';
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -2218,7 +2219,7 @@ export const DefaultApiAxiosParamCreator = function (
       localVarRequestOptions.data = serializeDataIfNeeded(
         resetUserPasswordRequest,
         localVarRequestOptions,
-        configuration
+        configuration,
       );
 
       return {
@@ -2237,13 +2238,13 @@ export const DefaultApiAxiosParamCreator = function (
     switchAppBundleVersion: async (
       version: string,
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'version' is not null or undefined
-      assertParamExists("switchAppBundleVersion", "version", version);
+      assertParamExists('switchAppBundleVersion', 'version', version);
       const localVarPath = `/app-bundle/switch/{version}`.replace(
-        `{${"version"}}`,
-        encodeURIComponent(String(version))
+        `{${'version'}}`,
+        encodeURIComponent(String(version)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2253,7 +2254,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "POST",
+        method: 'POST',
         ...baseOptions,
         ...options,
       };
@@ -2265,7 +2266,7 @@ export const DefaultApiAxiosParamCreator = function (
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -2296,10 +2297,10 @@ export const DefaultApiAxiosParamCreator = function (
       schemaType?: string,
       limit?: number,
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'syncPullRequest' is not null or undefined
-      assertParamExists("syncPull", "syncPullRequest", syncPullRequest);
+      assertParamExists('syncPull', 'syncPullRequest', syncPullRequest);
       const localVarPath = `/sync/pull`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2309,7 +2310,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "POST",
+        method: 'POST',
         ...baseOptions,
         ...options,
       };
@@ -2321,17 +2322,17 @@ export const DefaultApiAxiosParamCreator = function (
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       if (schemaType !== undefined) {
-        localVarQueryParameter["schemaType"] = schemaType;
+        localVarQueryParameter['schemaType'] = schemaType;
       }
 
       if (limit !== undefined) {
-        localVarQueryParameter["limit"] = limit;
+        localVarQueryParameter['limit'] = limit;
       }
 
-      localVarHeaderParameter["Content-Type"] = "application/json";
+      localVarHeaderParameter['Content-Type'] = 'application/json';
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -2344,7 +2345,7 @@ export const DefaultApiAxiosParamCreator = function (
       localVarRequestOptions.data = serializeDataIfNeeded(
         syncPullRequest,
         localVarRequestOptions,
-        configuration
+        configuration,
       );
 
       return {
@@ -2363,10 +2364,10 @@ export const DefaultApiAxiosParamCreator = function (
     syncPush: async (
       syncPushRequest: SyncPushRequest,
       xApiVersion?: string,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'syncPushRequest' is not null or undefined
-      assertParamExists("syncPush", "syncPushRequest", syncPushRequest);
+      assertParamExists('syncPush', 'syncPushRequest', syncPushRequest);
       const localVarPath = `/sync/push`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2376,7 +2377,7 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "POST",
+        method: 'POST',
         ...baseOptions,
         ...options,
       };
@@ -2387,10 +2388,10 @@ export const DefaultApiAxiosParamCreator = function (
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
-      localVarHeaderParameter["Content-Type"] = "application/json";
+      localVarHeaderParameter['Content-Type'] = 'application/json';
 
       if (xApiVersion != null) {
-        localVarHeaderParameter["x-api-version"] = String(xApiVersion);
+        localVarHeaderParameter['x-api-version'] = String(xApiVersion);
       }
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -2403,7 +2404,7 @@ export const DefaultApiAxiosParamCreator = function (
       localVarRequestOptions.data = serializeDataIfNeeded(
         syncPushRequest,
         localVarRequestOptions,
-        configuration
+        configuration,
       );
 
       return {
@@ -2422,15 +2423,15 @@ export const DefaultApiAxiosParamCreator = function (
     uploadAttachment: async (
       attachmentId: string,
       file: File,
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       // verify required parameter 'attachmentId' is not null or undefined
-      assertParamExists("uploadAttachment", "attachmentId", attachmentId);
+      assertParamExists('uploadAttachment', 'attachmentId', attachmentId);
       // verify required parameter 'file' is not null or undefined
-      assertParamExists("uploadAttachment", "file", file);
+      assertParamExists('uploadAttachment', 'file', file);
       const localVarPath = `/attachments/{attachment_id}`.replace(
-        `{${"attachment_id"}}`,
-        encodeURIComponent(String(attachmentId))
+        `{${'attachment_id'}}`,
+        encodeURIComponent(String(attachmentId)),
       );
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
       const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2440,25 +2441,26 @@ export const DefaultApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "PUT",
+        method: 'PUT',
         ...baseOptions,
         ...options,
       };
       const localVarHeaderParameter = {} as any;
       const localVarQueryParameter = {} as any;
-      const localVarFormParams = new ((configuration &&
-        configuration.formDataCtor) ||
-        FormData)();
+      const localVarFormParams = new (
+        (configuration && configuration.formDataCtor) ||
+        FormData
+      )();
 
       // authentication bearerAuth required
       // http bearer authentication required
       await setBearerAuthToObject(localVarHeaderParameter, configuration);
 
       if (file !== undefined) {
-        localVarFormParams.append("file", file as any);
+        localVarFormParams.append('file', file as any);
       }
 
-      localVarHeaderParameter["Content-Type"] = "multipart/form-data";
+      localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
 
       setSearchParams(localVarUrlObj, localVarQueryParameter);
       let headersFromBaseOptions =
@@ -2496,21 +2498,21 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     async changePassword(
       changePasswordRequest: ChangePasswordRequest,
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<ChangePassword200Response>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.changePassword(
         changePasswordRequest,
         xApiVersion,
-        options
+        options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.changePassword"]?.[
+        operationServerMap['DefaultApi.changePassword']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2518,7 +2520,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2530,18 +2532,18 @@ export const DefaultApiFp = function (configuration?: Configuration) {
      */
     async checkAttachmentExists(
       attachmentId: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.checkAttachmentExists(
           attachmentId,
-          options
+          options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.checkAttachmentExists"]?.[
+        operationServerMap['DefaultApi.checkAttachmentExists']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2549,7 +2551,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2563,18 +2565,18 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     async createUser(
       createUserRequest: CreateUserRequest,
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserResponse>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.createUser(
         createUserRequest,
         xApiVersion,
-        options
+        options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.createUser"]?.[
+        operationServerMap['DefaultApi.createUser']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2582,7 +2584,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2596,21 +2598,21 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     async deleteUser(
       username: string,
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<DeleteUser200Response>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.deleteUser(
         username,
         xApiVersion,
-        options
+        options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.deleteUser"]?.[
+        operationServerMap['DefaultApi.deleteUser']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2618,7 +2620,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2636,7 +2638,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
       preview?: boolean,
       ifNoneMatch?: string,
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<File>
     > {
@@ -2646,11 +2648,11 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           preview,
           ifNoneMatch,
           xApiVersion,
-          options
+          options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.downloadAppBundleFile"]?.[
+        operationServerMap['DefaultApi.downloadAppBundleFile']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2658,7 +2660,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2670,18 +2672,18 @@ export const DefaultApiFp = function (configuration?: Configuration) {
      */
     async downloadAttachment(
       attachmentId: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<File>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.downloadAttachment(
           attachmentId,
-          options
+          options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.downloadAttachment"]?.[
+        operationServerMap['DefaultApi.downloadAttachment']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2689,7 +2691,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2705,7 +2707,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
       current?: string,
       target?: string,
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<ChangeLog>
     > {
@@ -2714,11 +2716,11 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           current,
           target,
           xApiVersion,
-          options
+          options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.getAppBundleChanges"]?.[
+        operationServerMap['DefaultApi.getAppBundleChanges']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2726,7 +2728,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2738,21 +2740,21 @@ export const DefaultApiFp = function (configuration?: Configuration) {
      */
     async getAppBundleManifest(
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<AppBundleManifest>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getAppBundleManifest(
           xApiVersion,
-          options
+          options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.getAppBundleManifest"]?.[
+        operationServerMap['DefaultApi.getAppBundleManifest']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2760,7 +2762,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2772,21 +2774,21 @@ export const DefaultApiFp = function (configuration?: Configuration) {
      */
     async getAppBundleVersions(
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<AppBundleVersions>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getAppBundleVersions(
           xApiVersion,
-          options
+          options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.getAppBundleVersions"]?.[
+        operationServerMap['DefaultApi.getAppBundleVersions']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2794,7 +2796,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2808,22 +2810,22 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     async getAttachmentManifest(
       attachmentManifestRequest: AttachmentManifestRequest,
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<AttachmentManifestResponse>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.getAttachmentManifest(
           attachmentManifestRequest,
           xApiVersion,
-          options
+          options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.getAttachmentManifest"]?.[
+        operationServerMap['DefaultApi.getAttachmentManifest']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2831,7 +2833,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2841,19 +2843,18 @@ export const DefaultApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getVersion(
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<SystemVersionInfo>
     > {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getVersion(
-        options
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getVersion(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.getVersion"]?.[
+        operationServerMap['DefaultApi.getVersion']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2861,7 +2862,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2873,20 +2874,20 @@ export const DefaultApiFp = function (configuration?: Configuration) {
      */
     async listUsers(
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<Array<UserResponse>>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.listUsers(
         xApiVersion,
-        options
+        options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.listUsers"]?.[
+        operationServerMap['DefaultApi.listUsers']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2894,7 +2895,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2908,25 +2909,25 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     async login(
       loginRequest: LoginRequest,
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.login(
         loginRequest,
         xApiVersion,
-        options
+        options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.login"]?.[localVarOperationServerIndex]
+        operationServerMap['DefaultApi.login']?.[localVarOperationServerIndex]
           ?.url;
       return (axios, basePath) =>
         createRequestFunction(
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2940,21 +2941,21 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     async pushAppBundle(
       xApiVersion?: string,
       bundle?: File,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<AppBundlePushResponse>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.pushAppBundle(
         xApiVersion,
         bundle,
-        options
+        options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.pushAppBundle"]?.[
+        operationServerMap['DefaultApi.pushAppBundle']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2962,7 +2963,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -2976,18 +2977,18 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     async refreshToken(
       refreshTokenRequest: RefreshTokenRequest,
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (axios?: AxiosInstance, basePath?: string) => AxiosPromise<AuthResponse>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.refreshToken(
         refreshTokenRequest,
         xApiVersion,
-        options
+        options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.refreshToken"]?.[
+        operationServerMap['DefaultApi.refreshToken']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -2995,7 +2996,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -3009,22 +3010,22 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     async resetUserPassword(
       resetUserPasswordRequest: ResetUserPasswordRequest,
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<ResetUserPassword200Response>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.resetUserPassword(
           resetUserPasswordRequest,
           xApiVersion,
-          options
+          options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.resetUserPassword"]?.[
+        operationServerMap['DefaultApi.resetUserPassword']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -3032,7 +3033,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -3046,22 +3047,22 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     async switchAppBundleVersion(
       version: string,
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<SwitchAppBundleVersion200Response>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.switchAppBundleVersion(
           version,
           xApiVersion,
-          options
+          options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.switchAppBundleVersion"]?.[
+        operationServerMap['DefaultApi.switchAppBundleVersion']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -3069,7 +3070,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -3087,11 +3088,11 @@ export const DefaultApiFp = function (configuration?: Configuration) {
       schemaType?: string,
       limit?: number,
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<SyncPullResponse>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.syncPull(
@@ -3099,11 +3100,11 @@ export const DefaultApiFp = function (configuration?: Configuration) {
         schemaType,
         limit,
         xApiVersion,
-        options
+        options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.syncPull"]?.[
+        operationServerMap['DefaultApi.syncPull']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -3111,7 +3112,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -3125,21 +3126,21 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     async syncPush(
       syncPushRequest: SyncPushRequest,
       xApiVersion?: string,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<SyncPushResponse>
     > {
       const localVarAxiosArgs = await localVarAxiosParamCreator.syncPush(
         syncPushRequest,
         xApiVersion,
-        options
+        options,
       );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.syncPush"]?.[
+        operationServerMap['DefaultApi.syncPush']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -3147,7 +3148,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
     /**
@@ -3161,22 +3162,22 @@ export const DefaultApiFp = function (configuration?: Configuration) {
     async uploadAttachment(
       attachmentId: string,
       file: File,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<UploadAttachment200Response>
     > {
       const localVarAxiosArgs =
         await localVarAxiosParamCreator.uploadAttachment(
           attachmentId,
           file,
-          options
+          options,
         );
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["DefaultApi.uploadAttachment"]?.[
+        operationServerMap['DefaultApi.uploadAttachment']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -3184,7 +3185,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
   };
@@ -3197,7 +3198,7 @@ export const DefaultApiFp = function (configuration?: Configuration) {
 export const DefaultApiFactory = function (
   configuration?: Configuration,
   basePath?: string,
-  axios?: AxiosInstance
+  axios?: AxiosInstance,
 ) {
   const localVarFp = DefaultApiFp(configuration);
   return {
@@ -3210,15 +3211,15 @@ export const DefaultApiFactory = function (
      */
     changePassword(
       requestParameters: DefaultApiChangePasswordRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ChangePassword200Response> {
       return localVarFp
         .changePassword(
           requestParameters.changePasswordRequest,
           requestParameters.xApiVersion,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      *
@@ -3229,11 +3230,11 @@ export const DefaultApiFactory = function (
      */
     checkAttachmentExists(
       requestParameters: DefaultApiCheckAttachmentExistsRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<void> {
       return localVarFp
         .checkAttachmentExists(requestParameters.attachmentId, options)
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      * Create a new user with specified username, password, and role
@@ -3244,15 +3245,15 @@ export const DefaultApiFactory = function (
      */
     createUser(
       requestParameters: DefaultApiCreateUserRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<UserResponse> {
       return localVarFp
         .createUser(
           requestParameters.createUserRequest,
           requestParameters.xApiVersion,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      * Delete a user by username
@@ -3263,15 +3264,15 @@ export const DefaultApiFactory = function (
      */
     deleteUser(
       requestParameters: DefaultApiDeleteUserRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<DeleteUser200Response> {
       return localVarFp
         .deleteUser(
           requestParameters.username,
           requestParameters.xApiVersion,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      *
@@ -3282,7 +3283,7 @@ export const DefaultApiFactory = function (
      */
     downloadAppBundleFile(
       requestParameters: DefaultApiDownloadAppBundleFileRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<File> {
       return localVarFp
         .downloadAppBundleFile(
@@ -3290,9 +3291,9 @@ export const DefaultApiFactory = function (
           requestParameters.preview,
           requestParameters.ifNoneMatch,
           requestParameters.xApiVersion,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      *
@@ -3303,11 +3304,11 @@ export const DefaultApiFactory = function (
      */
     downloadAttachment(
       requestParameters: DefaultApiDownloadAttachmentRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<File> {
       return localVarFp
         .downloadAttachment(requestParameters.attachmentId, options)
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      * Compares two versions of the app bundle and returns detailed changes
@@ -3318,16 +3319,16 @@ export const DefaultApiFactory = function (
      */
     getAppBundleChanges(
       requestParameters: DefaultApiGetAppBundleChangesRequest = {},
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ChangeLog> {
       return localVarFp
         .getAppBundleChanges(
           requestParameters.current,
           requestParameters.target,
           requestParameters.xApiVersion,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      *
@@ -3338,11 +3339,11 @@ export const DefaultApiFactory = function (
      */
     getAppBundleManifest(
       requestParameters: DefaultApiGetAppBundleManifestRequest = {},
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<AppBundleManifest> {
       return localVarFp
         .getAppBundleManifest(requestParameters.xApiVersion, options)
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      *
@@ -3353,11 +3354,11 @@ export const DefaultApiFactory = function (
      */
     getAppBundleVersions(
       requestParameters: DefaultApiGetAppBundleVersionsRequest = {},
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<AppBundleVersions> {
       return localVarFp
         .getAppBundleVersions(requestParameters.xApiVersion, options)
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      * Returns a manifest of attachment changes (new, updated, deleted) since a specified data version
@@ -3368,15 +3369,15 @@ export const DefaultApiFactory = function (
      */
     getAttachmentManifest(
       requestParameters: DefaultApiGetAttachmentManifestRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<AttachmentManifestResponse> {
       return localVarFp
         .getAttachmentManifest(
           requestParameters.attachmentManifestRequest,
           requestParameters.xApiVersion,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      * Returns detailed version information about the server, including build information and system details
@@ -3385,11 +3386,11 @@ export const DefaultApiFactory = function (
      * @throws {RequiredError}
      */
     getVersion(
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<SystemVersionInfo> {
       return localVarFp
         .getVersion(options)
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      * Retrieve a list of all users in the system. Admin access required.
@@ -3400,11 +3401,11 @@ export const DefaultApiFactory = function (
      */
     listUsers(
       requestParameters: DefaultApiListUsersRequest = {},
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<Array<UserResponse>> {
       return localVarFp
         .listUsers(requestParameters.xApiVersion, options)
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      * Obtain a JWT token by providing username and password
@@ -3415,15 +3416,15 @@ export const DefaultApiFactory = function (
      */
     login(
       requestParameters: DefaultApiLoginRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<AuthResponse> {
       return localVarFp
         .login(
           requestParameters.loginRequest,
           requestParameters.xApiVersion,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      *
@@ -3434,15 +3435,15 @@ export const DefaultApiFactory = function (
      */
     pushAppBundle(
       requestParameters: DefaultApiPushAppBundleRequest = {},
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<AppBundlePushResponse> {
       return localVarFp
         .pushAppBundle(
           requestParameters.xApiVersion,
           requestParameters.bundle,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      * Obtain a new JWT token using a refresh token
@@ -3453,15 +3454,15 @@ export const DefaultApiFactory = function (
      */
     refreshToken(
       requestParameters: DefaultApiRefreshTokenRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<AuthResponse> {
       return localVarFp
         .refreshToken(
           requestParameters.refreshTokenRequest,
           requestParameters.xApiVersion,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      * Reset password for a specified user
@@ -3472,15 +3473,15 @@ export const DefaultApiFactory = function (
      */
     resetUserPassword(
       requestParameters: DefaultApiResetUserPasswordRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<ResetUserPassword200Response> {
       return localVarFp
         .resetUserPassword(
           requestParameters.resetUserPasswordRequest,
           requestParameters.xApiVersion,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      *
@@ -3491,15 +3492,15 @@ export const DefaultApiFactory = function (
      */
     switchAppBundleVersion(
       requestParameters: DefaultApiSwitchAppBundleVersionRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<SwitchAppBundleVersion200Response> {
       return localVarFp
         .switchAppBundleVersion(
           requestParameters.version,
           requestParameters.xApiVersion,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      * Retrieves records that have changed since a specified version.  **Pagination Pattern:** 1. Send initial request with `since.version` (or omit for all records) 2. Process returned records 3. If `has_more` is true, make next request using `change_cutoff` as the new `since.version` 4. Repeat until `has_more` is false  Example pagination flow: - Request 1: `since: {version: 100}` → Response: `change_cutoff: 150, has_more: true` - Request 2: `since: {version: 150}` → Response: `change_cutoff: 200, has_more: false`
@@ -3510,7 +3511,7 @@ export const DefaultApiFactory = function (
      */
     syncPull(
       requestParameters: DefaultApiSyncPullRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<SyncPullResponse> {
       return localVarFp
         .syncPull(
@@ -3518,9 +3519,9 @@ export const DefaultApiFactory = function (
           requestParameters.schemaType,
           requestParameters.limit,
           requestParameters.xApiVersion,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      *
@@ -3531,15 +3532,15 @@ export const DefaultApiFactory = function (
      */
     syncPush(
       requestParameters: DefaultApiSyncPushRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<SyncPushResponse> {
       return localVarFp
         .syncPush(
           requestParameters.syncPushRequest,
           requestParameters.xApiVersion,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
     /**
      *
@@ -3550,15 +3551,15 @@ export const DefaultApiFactory = function (
      */
     uploadAttachment(
       requestParameters: DefaultApiUploadAttachmentRequest,
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<UploadAttachment200Response> {
       return localVarFp
         .uploadAttachment(
           requestParameters.attachmentId,
           requestParameters.file,
-          options
+          options,
         )
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
   };
 };
@@ -3979,15 +3980,15 @@ export class DefaultApi extends BaseAPI {
    */
   public changePassword(
     requestParameters: DefaultApiChangePasswordRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .changePassword(
         requestParameters.changePasswordRequest,
         requestParameters.xApiVersion,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4000,11 +4001,11 @@ export class DefaultApi extends BaseAPI {
    */
   public checkAttachmentExists(
     requestParameters: DefaultApiCheckAttachmentExistsRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .checkAttachmentExists(requestParameters.attachmentId, options)
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4017,15 +4018,15 @@ export class DefaultApi extends BaseAPI {
    */
   public createUser(
     requestParameters: DefaultApiCreateUserRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .createUser(
         requestParameters.createUserRequest,
         requestParameters.xApiVersion,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4038,15 +4039,15 @@ export class DefaultApi extends BaseAPI {
    */
   public deleteUser(
     requestParameters: DefaultApiDeleteUserRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .deleteUser(
         requestParameters.username,
         requestParameters.xApiVersion,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4059,7 +4060,7 @@ export class DefaultApi extends BaseAPI {
    */
   public downloadAppBundleFile(
     requestParameters: DefaultApiDownloadAppBundleFileRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .downloadAppBundleFile(
@@ -4067,9 +4068,9 @@ export class DefaultApi extends BaseAPI {
         requestParameters.preview,
         requestParameters.ifNoneMatch,
         requestParameters.xApiVersion,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4082,11 +4083,11 @@ export class DefaultApi extends BaseAPI {
    */
   public downloadAttachment(
     requestParameters: DefaultApiDownloadAttachmentRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .downloadAttachment(requestParameters.attachmentId, options)
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4099,16 +4100,16 @@ export class DefaultApi extends BaseAPI {
    */
   public getAppBundleChanges(
     requestParameters: DefaultApiGetAppBundleChangesRequest = {},
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .getAppBundleChanges(
         requestParameters.current,
         requestParameters.target,
         requestParameters.xApiVersion,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4121,11 +4122,11 @@ export class DefaultApi extends BaseAPI {
    */
   public getAppBundleManifest(
     requestParameters: DefaultApiGetAppBundleManifestRequest = {},
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .getAppBundleManifest(requestParameters.xApiVersion, options)
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4138,11 +4139,11 @@ export class DefaultApi extends BaseAPI {
    */
   public getAppBundleVersions(
     requestParameters: DefaultApiGetAppBundleVersionsRequest = {},
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .getAppBundleVersions(requestParameters.xApiVersion, options)
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4155,15 +4156,15 @@ export class DefaultApi extends BaseAPI {
    */
   public getAttachmentManifest(
     requestParameters: DefaultApiGetAttachmentManifestRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .getAttachmentManifest(
         requestParameters.attachmentManifestRequest,
         requestParameters.xApiVersion,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4176,7 +4177,7 @@ export class DefaultApi extends BaseAPI {
   public getVersion(options?: RawAxiosRequestConfig) {
     return DefaultApiFp(this.configuration)
       .getVersion(options)
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4189,11 +4190,11 @@ export class DefaultApi extends BaseAPI {
    */
   public listUsers(
     requestParameters: DefaultApiListUsersRequest = {},
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .listUsers(requestParameters.xApiVersion, options)
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4206,15 +4207,15 @@ export class DefaultApi extends BaseAPI {
    */
   public login(
     requestParameters: DefaultApiLoginRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .login(
         requestParameters.loginRequest,
         requestParameters.xApiVersion,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4227,15 +4228,15 @@ export class DefaultApi extends BaseAPI {
    */
   public pushAppBundle(
     requestParameters: DefaultApiPushAppBundleRequest = {},
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .pushAppBundle(
         requestParameters.xApiVersion,
         requestParameters.bundle,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4248,15 +4249,15 @@ export class DefaultApi extends BaseAPI {
    */
   public refreshToken(
     requestParameters: DefaultApiRefreshTokenRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .refreshToken(
         requestParameters.refreshTokenRequest,
         requestParameters.xApiVersion,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4269,15 +4270,15 @@ export class DefaultApi extends BaseAPI {
    */
   public resetUserPassword(
     requestParameters: DefaultApiResetUserPasswordRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .resetUserPassword(
         requestParameters.resetUserPasswordRequest,
         requestParameters.xApiVersion,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4290,15 +4291,15 @@ export class DefaultApi extends BaseAPI {
    */
   public switchAppBundleVersion(
     requestParameters: DefaultApiSwitchAppBundleVersionRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .switchAppBundleVersion(
         requestParameters.version,
         requestParameters.xApiVersion,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4311,7 +4312,7 @@ export class DefaultApi extends BaseAPI {
    */
   public syncPull(
     requestParameters: DefaultApiSyncPullRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .syncPull(
@@ -4319,9 +4320,9 @@ export class DefaultApi extends BaseAPI {
         requestParameters.schemaType,
         requestParameters.limit,
         requestParameters.xApiVersion,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4334,15 +4335,15 @@ export class DefaultApi extends BaseAPI {
    */
   public syncPush(
     requestParameters: DefaultApiSyncPushRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .syncPush(
         requestParameters.syncPushRequest,
         requestParameters.xApiVersion,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 
   /**
@@ -4355,15 +4356,15 @@ export class DefaultApi extends BaseAPI {
    */
   public uploadAttachment(
     requestParameters: DefaultApiUploadAttachmentRequest,
-    options?: RawAxiosRequestConfig
+    options?: RawAxiosRequestConfig,
   ) {
     return DefaultApiFp(this.configuration)
       .uploadAttachment(
         requestParameters.attachmentId,
         requestParameters.file,
-        options
+        options,
       )
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 }
 
@@ -4372,7 +4373,7 @@ export class DefaultApi extends BaseAPI {
  * @export
  */
 export const HealthApiAxiosParamCreator = function (
-  configuration?: Configuration
+  configuration?: Configuration,
 ) {
   return {
     /**
@@ -4382,7 +4383,7 @@ export const HealthApiAxiosParamCreator = function (
      * @throws {RequiredError}
      */
     getHealth: async (
-      options: RawAxiosRequestConfig = {}
+      options: RawAxiosRequestConfig = {},
     ): Promise<RequestArgs> => {
       const localVarPath = `/health`;
       // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -4393,7 +4394,7 @@ export const HealthApiAxiosParamCreator = function (
       }
 
       const localVarRequestOptions = {
-        method: "GET",
+        method: 'GET',
         ...baseOptions,
         ...options,
       };
@@ -4431,19 +4432,18 @@ export const HealthApiFp = function (configuration?: Configuration) {
      * @throws {RequiredError}
      */
     async getHealth(
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): Promise<
       (
         axios?: AxiosInstance,
-        basePath?: string
+        basePath?: string,
       ) => AxiosPromise<GetHealth200Response>
     > {
-      const localVarAxiosArgs = await localVarAxiosParamCreator.getHealth(
-        options
-      );
+      const localVarAxiosArgs =
+        await localVarAxiosParamCreator.getHealth(options);
       const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
       const localVarOperationServerBasePath =
-        operationServerMap["HealthApi.getHealth"]?.[
+        operationServerMap['HealthApi.getHealth']?.[
           localVarOperationServerIndex
         ]?.url;
       return (axios, basePath) =>
@@ -4451,7 +4451,7 @@ export const HealthApiFp = function (configuration?: Configuration) {
           localVarAxiosArgs,
           globalAxios,
           BASE_PATH,
-          configuration
+          configuration,
         )(axios, localVarOperationServerBasePath || basePath);
     },
   };
@@ -4464,7 +4464,7 @@ export const HealthApiFp = function (configuration?: Configuration) {
 export const HealthApiFactory = function (
   configuration?: Configuration,
   basePath?: string,
-  axios?: AxiosInstance
+  axios?: AxiosInstance,
 ) {
   const localVarFp = HealthApiFp(configuration);
   return {
@@ -4475,11 +4475,11 @@ export const HealthApiFactory = function (
      * @throws {RequiredError}
      */
     getHealth(
-      options?: RawAxiosRequestConfig
+      options?: RawAxiosRequestConfig,
     ): AxiosPromise<GetHealth200Response> {
       return localVarFp
         .getHealth(options)
-        .then((request) => request(axios, basePath));
+        .then(request => request(axios, basePath));
     },
   };
 };
@@ -4501,6 +4501,6 @@ export class HealthApi extends BaseAPI {
   public getHealth(options?: RawAxiosRequestConfig) {
     return HealthApiFp(this.configuration)
       .getHealth(options)
-      .then((request) => request(this.axios, this.basePath));
+      .then(request => request(this.axios, this.basePath));
   }
 }

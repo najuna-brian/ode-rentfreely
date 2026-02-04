@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,14 +7,14 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Icon from "@react-native-vector-icons/material-design-icons";
-import { Observation } from "../database/models/Observation";
-import { FormService } from "../services/FormService";
-import { openFormplayerFromNative } from "../webview/FormulusMessageHandlers";
-import { useNavigation } from "@react-navigation/native";
-import colors from "../theme/colors";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from '@react-native-vector-icons/material-design-icons';
+import { Observation } from '../database/models/Observation';
+import { FormService } from '../services/FormService';
+import { openFormplayerFromNative } from '../webview/FormulusMessageHandlers';
+import { useNavigation } from '@react-navigation/native';
+import colors from '../theme/colors';
 
 interface ObservationDetailScreenProps {
   route: {
@@ -30,7 +30,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
   const { observationId } = route.params;
   const navigation = useNavigation();
   const [observation, setObservation] = useState<Observation | null>(null);
-  const [formName, setFormName] = useState<string>("");
+  const [formName, setFormName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
@@ -49,9 +49,9 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
 
       for (const formSpec of formSpecs) {
         const observations = await formService.getObservationsByFormType(
-          formSpec.id
+          formSpec.id,
         );
-        const obs = observations.find((o) => o.observationId === observationId);
+        const obs = observations.find(o => o.observationId === observationId);
         if (obs) {
           foundObservation = obs;
           setFormName(formSpec.name);
@@ -60,15 +60,15 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
       }
 
       if (!foundObservation) {
-        Alert.alert("Error", "Observation not found");
+        Alert.alert('Error', 'Observation not found');
         navigation.goBack();
         return;
       }
 
       setObservation(foundObservation);
     } catch (error) {
-      console.error("Error loading observation:", error);
-      Alert.alert("Error", "Failed to load observation");
+      console.error('Error loading observation:', error);
+      Alert.alert('Error', 'Failed to load observation');
       navigation.goBack();
     } finally {
       setLoading(false);
@@ -82,21 +82,21 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
       const result = await openFormplayerFromNative(
         observation.formType,
         {},
-        typeof observation.data === "string"
+        typeof observation.data === 'string'
           ? JSON.parse(observation.data)
           : observation.data,
-        observation.observationId
+        observation.observationId,
       );
       if (
-        result.status === "form_submitted" ||
-        result.status === "form_updated"
+        result.status === 'form_submitted' ||
+        result.status === 'form_updated'
       ) {
         await loadObservation();
-        Alert.alert("Success", "Observation updated successfully");
+        Alert.alert('Success', 'Observation updated successfully');
       }
     } catch (error) {
-      console.error("Error editing observation:", error);
-      Alert.alert("Error", "Failed to edit observation");
+      console.error('Error editing observation:', error);
+      Alert.alert('Error', 'Failed to edit observation');
     }
   };
 
@@ -104,26 +104,26 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
     if (!observation) return;
 
     Alert.alert(
-      "Delete Observation",
-      "Are you sure you want to delete this observation? This action cannot be undone.",
+      'Delete Observation',
+      'Are you sure you want to delete this observation? This action cannot be undone.',
       [
-        { text: "Cancel", style: "cancel" },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: "Delete",
-          style: "destructive",
+          text: 'Delete',
+          style: 'destructive',
           onPress: async () => {
             try {
               const formService = await FormService.getInstance();
               await formService.deleteObservation(observation.observationId);
-              Alert.alert("Success", "Observation deleted successfully");
+              Alert.alert('Success', 'Observation deleted successfully');
               navigation.goBack();
             } catch (error) {
-              console.error("Error deleting observation:", error);
-              Alert.alert("Error", "Failed to delete observation");
+              console.error('Error deleting observation:', error);
+              Alert.alert('Error', 'Failed to delete observation');
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -132,23 +132,21 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
       return (
         <View
           key={key}
-          style={[styles.fieldContainer, { paddingLeft: level * 16 }]}
-        >
+          style={[styles.fieldContainer, { paddingLeft: level * 16 }]}>
           <Text style={styles.fieldKey}>{key}:</Text>
           <Text style={styles.fieldValue}>null</Text>
         </View>
       );
     }
 
-    if (typeof value === "object" && !Array.isArray(value)) {
+    if (typeof value === 'object' && !Array.isArray(value)) {
       return (
         <View
           key={key}
-          style={[styles.fieldContainer, { paddingLeft: level * 16 }]}
-        >
+          style={[styles.fieldContainer, { paddingLeft: level * 16 }]}>
           <Text style={styles.fieldKey}>{key}:</Text>
           {Object.entries(value).map(([k, v]) =>
-            renderDataField(k, v, level + 1)
+            renderDataField(k, v, level + 1),
           )}
         </View>
       );
@@ -158,14 +156,13 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
       return (
         <View
           key={key}
-          style={[styles.fieldContainer, { paddingLeft: level * 16 }]}
-        >
+          style={[styles.fieldContainer, { paddingLeft: level * 16 }]}>
           <Text style={styles.fieldKey}>{key}:</Text>
           {value.map((item, index) => (
             <View key={index} style={styles.arrayItem}>
-              {typeof item === "object" && item !== null
+              {typeof item === 'object' && item !== null
                 ? Object.entries(item).map(([k, v]) =>
-                    renderDataField(k, v, level + 2)
+                    renderDataField(k, v, level + 2),
                   )
                 : renderDataField(`${index}`, item, level + 1)}
             </View>
@@ -177,8 +174,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
     return (
       <View
         key={key}
-        style={[styles.fieldContainer, { paddingLeft: level * 16 }]}
-      >
+        style={[styles.fieldContainer, { paddingLeft: level * 16 }]}>
         <Text style={styles.fieldKey}>{key}:</Text>
         <Text style={styles.fieldValue}>{String(value)}</Text>
       </View>
@@ -208,9 +204,9 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
 
   const isSynced =
     observation.syncedAt &&
-    observation.syncedAt.getTime() > new Date("1980-01-01").getTime();
+    observation.syncedAt.getTime() > new Date('1980-01-01').getTime();
   const data =
-    typeof observation.data === "string"
+    typeof observation.data === 'string'
       ? JSON.parse(observation.data)
       : observation.data;
 
@@ -219,8 +215,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation.goBack()}
-          style={styles.backButton}
-        >
+          style={styles.backButton}>
           <Icon name="arrow-left" size={24} color={colors.brand.primary[500]} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Observation Details</Text>
@@ -236,8 +231,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
 
       <ScrollView
         style={styles.content}
-        contentContainerStyle={styles.contentContainer}
-      >
+        contentContainerStyle={styles.contentContainer}>
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Basic Information</Text>
           <View style={styles.infoRow}>
@@ -270,10 +264,9 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
               style={[
                 styles.statusBadge,
                 isSynced ? styles.syncedBadge : styles.pendingBadge,
-              ]}
-            >
+              ]}>
               <Icon
-                name={isSynced ? "check-circle" : "clock-outline"}
+                name={isSynced ? 'check-circle' : 'clock-outline'}
                 size={16}
                 color={
                   isSynced
@@ -282,7 +275,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
                 }
               />
               <Text style={styles.statusText}>
-                {isSynced ? "Synced" : "Pending"}
+                {isSynced ? 'Synced' : 'Pending'}
               </Text>
             </View>
           </View>
@@ -302,7 +295,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Latitude:</Text>
               <Text style={styles.infoValue}>
-                {typeof observation.geolocation === "string"
+                {typeof observation.geolocation === 'string'
                   ? JSON.parse(observation.geolocation).latitude
                   : observation.geolocation.latitude}
               </Text>
@@ -310,7 +303,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Longitude:</Text>
               <Text style={styles.infoValue}>
-                {typeof observation.geolocation === "string"
+                {typeof observation.geolocation === 'string'
                   ? JSON.parse(observation.geolocation).longitude
                   : observation.geolocation.longitude}
               </Text>
@@ -325,7 +318,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
             <Text style={styles.infoValue}>
               {observation.author && observation.author.trim().length > 0
                 ? observation.author
-                : "Unknown"}
+                : 'Unknown'}
             </Text>
           </View>
           <View style={styles.infoRow}>
@@ -333,7 +326,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
             <Text style={[styles.infoValue, styles.monoText]}>
               {observation.deviceId && observation.deviceId.trim().length > 0
                 ? observation.deviceId
-                : "Unknown"}
+                : 'Unknown'}
             </Text>
           </View>
         </View>
@@ -342,7 +335,7 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
           <Text style={styles.sectionTitle}>Form Data</Text>
           <View style={styles.dataContainer}>
             {Object.entries(data).map(([key, value]) =>
-              renderDataField(key, value)
+              renderDataField(key, value),
             )}
           </View>
         </View>
@@ -357,9 +350,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral[50],
   },
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     padding: 16,
     backgroundColor: colors.neutral.white,
     borderBottomWidth: 1,
@@ -370,13 +363,13 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     color: colors.neutral[900],
     flex: 1,
-    textAlign: "center",
+    textAlign: 'center',
   },
   headerActions: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 8,
   },
   actionButton: {
@@ -396,34 +389,34 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    fontWeight: "600",
+    fontWeight: '600',
     color: colors.neutral[900],
     marginBottom: 12,
   },
   infoRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     marginBottom: 12,
   },
   infoLabel: {
     fontSize: 14,
     color: colors.neutral[600],
-    fontWeight: "500",
+    fontWeight: '500',
   },
   infoValue: {
     fontSize: 14,
     color: colors.neutral[900],
     flex: 1,
-    textAlign: "right",
+    textAlign: 'right',
   },
   monoText: {
-    fontFamily: "monospace",
+    fontFamily: 'monospace',
     fontSize: 12,
   },
   statusBadge: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 12,
@@ -437,7 +430,7 @@ const styles = StyleSheet.create({
   },
   statusText: {
     fontSize: 12,
-    fontWeight: "500",
+    fontWeight: '500',
     color: colors.neutral[900],
   },
   dataContainer: {
@@ -451,7 +444,7 @@ const styles = StyleSheet.create({
   },
   fieldKey: {
     fontSize: 14,
-    fontWeight: "600",
+    fontWeight: '600',
     color: colors.brand.primary[500],
     marginBottom: 4,
   },
@@ -466,8 +459,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loadingText: {
     marginTop: 12,
@@ -476,8 +469,8 @@ const styles = StyleSheet.create({
   },
   errorContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   errorText: {
     fontSize: 16,

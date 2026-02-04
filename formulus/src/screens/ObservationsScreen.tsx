@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo } from 'react';
 import {
   View,
   Text,
@@ -9,28 +9,28 @@ import {
   Alert,
   TouchableOpacity,
   TextInput,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import Icon from "@react-native-vector-icons/material-design-icons";
-import { useObservations } from "../hooks/useObservations";
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from '@react-native-vector-icons/material-design-icons';
+import { useObservations } from '../hooks/useObservations';
 import {
   ObservationCard,
   EmptyState,
   FormTypeSelector,
   SyncStatusButtons,
   SyncStatus,
-} from "../components/common";
-import { openFormplayerFromNative } from "../webview/FormulusMessageHandlers";
-import { FormService } from "../services/FormService";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { MainAppStackParamList } from "../types/NavigationTypes";
-import { Observation } from "../database/models/Observation";
-import colors from "../theme/colors";
+} from '../components/common';
+import { openFormplayerFromNative } from '../webview/FormulusMessageHandlers';
+import { FormService } from '../services/FormService';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MainAppStackParamList } from '../types/NavigationTypes';
+import { Observation } from '../database/models/Observation';
+import colors from '../theme/colors';
 
 type ObservationsScreenNavigationProp = StackNavigationProp<
   MainAppStackParamList,
-  "ObservationDetail"
+  'ObservationDetail'
 >;
 
 const ObservationsScreen: React.FC = () => {
@@ -47,10 +47,10 @@ const ObservationsScreen: React.FC = () => {
   const [refreshing, setRefreshing] = useState<boolean>(false);
   const [formNames, setFormNames] = useState<Record<string, string>>({});
   const [formTypes, setFormTypes] = useState<{ id: string; name: string }[]>(
-    []
+    [],
   );
   const [selectedFormType, setSelectedFormType] = useState<string | null>(null);
-  const [syncStatus, setSyncStatus] = useState<SyncStatus>("all");
+  const [syncStatus, setSyncStatus] = useState<SyncStatus>('all');
   const [showSearch, setShowSearch] = useState<boolean>(false);
 
   useFocusEffect(
@@ -61,34 +61,34 @@ const ObservationsScreen: React.FC = () => {
           const formSpecs = formService.getFormSpecs();
           const names: Record<string, string> = {};
           const types: { id: string; name: string }[] = [];
-          formSpecs.forEach((form) => {
+          formSpecs.forEach(form => {
             names[form.id] = form.name;
             types.push({ id: form.id, name: form.name });
           });
           setFormNames(names);
           setFormTypes(types);
         } catch (err) {
-          console.error("Failed to load form data:", err);
+          console.error('Failed to load form data:', err);
         }
       };
       loadFormData();
       refresh();
-    }, [refresh])
+    }, [refresh]),
   );
 
   const finalFiltered = useMemo(() => {
     let filtered = filteredAndSorted;
 
     if (selectedFormType) {
-      filtered = filtered.filter((obs) => obs.formType === selectedFormType);
+      filtered = filtered.filter(obs => obs.formType === selectedFormType);
     }
 
-    if (syncStatus !== "all") {
-      filtered = filtered.filter((obs) => {
+    if (syncStatus !== 'all') {
+      filtered = filtered.filter(obs => {
         const isSynced =
           obs.syncedAt &&
-          obs.syncedAt.getTime() > new Date("1980-01-01").getTime();
-        return syncStatus === "synced" ? isSynced : !isSynced;
+          obs.syncedAt.getTime() > new Date('1980-01-01').getTime();
+        return syncStatus === 'synced' ? isSynced : !isSynced;
       });
     }
 
@@ -105,7 +105,7 @@ const ObservationsScreen: React.FC = () => {
   };
 
   const handleObservationPress = (observation: Observation) => {
-    navigation.navigate("ObservationDetail", {
+    navigation.navigate('ObservationDetail', {
       observationId: observation.observationId,
     });
   };
@@ -115,44 +115,44 @@ const ObservationsScreen: React.FC = () => {
       const result = await openFormplayerFromNative(
         observation.formType,
         {},
-        typeof observation.data === "string"
+        typeof observation.data === 'string'
           ? JSON.parse(observation.data)
           : observation.data,
-        observation.observationId
+        observation.observationId,
       );
       if (
-        result.status === "form_submitted" ||
-        result.status === "form_updated"
+        result.status === 'form_submitted' ||
+        result.status === 'form_updated'
       ) {
         await refresh();
       }
     } catch (err) {
-      console.error("Error editing observation:", err);
-      Alert.alert("Error", "Failed to edit observation. Please try again.");
+      console.error('Error editing observation:', err);
+      Alert.alert('Error', 'Failed to edit observation. Please try again.');
     }
   };
 
   const handleDeleteObservation = async (observation: Observation) => {
     Alert.alert(
-      "Delete Observation",
-      "Are you sure you want to delete this observation? This action cannot be undone.",
+      'Delete Observation',
+      'Are you sure you want to delete this observation? This action cannot be undone.',
       [
-        { text: "Cancel", style: "cancel" },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: "Delete",
-          style: "destructive",
+          text: 'Delete',
+          style: 'destructive',
           onPress: async () => {
             try {
               const formService = await FormService.getInstance();
               await formService.deleteObservation(observation.observationId);
               await refresh();
             } catch (err) {
-              console.error("Error deleting observation:", err);
-              Alert.alert("Error", "Failed to delete observation.");
+              console.error('Error deleting observation:', err);
+              Alert.alert('Error', 'Failed to delete observation.');
             }
           },
         },
-      ]
+      ],
     );
   };
 
@@ -201,16 +201,15 @@ const ObservationsScreen: React.FC = () => {
           {finalFiltered.length > 0 && (
             <Text style={styles.subtitle}>
               {finalFiltered.length} observation
-              {finalFiltered.length !== 1 ? "s" : ""}
+              {finalFiltered.length !== 1 ? 's' : ''}
             </Text>
           )}
         </View>
         <TouchableOpacity
           style={styles.searchButton}
-          onPress={() => setShowSearch(!showSearch)}
-        >
+          onPress={() => setShowSearch(!showSearch)}>
           <Icon
-            name={showSearch ? "close" : "magnify"}
+            name={showSearch ? 'close' : 'magnify'}
             size={24}
             color={colors.brand.primary[500]}
           />
@@ -234,7 +233,7 @@ const ObservationsScreen: React.FC = () => {
             autoFocus
           />
           {searchQuery.length > 0 && (
-            <TouchableOpacity onPress={() => setSearchQuery("")}>
+            <TouchableOpacity onPress={() => setSearchQuery('')}>
               <Icon name="close-circle" size={20} color={colors.neutral[500]} />
             </TouchableOpacity>
           )}
@@ -262,21 +261,21 @@ const ObservationsScreen: React.FC = () => {
         <EmptyState
           icon="clipboard-text-outline"
           title={
-            searchQuery || selectedFormType || syncStatus !== "all"
-              ? "No Observations Found"
-              : "No Observations Yet"
+            searchQuery || selectedFormType || syncStatus !== 'all'
+              ? 'No Observations Found'
+              : 'No Observations Yet'
           }
           message={
-            searchQuery || selectedFormType || syncStatus !== "all"
-              ? "Try adjusting your search or filter criteria."
-              : "Start filling out forms to create observations. Your data will appear here once saved."
+            searchQuery || selectedFormType || syncStatus !== 'all'
+              ? 'Try adjusting your search or filter criteria.'
+              : 'Start filling out forms to create observations. Your data will appear here once saved.'
           }
         />
       ) : (
         <FlatList
           data={finalFiltered}
           renderItem={renderObservation}
-          keyExtractor={(item) => item.observationId}
+          keyExtractor={item => item.observationId}
           contentContainerStyle={styles.listContent}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
@@ -293,9 +292,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral[50],
   },
   header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-start",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
     padding: 16,
     backgroundColor: colors.neutral.white,
     borderBottomWidth: 1,
@@ -306,7 +305,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: colors.neutral[900],
     marginBottom: 4,
   },
@@ -319,8 +318,8 @@ const styles = StyleSheet.create({
     marginTop: 4,
   },
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.neutral.white,
     marginHorizontal: 16,
     marginTop: 12,
@@ -347,9 +346,9 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   filterRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
     gap: 12,
   },
   listContent: {
@@ -357,8 +356,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   loadingText: {
     marginTop: 12,

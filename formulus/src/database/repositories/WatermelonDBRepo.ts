@@ -1,16 +1,16 @@
-import { Database, Q, Collection } from "@nozbe/watermelondb";
-import { ObservationModel } from "../models/ObservationModel";
-import { LocalRepoInterface } from "./LocalRepoInterface";
+import { Database, Q, Collection } from '@nozbe/watermelondb';
+import { ObservationModel } from '../models/ObservationModel';
+import { LocalRepoInterface } from './LocalRepoInterface';
 import {
   Observation,
   NewObservationInput,
   UpdateObservationInput,
-} from "../models/Observation";
-import { ObservationMapper } from "../../mappers/ObservationMapper";
-import { geolocationService } from "../../services/GeolocationService";
-import { ToastService } from "../../services/ToastService";
-import { clientIdService } from "../../services/ClientIdService";
-import { getUserInfo } from "../../api/synkronus/Auth";
+} from '../models/Observation';
+import { ObservationMapper } from '../../mappers/ObservationMapper';
+import { geolocationService } from '../../services/GeolocationService';
+import { ToastService } from '../../services/ToastService';
+import { clientIdService } from '../../services/ClientIdService';
+import { getUserInfo } from '../../api/synkronus/Auth';
 
 /**
  * WatermelonDB implementation of the LocalRepoInterface
@@ -23,7 +23,7 @@ export class WatermelonDBRepo implements LocalRepoInterface {
   constructor(database: Database) {
     this.database = database;
     this.observationsCollection =
-      database.get<ObservationModel>("observations");
+      database.get<ObservationModel>('observations');
   }
 
   /**
@@ -33,7 +33,7 @@ export class WatermelonDBRepo implements LocalRepoInterface {
    */
   async saveObservation(input: NewObservationInput): Promise<string> {
     try {
-      console.log("Saving observation:", input);
+      console.log('Saving observation:', input);
 
       // Attempt to capture geolocation (non-blocking)
       let geolocation = null;
@@ -41,35 +41,35 @@ export class WatermelonDBRepo implements LocalRepoInterface {
         geolocation =
           await geolocationService.getCurrentLocationForObservation();
         if (geolocation) {
-          console.debug("Captured geolocation for observation");
+          console.debug('Captured geolocation for observation');
           ToastService.showGeolocationCaptured();
         } else {
-          console.debug("No geolocation available for observation");
+          console.debug('No geolocation available for observation');
           ToastService.showGeolocationUnavailable();
         }
       } catch (geoError) {
         console.warn(
-          "Failed to capture geolocation for observation:",
-          geoError
+          'Failed to capture geolocation for observation:',
+          geoError,
         );
         ToastService.showGeolocationUnavailable();
       }
 
       // Ensure data is properly stringified
       const stringifiedData =
-        typeof input.data === "string"
+        typeof input.data === 'string'
           ? input.data
           : JSON.stringify(input.data);
 
       // Capture author and device id
-      let author: string = input.author ?? "";
+      let author: string = input.author ?? '';
       try {
         if (!author) {
           const user = await getUserInfo();
-          author = user?.username ?? "";
+          author = user?.username ?? '';
         }
       } catch (error) {
-        console.error("Error capturing author", error);
+        console.error('Error capturing author', error);
       }
       const deviceId: string =
         input.deviceId ?? (await clientIdService.getClientId());
@@ -77,24 +77,24 @@ export class WatermelonDBRepo implements LocalRepoInterface {
       // Stringify geolocation for storage
       const stringifiedGeolocation = geolocation
         ? JSON.stringify(geolocation)
-        : "";
+        : '';
 
       // Generate a unique observation ID that will be used as the WatermelonDB record ID
       const observationId = `obs_${Date.now()}_${Math.floor(
-        Math.random() * 10000
+        Math.random() * 10000,
       )}`;
 
       // Create the record with our observationId as the primary key
       let newRecord: ObservationModel | null = null;
 
       await this.database.write(async () => {
-        newRecord = await this.observationsCollection.create((record) => {
+        newRecord = await this.observationsCollection.create(record => {
           // Use our observationId as the WatermelonDB record ID
           record._raw.id = observationId;
           // Also store it in the observationId field for consistency
           record.observationId = observationId;
           record.formType = input.formType;
-          record.formVersion = input.formVersion || "1.0";
+          record.formVersion = input.formVersion || '1.0';
           record.data = stringifiedData;
           record.geolocation = stringifiedGeolocation;
           record.author = author;
@@ -105,17 +105,17 @@ export class WatermelonDBRepo implements LocalRepoInterface {
       });
 
       if (!newRecord) {
-        throw new Error("Failed to create observation record");
+        throw new Error('Failed to create observation record');
       }
 
-      console.log("Successfully created observation with ID:", observationId);
+      console.log('Successfully created observation with ID:', observationId);
 
       // Return the observationId as the public identifier
       return observationId;
     } catch (error) {
       console.error(
-        "Error saving observation:",
-        error instanceof Error ? error.message : String(error)
+        'Error saving observation:',
+        error instanceof Error ? error.message : String(error),
       );
       throw error;
     }
@@ -140,26 +140,26 @@ export class WatermelonDBRepo implements LocalRepoInterface {
         console.log(
           `Direct lookup by ID failed, trying by observationId: ${
             (error as Error).message
-          }`
+          }`,
         );
       }
 
       // If not found by ID, try to find by observationId field
       // Force a database sync before querying to ensure we have the latest data
-      await this.database.get("observations").query().fetch();
+      await this.database.get('observations').query().fetch();
 
       const observations = await this.observationsCollection
-        .query(Q.where("observation_id", id))
+        .query(Q.where('observation_id', id))
         .fetch();
 
       console.log(
-        `Query for observation_id=${id} returned ${observations.length} results`
+        `Query for observation_id=${id} returned ${observations.length} results`,
       );
 
       if (observations.length > 0) {
         const observation = observations[0];
         console.log(
-          `Found observation via observationId query: ${observation.id}`
+          `Found observation via observationId query: ${observation.id}`,
         );
         return this.mapObservationModelToInterface(observation);
       }
@@ -168,25 +168,25 @@ export class WatermelonDBRepo implements LocalRepoInterface {
       // As a last resort, try to fetch all observations to see what's in the database
       const allObservations = await this.observationsCollection.query().fetch();
       console.log(
-        `No observation found with ID: ${id}. Total observations in database: ${allObservations.length}`
+        `No observation found with ID: ${id}. Total observations in database: ${allObservations.length}`,
       );
 
       if (allObservations.length > 0) {
         console.log(
-          "Available observations:",
-          allObservations.map((o) => ({
+          'Available observations:',
+          allObservations.map(o => ({
             id: o.id,
             observationId: o.observationId,
             formType: o.formType,
-          }))
+          })),
         );
       }
 
       return null;
     } catch (error) {
       console.error(
-        "Error getting observation:",
-        error instanceof Error ? error.message : String(error)
+        'Error getting observation:',
+        error instanceof Error ? error.message : String(error),
       );
       return null;
     }
@@ -199,7 +199,7 @@ export class WatermelonDBRepo implements LocalRepoInterface {
    */
   async getObservationsByFormType(formId: string): Promise<Observation[]> {
     try {
-      console.log("Fetching observations for form type ID:", formId);
+      console.log('Fetching observations for form type ID:', formId);
 
       // First, let's check all observations in the database for debugging
       const allObservations = await this.observationsCollection.query().fetch();
@@ -207,20 +207,20 @@ export class WatermelonDBRepo implements LocalRepoInterface {
 
       // Query for observations with form_type matching the requested form type
       const observations = await this.observationsCollection
-        .query(Q.where("form_type", formId))
+        .query(Q.where('form_type', formId))
         .fetch();
 
       console.log(
-        `Found ${observations.length} total observations for form type: ${formId}`
+        `Found ${observations.length} total observations for form type: ${formId}`,
       );
 
-      return observations.map((observation) =>
-        this.mapObservationModelToInterface(observation)
+      return observations.map(observation =>
+        this.mapObservationModelToInterface(observation),
       );
     } catch (error) {
       console.error(
-        "Error getting observations by form type ID:",
-        error instanceof Error ? error.message : String(error)
+        'Error getting observations by form type ID:',
+        error instanceof Error ? error.message : String(error),
       );
       return [];
     }
@@ -234,27 +234,27 @@ export class WatermelonDBRepo implements LocalRepoInterface {
   async updateObservation(input: UpdateObservationInput): Promise<boolean> {
     try {
       console.log(
-        "Updating observation with ObservationId:",
-        input.observationId
+        'Updating observation with ObservationId:',
+        input.observationId,
       );
 
       // Find the observation by ID (which is now the observationId)
       const record = await this.observationsCollection.find(
-        input.observationId
+        input.observationId,
       );
 
       if (!record) {
-        console.error("Observation not found with ID:", input.observationId);
+        console.error('Observation not found with ID:', input.observationId);
         return false;
       }
 
       // Update the record
       let success = false;
       await this.database.write(async () => {
-        await record!.update((rec) => {
+        await record!.update(rec => {
           // Handle data update - this is the main field we update
           const stringifiedData =
-            typeof input.data === "string"
+            typeof input.data === 'string'
               ? input.data
               : JSON.stringify(input.data);
           rec.data = stringifiedData;
@@ -269,18 +269,18 @@ export class WatermelonDBRepo implements LocalRepoInterface {
       // Verify the update
       if (success) {
         // Force a database sync
-        await this.database.get("observations").query().fetch();
+        await this.database.get('observations').query().fetch();
 
         // Verify the record was updated by querying for it again
         const updatedRecord = await this.observationsCollection.find(record.id);
-        console.log("Successfully updated observation:", updatedRecord.id);
+        console.log('Successfully updated observation:', updatedRecord.id);
       }
 
       return success;
     } catch (error) {
       console.error(
-        "Error updating observation:",
-        error instanceof Error ? error.message : String(error)
+        'Error updating observation:',
+        error instanceof Error ? error.message : String(error),
       );
       return false;
     }
@@ -293,20 +293,20 @@ export class WatermelonDBRepo implements LocalRepoInterface {
    */
   async deleteObservation(id: string): Promise<boolean> {
     try {
-      console.log("Deleting observation with ObservationId:", id);
+      console.log('Deleting observation with ObservationId:', id);
 
       // Find the observation by ID (which is now the observationId)
       const record = await this.observationsCollection.find(id);
 
       if (!record) {
-        console.error("Observation not found with ID:", id);
+        console.error('Observation not found with ID:', id);
         return false;
       }
 
       // Mark the record as deleted (soft delete)
       let success = false;
       await this.database.write(async () => {
-        await record!.update((rec) => {
+        await record!.update(rec => {
           rec.deleted = true;
         });
         success = true;
@@ -315,21 +315,21 @@ export class WatermelonDBRepo implements LocalRepoInterface {
       // Verify the update
       if (success) {
         // Force a database sync
-        await this.database.get("observations").query().fetch();
+        await this.database.get('observations').query().fetch();
 
         // Verify the record was updated by querying for it again
         const updatedRecord = await this.observationsCollection.find(record.id);
         console.log(
-          "Successfully marked observation as deleted:",
-          updatedRecord.id
+          'Successfully marked observation as deleted:',
+          updatedRecord.id,
         );
       }
 
       return success;
     } catch (error) {
       console.error(
-        "Error marking observation as deleted:",
-        error instanceof Error ? error.message : String(error)
+        'Error marking observation as deleted:',
+        error instanceof Error ? error.message : String(error),
       );
       return false;
     }
@@ -354,33 +354,33 @@ export class WatermelonDBRepo implements LocalRepoInterface {
         console.log(
           `Direct lookup by ID failed, trying by observationId: ${
             (error as Error).message
-          }`
+          }`,
         );
       }
 
       // If not found by ID, try to find by observationId field
       if (!record) {
         const observations = await this.observationsCollection
-          .query(Q.where("observation_id", id))
+          .query(Q.where('observation_id', id))
           .fetch();
 
         if (observations.length > 0) {
           record = observations[0];
           console.log(
-            `Found observation via observationId query: ${record.id}`
+            `Found observation via observationId query: ${record.id}`,
           );
         }
       }
 
       if (!record) {
-        console.error("Observation not found with ID:", id);
+        console.error('Observation not found with ID:', id);
         return false;
       }
 
       // Update the syncedAt timestamp
       let success = false;
       await this.database.write(async () => {
-        await record!.update((rec) => {
+        await record!.update(rec => {
           rec.syncedAt = new Date();
         });
         success = true;
@@ -389,21 +389,21 @@ export class WatermelonDBRepo implements LocalRepoInterface {
       // Verify the update
       if (success) {
         // Force a database sync
-        await this.database.get("observations").query().fetch();
+        await this.database.get('observations').query().fetch();
 
         // Verify the record was updated by querying for it again
         const updatedRecord = await this.observationsCollection.find(record.id);
         console.log(
-          "Successfully marked observation as synced:",
-          updatedRecord.id
+          'Successfully marked observation as synced:',
+          updatedRecord.id,
         );
       }
 
       return success;
     } catch (error) {
       console.error(
-        "Error marking observation as synced:",
-        error instanceof Error ? error.message : String(error)
+        'Error marking observation as synced:',
+        error instanceof Error ? error.message : String(error),
       );
       return false;
     }
@@ -421,56 +421,53 @@ export class WatermelonDBRepo implements LocalRepoInterface {
     const count = await this.database.write(async () => {
       const existingRecords = await this.observationsCollection
         .query(
-          Q.where(
-            "observation_id",
-            Q.oneOf(changes.map((c) => c.observationId))
-          )
+          Q.where('observation_id', Q.oneOf(changes.map(c => c.observationId))),
         )
         .fetch();
       const existingMap = new Map(
-        existingRecords.map((record) => [record.observationId, record])
+        existingRecords.map(record => [record.observationId, record]),
       );
-      const batchOps = changes.map((change) => {
+      const batchOps = changes.map(change => {
         const existing = existingMap.get(change.observationId);
         if (existing) {
           console.debug(`Preparing update for observation: ${existing.id}`);
           if (existing.updatedAt > existing.syncedAt) {
             console.debug(
-              `Skipping server change for ${existing.id} because it's locally dirty`
+              `Skipping server change for ${existing.id} because it's locally dirty`,
             );
             return null; // skip applying server version (TODO: maybe include this information in the return value to be able to report it to the user)
           }
-          return existing.prepareUpdate((record) => {
+          return existing.prepareUpdate(record => {
             record.formType = change.formType || record.formType;
             record.formVersion = change.formVersion || record.formVersion;
             record.data =
-              typeof change.data === "string"
+              typeof change.data === 'string'
                 ? change.data
                 : JSON.stringify(change.data);
             record.deleted = change.deleted ?? record.deleted;
             // Set optional metadata if provided
             if (change.author !== undefined) {
-              record.author = change.author ?? "";
+              record.author = change.author ?? '';
             }
             if (change.deviceId !== undefined) {
-              record.deviceId = change.deviceId ?? "";
+              record.deviceId = change.deviceId ?? '';
             }
             record.syncedAt = new Date();
           });
         } else {
           console.debug(
-            `Preparing create for new observation: ${change.observationId}`
+            `Preparing create for new observation: ${change.observationId}`,
           );
-          return this.observationsCollection.prepareCreate((record) => {
+          return this.observationsCollection.prepareCreate(record => {
             record.observationId = change.observationId;
-            record.formType = change.formType || "";
-            record.formVersion = change.formVersion || "1.0";
+            record.formType = change.formType || '';
+            record.formVersion = change.formVersion || '1.0';
             record.data =
-              typeof change.data === "string"
+              typeof change.data === 'string'
                 ? change.data
                 : JSON.stringify(change.data);
-            record.author = change.author ?? "";
-            record.deviceId = change.deviceId ?? "";
+            record.author = change.author ?? '';
+            record.deviceId = change.deviceId ?? '';
             record.deleted = change.deleted ?? false;
             record.syncedAt = new Date();
           });
@@ -490,13 +487,13 @@ export class WatermelonDBRepo implements LocalRepoInterface {
     return this.observationsCollection
       .query(
         Q.or(
-          Q.where("synced_at", Q.eq(null)),
-          Q.where("updated_at", Q.gt(Q.column("synced_at")))
-        )
+          Q.where('synced_at', Q.eq(null)),
+          Q.where('updated_at', Q.gt(Q.column('synced_at'))),
+        ),
       )
       .fetch()
-      .then((records) =>
-        records.map((record) => ObservationMapper.fromDBModel(record))
+      .then(records =>
+        records.map(record => ObservationMapper.fromDBModel(record)),
       );
   }
 
@@ -508,13 +505,13 @@ export class WatermelonDBRepo implements LocalRepoInterface {
     const now = new Date();
     await this.database.write(async () => {
       const records = await this.observationsCollection
-        .query(Q.where("id", Q.oneOf(ids)))
+        .query(Q.where('id', Q.oneOf(ids)))
         .fetch();
 
-      const batchOps = records.map((record) =>
-        record.prepareUpdate((rec) => {
+      const batchOps = records.map(record =>
+        record.prepareUpdate(rec => {
           rec.syncedAt = rec.updatedAt > now ? rec.updatedAt : now;
-        })
+        }),
       );
 
       await this.database.batch(...batchOps);
@@ -529,10 +526,10 @@ export class WatermelonDBRepo implements LocalRepoInterface {
    */
   async synchronize(
     pullChanges: () => Promise<Observation[]>,
-    pushChanges: (observations: Observation[]) => Promise<void>
+    pushChanges: (observations: Observation[]) => Promise<void>,
   ): Promise<void> {
     try {
-      console.log("Starting synchronization process");
+      console.log('Starting synchronization process');
 
       // Step 1: Pull changes from the server
       const serverChanges = await pullChanges();
@@ -547,9 +544,9 @@ export class WatermelonDBRepo implements LocalRepoInterface {
       const localChanges = await this.observationsCollection
         .query(
           Q.or(
-            Q.where("synced_at", Q.eq(null)),
-            Q.where("updated_at", Q.gt(Q.column("synced_at")))
-          )
+            Q.where('synced_at', Q.eq(null)),
+            Q.where('updated_at', Q.gt(Q.column('synced_at'))),
+          ),
         )
         .fetch();
 
@@ -558,8 +555,8 @@ export class WatermelonDBRepo implements LocalRepoInterface {
       // Step 4: Push local changes to server
       if (localChanges.length > 0) {
         // Convert WatermelonDB records to plain objects for the API
-        const localObservations = localChanges.map((record) =>
-          this.mapObservationModelToInterface(record)
+        const localObservations = localChanges.map(record =>
+          this.mapObservationModelToInterface(record),
         );
 
         // Push changes to server
@@ -569,20 +566,20 @@ export class WatermelonDBRepo implements LocalRepoInterface {
         // Mark all pushed observations as synced
         await this.database.write(async () => {
           for (const record of localChanges) {
-            await record.update((rec) => {
+            await record.update(rec => {
               rec.syncedAt = new Date();
             });
           }
         });
 
-        console.log("All pushed observations marked as synced");
+        console.log('All pushed observations marked as synced');
       }
 
-      console.log("Synchronization completed successfully");
+      console.log('Synchronization completed successfully');
     } catch (error) {
       console.error(
-        "Error during synchronization:",
-        error instanceof Error ? error.message : String(error)
+        'Error during synchronization:',
+        error instanceof Error ? error.message : String(error),
       );
       throw error;
     }
@@ -599,7 +596,7 @@ export class WatermelonDBRepo implements LocalRepoInterface {
       try {
         geolocation = JSON.parse(model.geolocation);
       } catch (error) {
-        console.warn("Failed to parse geolocation data:", error);
+        console.warn('Failed to parse geolocation data:', error);
       }
     }
 

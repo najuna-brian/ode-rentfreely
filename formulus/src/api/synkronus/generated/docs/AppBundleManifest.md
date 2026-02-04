@@ -12,7 +12,7 @@
 ## Example
 
 ```typescript
-import { AppBundleManifest } from "./api";
+import { AppBundleManifest } from './api';
 
 const instance: AppBundleManifest = {
   files,

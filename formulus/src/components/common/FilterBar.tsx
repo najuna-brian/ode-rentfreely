@@ -1,14 +1,14 @@
-import React from "react";
+import React from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   TextInput,
-} from "react-native";
-import Icon from "@react-native-vector-icons/material-design-icons";
-import { SortOption, FilterOption } from "./FilterBar.types";
-import { colors } from "../../theme/colors";
+} from 'react-native';
+import Icon from '@react-native-vector-icons/material-design-icons';
+import { SortOption, FilterOption } from './FilterBar.types';
+import { colors } from '../../theme/colors';
 
 export type { SortOption, FilterOption };
 
@@ -27,21 +27,21 @@ const FilterBar: React.FC<FilterBarProps> = ({
   onSearchChange,
   sortOption,
   onSortChange,
-  filterOption = "all",
+  filterOption = 'all',
   onFilterChange,
   showFilter = false,
 }) => {
   const sortOptions: { value: SortOption; label: string }[] = [
-    { value: "date-desc", label: "Newest" },
-    { value: "date-asc", label: "Oldest" },
-    { value: "form-type", label: "Form Type" },
-    { value: "sync-status", label: "Sync Status" },
+    { value: 'date-desc', label: 'Newest' },
+    { value: 'date-asc', label: 'Oldest' },
+    { value: 'form-type', label: 'Form Type' },
+    { value: 'sync-status', label: 'Sync Status' },
   ];
 
   const filterOptions: { value: FilterOption; label: string }[] = [
-    { value: "all", label: "All" },
-    { value: "synced", label: "Synced" },
-    { value: "pending", label: "Pending" },
+    { value: 'all', label: 'All' },
+    { value: 'synced', label: 'Synced' },
+    { value: 'pending', label: 'Pending' },
   ];
 
   return (
@@ -61,7 +61,7 @@ const FilterBar: React.FC<FilterBarProps> = ({
           onChangeText={onSearchChange}
         />
         {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={() => onSearchChange("")}>
+          <TouchableOpacity onPress={() => onSearchChange('')}>
             <Icon name="close-circle" size={20} color={colors.neutral[500]} />
           </TouchableOpacity>
         )}
@@ -70,21 +70,19 @@ const FilterBar: React.FC<FilterBarProps> = ({
       <View style={styles.controlsRow}>
         <View style={styles.sortContainer}>
           <Text style={styles.label}>Sort:</Text>
-          {sortOptions.map((option) => (
+          {sortOptions.map(option => (
             <TouchableOpacity
               key={option.value}
               style={[
                 styles.optionButton,
                 sortOption === option.value && styles.optionButtonActive,
               ]}
-              onPress={() => onSortChange(option.value)}
-            >
+              onPress={() => onSortChange(option.value)}>
               <Text
                 style={[
                   styles.optionText,
                   sortOption === option.value && styles.optionTextActive,
-                ]}
-              >
+                ]}>
                 {option.label}
               </Text>
             </TouchableOpacity>
@@ -94,21 +92,19 @@ const FilterBar: React.FC<FilterBarProps> = ({
         {showFilter && onFilterChange && (
           <View style={styles.filterContainer}>
             <Text style={styles.label}>Filter:</Text>
-            {filterOptions.map((option) => (
+            {filterOptions.map(option => (
               <TouchableOpacity
                 key={option.value}
                 style={[
                   styles.optionButton,
                   filterOption === option.value && styles.optionButtonActive,
                 ]}
-                onPress={() => onFilterChange(option.value)}
-              >
+                onPress={() => onFilterChange(option.value)}>
                 <Text
                   style={[
                     styles.optionText,
                     filterOption === option.value && styles.optionTextActive,
-                  ]}
-                >
+                  ]}>
                   {option.label}
                 </Text>
               </TouchableOpacity>
@@ -128,8 +124,8 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.ui.gray.light,
   },
   searchContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: colors.neutral[100],
     borderRadius: 8,
     paddingHorizontal: 12,
@@ -145,27 +141,27 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   controlsRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    flexWrap: 'wrap',
   },
   sortContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
     flex: 1,
   },
   filterContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    flexWrap: "wrap",
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
     flex: 1,
   },
   label: {
     fontSize: 12,
     color: colors.neutral[600],
     marginRight: 8,
-    fontWeight: "500",
+    fontWeight: '500',
   },
   optionButton: {
     paddingHorizontal: 10,
@@ -181,7 +177,7 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 12,
     color: colors.neutral[600],
-    fontWeight: "500",
+    fontWeight: '500',
   },
   optionTextActive: {
     color: colors.neutral.white,

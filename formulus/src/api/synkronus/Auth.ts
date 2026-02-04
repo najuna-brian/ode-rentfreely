@@ -1,8 +1,8 @@
-import { synkronusApi } from "./index";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import * as Keychain from "react-native-keychain";
+import { synkronusApi } from './index';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as Keychain from 'react-native-keychain';
 
-export type UserRole = "read-only" | "read-write" | "admin";
+export type UserRole = 'read-only' | 'read-write' | 'admin';
 
 export interface UserInfo {
   username: string;
@@ -29,13 +29,13 @@ const decodeBase64 = (input: string): string => {
   const atobFn = (globalThis as any).atob as
     | ((data: string) => string)
     | undefined;
-  if (typeof atobFn === "function") {
+  if (typeof atobFn === 'function') {
     return atobFn(input);
   }
 
   const chars =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-  let str = "";
+    'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
+  let str = '';
   let i = 0;
 
   // Basic base64 decoder fallback
@@ -64,22 +64,22 @@ const decodeBase64 = (input: string): string => {
 // Decode JWT payload without verification (claims are in the middle part)
 function decodeJwtPayload(token: string) {
   try {
-    const parts = token.split(".");
+    const parts = token.split('.');
     if (parts.length !== 3) return null;
     const payload = parts[1];
-    const decoded = decodeBase64(payload.replace(/-/g, "+").replace(/_/g, "/"));
+    const decoded = decodeBase64(payload.replace(/-/g, '+').replace(/_/g, '/'));
     return JSON.parse(decoded);
   } catch (error: unknown) {
-    console.error("Error decoding JWT payload:", error);
+    console.error('Error decoding JWT payload:', error);
     return null;
   }
 }
 
 export const login = async (
   username: string,
-  password: string
+  password: string,
 ): Promise<UserInfo> => {
-  console.log("Logging in with", username);
+  console.log('Logging in with', username);
   const api = await synkronusApi.getApi();
 
   synkronusApi.clearTokenCache();
@@ -90,26 +90,26 @@ export const login = async (
 
   const { token, refreshToken: refreshTokenValue, expiresAt } = res.data;
 
-  await AsyncStorage.setItem("@token", token);
-  await AsyncStorage.setItem("@refreshToken", refreshTokenValue);
-  await AsyncStorage.setItem("@tokenExpiresAt", expiresAt.toString());
+  await AsyncStorage.setItem('@token', token);
+  await AsyncStorage.setItem('@refreshToken', refreshTokenValue);
+  await AsyncStorage.setItem('@tokenExpiresAt', expiresAt.toString());
 
   // Decode JWT to get user info
   const claims = decodeJwtPayload(token);
   const userInfo: UserInfo = {
     username: claims?.username || username,
-    role: claims?.role || "read-only",
+    role: claims?.role || 'read-only',
   };
 
   // Store user info
-  await AsyncStorage.setItem("@user", JSON.stringify(userInfo));
+  await AsyncStorage.setItem('@user', JSON.stringify(userInfo));
 
   return userInfo;
 };
 
 export const getUserInfo = async (): Promise<UserInfo | null> => {
   try {
-    const userJson = await AsyncStorage.getItem("@user");
+    const userJson = await AsyncStorage.getItem('@user');
     if (userJson) {
       return JSON.parse(userJson);
     }
@@ -121,25 +121,25 @@ export const getUserInfo = async (): Promise<UserInfo | null> => {
 
 export const logout = async (): Promise<void> => {
   await AsyncStorage.multiRemove([
-    "@token",
-    "@refreshToken",
-    "@tokenExpiresAt",
-    "@user",
+    '@token',
+    '@refreshToken',
+    '@tokenExpiresAt',
+    '@user',
   ]);
 };
 
 // Function to retrieve the auth token from AsyncStorage
 export const getApiAuthToken = async (): Promise<string | undefined> => {
   try {
-    const token = await AsyncStorage.getItem("@token");
+    const token = await AsyncStorage.getItem('@token');
     if (token) {
-      console.debug("Token retrieved from AsyncStorage.");
+      console.debug('Token retrieved from AsyncStorage.');
       return token;
     }
-    console.warn("No token found in AsyncStorage.");
+    console.warn('No token found in AsyncStorage.');
     return undefined;
   } catch (error) {
-    console.error("Error retrieving token from AsyncStorage:", error);
+    console.error('Error retrieving token from AsyncStorage:', error);
     return undefined;
   }
 };
@@ -151,13 +151,13 @@ export const refreshToken = async () => {
   const api = await synkronusApi.getApi();
   const res = await api.refreshToken({
     refreshTokenRequest: {
-      refreshToken: (await AsyncStorage.getItem("@refreshToken")) ?? "",
+      refreshToken: (await AsyncStorage.getItem('@refreshToken')) ?? '',
     },
   });
   const { token, refreshToken: refreshTokenValue, expiresAt } = res.data;
-  await AsyncStorage.setItem("@token", token);
-  await AsyncStorage.setItem("@refreshToken", refreshTokenValue);
-  await AsyncStorage.setItem("@tokenExpiresAt", expiresAt.toString());
+  await AsyncStorage.setItem('@token', token);
+  await AsyncStorage.setItem('@refreshToken', refreshTokenValue);
+  await AsyncStorage.setItem('@tokenExpiresAt', expiresAt.toString());
   return true;
 };
 
@@ -172,21 +172,21 @@ export const autoLogin = async (): Promise<UserInfo | null> => {
     // Get stored credentials from Keychain
     const credentials = await Keychain.getGenericPassword();
     if (!credentials || !credentials.username || !credentials.password) {
-      console.warn("No stored credentials found for auto-login");
+      console.warn('No stored credentials found for auto-login');
       return null;
     }
 
-    console.log("🔄 Attempting auto-login with stored credentials");
+    console.log('🔄 Attempting auto-login with stored credentials');
     const userInfo = await login(credentials.username, credentials.password);
-    console.log("✅ Auto-login successful - token refreshed");
+    console.log('✅ Auto-login successful - token refreshed');
     return userInfo;
   } catch (error: unknown) {
     const httpError = error as HttpError;
-    console.error("Auto-login failed:", httpError);
+    console.error('Auto-login failed:', httpError);
     throw new Error(
       `Auto-login failed: ${
-        httpError?.message || "Unknown error"
-      }. Please login manually.`
+        httpError?.message || 'Unknown error'
+      }. Please login manually.`,
     );
   }
 };
@@ -211,15 +211,15 @@ export const isUnauthorizedError = (error: unknown): boolean => {
     return true;
 
   // Check error message for 401 or unauthorized
-  if (typeof httpError.message === "string") {
+  if (typeof httpError.message === 'string') {
     const msg = httpError.message.toLowerCase();
-    if (msg.includes("401") || msg.includes("unauthorized")) {
+    if (msg.includes('401') || msg.includes('unauthorized')) {
       return true;
     }
   }
 
   // Check error code
-  if (httpError.code === "UNAUTHORIZED" || httpError.code === 401) return true;
+  if (httpError.code === 'UNAUTHORIZED' || httpError.code === 401) return true;
 
   return false;
 };

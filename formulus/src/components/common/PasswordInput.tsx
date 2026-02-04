@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   TextInput,
   Text,
@@ -8,12 +8,14 @@ import {
   ViewStyle,
   TouchableOpacity,
   AccessibilityState,
-} from "react-native";
-import Icon from "@react-native-vector-icons/material-design-icons";
-import { colors } from "../../theme/colors";
+} from 'react-native';
+import Icon from '@react-native-vector-icons/material-design-icons';
+import { colors } from '../../theme/colors';
 
-export interface PasswordInputProps
-  extends Omit<TextInputProps, "secureTextEntry"> {
+export interface PasswordInputProps extends Omit<
+  TextInputProps,
+  'secureTextEntry'
+> {
   label?: string;
   error?: string;
   containerStyle?: ViewStyle;
@@ -39,18 +41,18 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = () => {
-    setIsPasswordVisible((prev) => !prev);
+    setIsPasswordVisible(prev => !prev);
   };
 
   const accessibilityLabel = isPasswordVisible
-    ? "Hide password"
-    : "Show password";
+    ? 'Hide password'
+    : 'Show password';
 
   // Extract paddingHorizontal from style to calculate proper paddingRight
   const inputStyle = StyleSheet.flatten([styles.input, style]);
   const paddingHorizontal = inputStyle.paddingHorizontal || 12;
   const paddingRight =
-    typeof paddingHorizontal === "number"
+    typeof paddingHorizontal === 'number'
       ? paddingHorizontal + 40 // Space for icon + some padding
       : 45; // Default fallback
 
@@ -76,7 +78,7 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
             textInputProps.accessibilityLabel ||
             label ||
             textInputProps.placeholder ||
-            "Password input"
+            'Password input'
           }
           accessibilityRole="text"
           accessibilityState={{ invalid: !!error } as AccessibilityState}
@@ -87,12 +89,11 @@ const PasswordInput: React.FC<PasswordInputProps> = ({
           accessibilityLabel={accessibilityLabel}
           accessibilityRole="button"
           accessibilityHint={
-            isPasswordVisible ? "Tap to hide password" : "Tap to show password"
+            isPasswordVisible ? 'Tap to hide password' : 'Tap to show password'
           }
-          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
-        >
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
           <Icon
-            name={isPasswordVisible ? "eye-off" : "eye"}
+            name={isPasswordVisible ? 'eye-off' : 'eye'}
             size={22}
             color={colors.neutral[600]}
           />
@@ -109,14 +110,14 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
-    fontWeight: "500",
+    fontWeight: '500',
     color: colors.neutral[800],
     marginBottom: 8,
   },
   inputContainer: {
-    position: "relative",
-    flexDirection: "row",
-    alignItems: "center",
+    position: 'relative',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
   input: {
     flex: 1,
@@ -138,11 +139,11 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   eyeButton: {
-    position: "absolute",
+    position: 'absolute',
     right: 12,
     padding: 4,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   errorText: {
     fontSize: 12,

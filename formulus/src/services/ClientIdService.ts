@@ -8,7 +8,7 @@
  * This ensures consistent device identification across both platforms.
  */
 
-import DeviceInfo from "react-native-device-info";
+import DeviceInfo from 'react-native-device-info';
 
 export class ClientIdService {
   private static instance: ClientIdService;
@@ -41,14 +41,14 @@ export class ClientIdService {
       const deviceId = await DeviceInfo.getUniqueId();
       this.cachedClientId = `formulus-${deviceId}`;
 
-      console.log("ClientIdService: Generated client ID:", this.cachedClientId);
+      console.log('ClientIdService: Generated client ID:', this.cachedClientId);
       return this.cachedClientId;
     } catch (error) {
-      console.error("ClientIdService: Error getting device ID:", error);
+      console.error('ClientIdService: Error getting device ID:', error);
       throw new Error(
         `Failed to get client ID: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
       );
     }
   }

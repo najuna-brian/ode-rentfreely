@@ -10,7 +10,7 @@
 ## Example
 
 ```typescript
-import { FieldChange } from "./api";
+import { FieldChange } from './api';
 
 const instance: FieldChange = {
   field,

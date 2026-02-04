@@ -2,13 +2,13 @@ import notifee, {
   AndroidImportance,
   AndroidStyle,
   AndroidAction,
-} from "@notifee/react-native";
-import { SyncProgress } from "../contexts/SyncContext";
+} from '@notifee/react-native';
+import { SyncProgress } from '../contexts/SyncContext';
 
 class NotificationService {
-  private syncNotificationId = "sync_progress";
-  private completionNotificationId = "sync_completion";
-  private channelId = "sync_channel";
+  private syncNotificationId = 'sync_progress';
+  private completionNotificationId = 'sync_completion';
+  private channelId = 'sync_channel';
   private isConfigured = false;
 
   async configure() {
@@ -20,15 +20,15 @@ class NotificationService {
     // Create notification channel for Android
     await notifee.createChannel({
       id: this.channelId,
-      name: "Sync Progress",
-      description: "Shows progress of data synchronization",
+      name: 'Sync Progress',
+      description: 'Shows progress of data synchronization',
       importance: AndroidImportance.DEFAULT,
       sound: undefined, // No sound
       vibration: false,
     });
 
     this.isConfigured = true;
-    console.log("Notifee notification service configured");
+    console.log('Notifee notification service configured');
   }
 
   async showSyncProgress(progress: SyncProgress) {
@@ -40,7 +40,7 @@ class NotificationService {
         : 0;
     const phaseText = this.getPhaseText(progress.phase);
 
-    const title = "Syncing data...";
+    const title = 'Syncing data...';
     let message = `${phaseText}: ${progress.current}/${progress.total}`;
 
     if (progress.details) {
@@ -48,9 +48,9 @@ class NotificationService {
     }
 
     const cancelAction: AndroidAction = {
-      title: "Cancel",
+      title: 'Cancel',
       pressAction: {
-        id: "cancel_sync",
+        id: 'cancel_sync',
       },
     };
 
@@ -72,7 +72,7 @@ class NotificationService {
         },
         actions: [cancelAction],
         pressAction: {
-          id: "default",
+          id: 'default',
         },
       },
     });
@@ -83,15 +83,15 @@ class NotificationService {
 
     // Cancel the ongoing notification completely
     console.log(
-      "Canceling progress notification with ID:",
-      this.syncNotificationId
+      'Canceling progress notification with ID:',
+      this.syncNotificationId,
     );
 
     // First, update the notification to make it non-ongoing, then cancel it
     await notifee.displayNotification({
       id: this.syncNotificationId,
-      title: "Sync completing...",
-      body: "Finalizing sync...",
+      title: 'Sync completing...',
+      body: 'Finalizing sync...',
       android: {
         channelId: this.channelId,
         ongoing: false, // Make it non-ongoing so it can be cancelled
@@ -101,29 +101,29 @@ class NotificationService {
 
     // Now cancel it
     await notifee.cancelNotification(this.syncNotificationId);
-    console.log("Progress notification cancellation completed");
+    console.log('Progress notification cancellation completed');
 
     if (success) {
       // Show a fresh completion notification with timestamp
       const now = new Date();
-      const timeString = now.toLocaleTimeString("en-US", {
+      const timeString = now.toLocaleTimeString('en-US', {
         hour12: false,
-        hour: "2-digit",
-        minute: "2-digit",
+        hour: '2-digit',
+        minute: '2-digit',
       });
 
       await notifee.displayNotification({
         id: `sync_completed_${Date.now()}`, // Unique ID each time
         title: `Sync completed @ ${timeString}`,
-        body: "All data synchronized successfully",
+        body: 'All data synchronized successfully',
         android: {
           channelId: this.channelId,
           autoCancel: true,
-          smallIcon: "ic_launcher",
+          smallIcon: 'ic_launcher',
           ongoing: false,
           // No actions at all - completely fresh notification
           pressAction: {
-            id: "default",
+            id: 'default',
           },
         },
       });
@@ -131,15 +131,15 @@ class NotificationService {
       // For errors, show a simple error notification
       await notifee.displayNotification({
         id: `sync_failed_${Date.now()}`, // Unique ID each time
-        title: "Sync failed",
-        body: error || "An error occurred during synchronization",
+        title: 'Sync failed',
+        body: error || 'An error occurred during synchronization',
         android: {
           channelId: this.channelId,
           autoCancel: true,
-          smallIcon: "ic_launcher",
+          smallIcon: 'ic_launcher',
           ongoing: false,
           pressAction: {
-            id: "default",
+            id: 'default',
           },
         },
       });
@@ -153,19 +153,19 @@ class NotificationService {
     await notifee.cancelNotification(this.syncNotificationId);
 
     // Small delay to ensure the previous notification is fully canceled
-    await new Promise<void>((resolve) => setTimeout(() => resolve(), 100));
+    await new Promise<void>(resolve => setTimeout(() => resolve(), 100));
 
     // Show cancellation notification with different ID
     await notifee.displayNotification({
       id: `${this.completionNotificationId}_canceled`,
-      title: "Sync canceled",
-      body: "Data synchronization was canceled by user",
+      title: 'Sync canceled',
+      body: 'Data synchronization was canceled by user',
       android: {
         channelId: this.channelId,
         autoCancel: true,
-        smallIcon: "ic_launcher",
+        smallIcon: 'ic_launcher',
         pressAction: {
-          id: "default",
+          id: 'default',
         },
         actions: [], // Explicitly remove all actions (no Cancel button)
         ongoing: false, // Ensure it's not ongoing
@@ -182,22 +182,22 @@ class NotificationService {
     await notifee.cancelNotification(this.syncNotificationId);
     await notifee.cancelNotification(this.completionNotificationId);
     await notifee.cancelNotification(
-      `${this.completionNotificationId}_canceled`
+      `${this.completionNotificationId}_canceled`,
     );
   }
 
-  private getPhaseText(phase: SyncProgress["phase"]): string {
+  private getPhaseText(phase: SyncProgress['phase']): string {
     switch (phase) {
-      case "pull":
-        return "Downloading";
-      case "push":
-        return "Uploading observations";
-      case "attachments_download":
-        return "Downloading attachments";
-      case "attachments_upload":
-        return "Uploading attachments";
+      case 'pull':
+        return 'Downloading';
+      case 'push':
+        return 'Uploading observations';
+      case 'attachments_download':
+        return 'Downloading attachments';
+      case 'attachments_upload':
+        return 'Uploading attachments';
       default:
-        return "Syncing";
+        return 'Syncing';
     }
   }
 }

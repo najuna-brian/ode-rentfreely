@@ -2,7 +2,7 @@ import {
   Observation,
   NewObservationInput,
   UpdateObservationInput,
-} from "../models/Observation";
+} from '../models/Observation';
 /**
  * Interface for local data repository operations
  * This allows us to abstract the storage implementation for testability
@@ -72,6 +72,6 @@ export interface LocalRepoInterface {
    */
   synchronize?(
     pullChanges: () => Promise<Observation[]>,
-    pushChanges: (observations: Observation[]) => Promise<void>
+    pushChanges: (observations: Observation[]) => Promise<void>,
   ): Promise<void>;
 }

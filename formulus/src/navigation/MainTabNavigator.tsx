@@ -1,17 +1,17 @@
-import React from "react";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Icon from "@react-native-vector-icons/material-design-icons";
-import HomeScreen from "../screens/HomeScreen";
-import FormsScreen from "../screens/FormsScreen";
-import ObservationsScreen from "../screens/ObservationsScreen";
-import SyncScreen from "../screens/SyncScreen";
-import SettingsScreen from "../screens/SettingsScreen";
-import AboutScreen from "../screens/AboutScreen";
-import HelpScreen from "../screens/HelpScreen";
-import MoreScreen from "../screens/MoreScreen";
-import { colors } from "../theme/colors";
-import { MainTabParamList } from "../types/NavigationTypes";
+import React from 'react';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Icon from '@react-native-vector-icons/material-design-icons';
+import HomeScreen from '../screens/HomeScreen';
+import FormsScreen from '../screens/FormsScreen';
+import ObservationsScreen from '../screens/ObservationsScreen';
+import SyncScreen from '../screens/SyncScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import AboutScreen from '../screens/AboutScreen';
+import HelpScreen from '../screens/HelpScreen';
+import MoreScreen from '../screens/MoreScreen';
+import { colors } from '../theme/colors';
+import { MainTabParamList } from '../types/NavigationTypes';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
@@ -59,8 +59,7 @@ const MainTabNavigator: React.FC = () => {
           paddingTop: 4,
           height: tabBarHeight,
         },
-      }}
-    >
+      }}>
       <Tab.Screen
         name="Home"
         component={HomeScreen}
@@ -120,7 +119,7 @@ const MainTabNavigator: React.FC = () => {
           tabPress: () => {
             const state = navigation.getState();
             const currentRoute = state.routes[state.index];
-            if (currentRoute?.name === "More") {
+            if (currentRoute?.name === 'More') {
               navigation.setParams({ openDrawer: Date.now() });
             }
           },

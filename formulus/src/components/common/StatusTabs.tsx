@@ -1,6 +1,6 @@
-import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import colors from "../../theme/colors";
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import colors from '../../theme/colors';
 
 export interface StatusTab {
   id: string;
@@ -22,15 +22,14 @@ const StatusTabs: React.FC<StatusTabsProps> = ({
 }) => {
   return (
     <View style={styles.container}>
-      {tabs.map((tab) => {
+      {tabs.map(tab => {
         const isActive = activeTab === tab.id;
         return (
           <TouchableOpacity
             key={tab.id}
             style={[styles.tab, isActive && styles.tabActive]}
             onPress={() => onTabChange(tab.id)}
-            activeOpacity={0.7}
-          >
+            activeOpacity={0.7}>
             {tab.icon && (
               <View
                 style={[
@@ -51,7 +50,7 @@ const StatusTabs: React.FC<StatusTabsProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    flexDirection: "row",
+    flexDirection: 'row',
     backgroundColor: colors.neutral.white,
     paddingHorizontal: 16,
     paddingVertical: 12,
@@ -59,8 +58,8 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.neutral[200],
   },
   tab: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     marginRight: 24,
     paddingVertical: 4,
   },
@@ -77,11 +76,11 @@ const styles = StyleSheet.create({
   tabLabel: {
     fontSize: 14,
     color: colors.neutral[600],
-    fontWeight: "500",
+    fontWeight: '500',
   },
   tabLabelActive: {
     color: colors.brand.primary[500],
-    fontWeight: "600",
+    fontWeight: '600',
   },
 });
 

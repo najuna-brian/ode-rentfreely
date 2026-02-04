@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Modal,
   View,
@@ -7,23 +7,23 @@ import {
   TouchableOpacity,
   Dimensions,
   StatusBar,
-} from "react-native";
+} from 'react-native';
 import {
   Camera,
   useCameraDevices,
   useCodeScanner,
   useCameraPermission,
   CodeType,
-} from "react-native-vision-camera";
-import { colors } from "../theme/colors";
-const { width } = Dimensions.get("window");
+} from 'react-native-vision-camera';
+import { colors } from '../theme/colors';
+const { width } = Dimensions.get('window');
 
 export interface ScannerModalResults {
   fieldId: string | undefined;
-  status: "success" | "cancelled";
+  status: 'success' | 'cancelled';
   message?: string;
   data?: {
-    type: "qrcode";
+    type: 'qrcode';
     value: string | undefined;
     format: CodeType | unknown;
     timestamp: string;
@@ -47,7 +47,7 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
   const [scannedData, setScannedData] = useState<string | null>(null);
   const { hasPermission, requestPermission } = useCameraPermission();
   const devices = useCameraDevices();
-  const device = devices.find((d) => d.position === "back");
+  const device = devices.find(d => d.position === 'back');
   const resultSentRef = useRef(false);
 
   // Request camera permission when modal opens
@@ -73,27 +73,27 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
   // Code scanner using built-in functionality
   const codeScanner = useCodeScanner({
     codeTypes: [
-      "qr",
-      "ean-13",
-      "ean-8",
-      "code-128",
-      "code-39",
-      "code-93",
-      "upc-a",
-      "upc-e",
-      "data-matrix",
-      "pdf-417",
-      "aztec",
-      "codabar",
-      "itf",
+      'qr',
+      'ean-13',
+      'ean-8',
+      'code-128',
+      'code-39',
+      'code-93',
+      'upc-a',
+      'upc-e',
+      'data-matrix',
+      'pdf-417',
+      'aztec',
+      'codabar',
+      'itf',
     ],
-    onCodeScanned: (codes) => {
+    onCodeScanned: codes => {
       if (!isScanning || resultSentRef.current || codes.length === 0) return;
 
       const code = codes[0];
-      console.log("Code detected:", code);
+      console.log('Code detected:', code);
 
-      setScannedData(code.value || "");
+      setScannedData(code.value || '');
       setIsScanning(false);
       resultSentRef.current = true;
 
@@ -101,9 +101,9 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
       if (onResult) {
         onResult({
           fieldId: fieldId || undefined,
-          status: "success",
+          status: 'success',
           data: {
-            type: "qrcode",
+            type: 'qrcode',
             value: code.value,
             format: code.type,
             timestamp: new Date().toISOString(),
@@ -117,8 +117,8 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
     if (onResult) {
       onResult({
         fieldId: fieldId || undefined,
-        status: "cancelled",
-        message: "QR code scanning cancelled by user",
+        status: 'cancelled',
+        message: 'QR code scanning cancelled by user',
       });
     }
     onClose();
@@ -151,8 +151,7 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.cancelButton}
-              onPress={handleCancel}
-            >
+              onPress={handleCancel}>
               <Text style={styles.cancelButtonText}>Cancel</Text>
             </TouchableOpacity>
           </View>
@@ -169,8 +168,7 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
             <Text style={styles.errorText}>No camera device found</Text>
             <TouchableOpacity
               style={styles.cancelButton}
-              onPress={handleCancel}
-            >
+              onPress={handleCancel}>
               <Text style={styles.cancelButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -196,8 +194,8 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
           <View style={styles.topOverlay}>
             <Text style={styles.instructionText}>
               {scannedData
-                ? "Code Scanned!"
-                : "Point camera at QR code or barcode"}
+                ? 'Code Scanned!'
+                : 'Point camera at QR code or barcode'}
             </Text>
           </View>
 
@@ -221,14 +219,12 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
                 <View style={styles.buttonRow}>
                   <TouchableOpacity
                     style={styles.retryButton}
-                    onPress={handleRetry}
-                  >
+                    onPress={handleRetry}>
                     <Text style={styles.buttonText}>Scan Again</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={styles.confirmButton}
-                    onPress={handleConfirm}
-                  >
+                    onPress={handleConfirm}>
                     <Text style={styles.buttonText}>Confirm</Text>
                   </TouchableOpacity>
                 </View>
@@ -236,8 +232,7 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
             ) : (
               <TouchableOpacity
                 style={styles.cancelButton}
-                onPress={handleCancel}
-              >
+                onPress={handleCancel}>
                 <Text style={styles.cancelButtonText}>Cancel</Text>
               </TouchableOpacity>
             )}
@@ -257,7 +252,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   overlay: {
-    position: "absolute",
+    position: 'absolute',
     top: 0,
     left: 0,
     right: 0,
@@ -266,19 +261,19 @@ const styles = StyleSheet.create({
   topOverlay: {
     flex: 1,
     backgroundColor: colors.ui.background,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingTop: 50,
   },
   instructionText: {
     color: colors.neutral.white,
     fontSize: 18,
-    textAlign: "center",
+    textAlign: 'center',
     marginHorizontal: 20,
   },
   scanFrame: {
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
     height: 250,
   },
   scanArea: {
@@ -289,7 +284,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral.transparent,
   },
   corner: {
-    position: "absolute",
+    position: 'absolute',
     width: 30,
     height: 30,
     borderColor: colors.semantic.scanner.success,
@@ -322,12 +317,12 @@ const styles = StyleSheet.create({
   bottomOverlay: {
     flex: 1,
     backgroundColor: colors.ui.background,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingBottom: 50,
   },
   resultContainer: {
-    alignItems: "center",
+    alignItems: 'center',
     paddingHorizontal: 20,
   },
   resultLabel: {
@@ -338,13 +333,13 @@ const styles = StyleSheet.create({
   resultText: {
     color: colors.semantic.scanner.success,
     fontSize: 14,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 20,
     paddingHorizontal: 20,
-    fontFamily: "monospace",
+    fontFamily: 'monospace',
   },
   buttonRow: {
-    flexDirection: "row",
+    flexDirection: 'row',
     gap: 20,
   },
   button: {
@@ -377,36 +372,36 @@ const styles = StyleSheet.create({
   buttonText: {
     color: colors.neutral.white,
     fontSize: 16,
-    fontWeight: "bold",
-    textAlign: "center",
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   cancelButtonText: {
     color: colors.neutral.white,
     fontSize: 16,
-    textAlign: "center",
+    textAlign: 'center',
   },
   permissionContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 40,
   },
   permissionText: {
     color: colors.neutral.white,
     fontSize: 18,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 30,
   },
   errorContainer: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     paddingHorizontal: 40,
   },
   errorText: {
     color: colors.neutral.white,
     fontSize: 18,
-    textAlign: "center",
+    textAlign: 'center',
     marginBottom: 30,
   },
 });

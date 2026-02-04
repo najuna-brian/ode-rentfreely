@@ -6,15 +6,15 @@ import React, {
   useImperativeHandle,
   useMemo,
   SyntheticEvent,
-} from "react";
-import { View, ActivityIndicator, AppState, StyleSheet } from "react-native";
-import { WebView } from "react-native-webview";
-import { useIsFocused } from "@react-navigation/native";
-import { Platform } from "react-native";
-import { readFileAssets, MainBundlePath, readFile } from "react-native-fs";
-import { FormulusWebViewMessageManager } from "../webview/FormulusWebViewHandler";
-import { FormInitData } from "../webview/FormulusInterfaceDefinition";
-import { colors } from "../theme/colors";
+} from 'react';
+import { View, ActivityIndicator, AppState, StyleSheet } from 'react-native';
+import { WebView } from 'react-native-webview';
+import { useIsFocused } from '@react-navigation/native';
+import { Platform } from 'react-native';
+import { readFileAssets, MainBundlePath, readFile } from 'react-native-fs';
+import { FormulusWebViewMessageManager } from '../webview/FormulusWebViewHandler';
+import { FormInitData } from '../webview/FormulusInterfaceDefinition';
+import { colors } from '../theme/colors';
 
 export interface CustomAppWebViewHandle {
   reload: () => void;
@@ -32,9 +32,9 @@ interface CustomAppWebViewProps {
 }
 
 const INJECTION_SCRIPT_PATH =
-  Platform.OS === "android"
-    ? "webview/FormulusInjectionScript.js"
-    : "FormulusInjectionScript.js";
+  Platform.OS === 'android'
+    ? 'webview/FormulusInjectionScript.js'
+    : 'FormulusInjectionScript.js';
 
 const consoleLogScript = `
     (function() {
@@ -113,23 +113,23 @@ const CustomAppWebView = forwardRef<
   useEffect(() => {
     const loadScript = async () => {
       try {
-        let script = "";
+        let script = '';
 
-        if (Platform.OS === "android") {
+        if (Platform.OS === 'android') {
           // Path A: Use the Android-only asset reader
           script = await readFileAssets(INJECTION_SCRIPT_PATH);
         } else {
           const iosPath = `${MainBundlePath}/${INJECTION_SCRIPT_PATH}`;
-          script = await readFile(iosPath, "utf8");
+          script = await readFile(iosPath, 'utf8');
         }
 
         // Combine and set state
-        const fullScript = consoleLogScript + "\n" + script;
+        const fullScript = consoleLogScript + '\n' + script;
         setInjectionScript(fullScript);
         setIsScriptReady(true);
       } catch (err) {
         // Logic for if the file is missing entirely
-        console.error("Failed to load injection script with error:", err);
+        console.error('Failed to load injection script with error:', err);
         // setIsScriptReady(true);
       }
     };
@@ -141,16 +141,16 @@ const CustomAppWebView = forwardRef<
 
     // Extend the message manager to handle API recovery requests
     const originalHandleMessage = manager.handleWebViewMessage;
-    manager.handleWebViewMessage = (event) => {
+    manager.handleWebViewMessage = event => {
       try {
         const eventData = JSON.parse(event.nativeEvent.data);
 
         // Handle API re-injection requests from WebView
-        if (eventData.type === "requestApiReinjection") {
+        if (eventData.type === 'requestApiReinjection') {
           console.log(
             `[CustomAppWebView - ${
-              appName || "Default"
-            }] WebView requested API re-injection`
+              appName || 'Default'
+            }] WebView requested API re-injection`,
           );
 
           // Perform immediate re-injection
@@ -182,7 +182,7 @@ const CustomAppWebView = forwardRef<
           return;
         }
       } catch (error: unknown) {
-        console.error("Error parsing event data:", error);
+        console.error('Error parsing event data:', error);
         // If parsing fails, let the original handler deal with it
       }
 
@@ -207,16 +207,16 @@ const CustomAppWebView = forwardRef<
       sendAttachmentData: (attachmentData: File) =>
         messageManager.sendAttachmentData(attachmentData),
     }),
-    [messageManager]
+    [messageManager],
   );
 
   const handleError = (syntheticEvent: SyntheticEvent) => {
     const { nativeEvent } = syntheticEvent;
     console.error(
-      "[CustomAppWebView] WebView error",
+      '[CustomAppWebView] WebView error',
       nativeEvent,
-      "appUrl:",
-      appUrl
+      'appUrl:',
+      appUrl,
     );
   };
 
@@ -256,14 +256,14 @@ const CustomAppWebView = forwardRef<
   // AppState listener to detect when app regains focus and trigger handleReceiveFocus
   useEffect(() => {
     const handleAppStateChange = (nextAppState: string) => {
-      if (nextAppState === "active") {
+      if (nextAppState === 'active') {
         console.log(
-          "[CustomAppWebView] App became active, triggering handleReceiveFocus"
+          '[CustomAppWebView] App became active, triggering handleReceiveFocus',
         );
         // Call handleReceiveFocus on the messageManager when app becomes active
         if (
           messageManager &&
-          typeof messageManager.handleReceiveFocus === "function"
+          typeof messageManager.handleReceiveFocus === 'function'
         ) {
           messageManager.handleReceiveFocus();
         }
@@ -271,8 +271,8 @@ const CustomAppWebView = forwardRef<
     };
 
     const subscription = AppState.addEventListener(
-      "change",
-      handleAppStateChange
+      'change',
+      handleAppStateChange,
     );
 
     return () => {
@@ -299,15 +299,15 @@ const CustomAppWebView = forwardRef<
       onError={handleError}
       onLoadStart={() =>
         console.debug(
-          `[CustomAppWebView - ${appName || "Default"}] Starting to load URL:`,
-          appUrl
+          `[CustomAppWebView - ${appName || 'Default'}] Starting to load URL:`,
+          appUrl,
         )
       }
       onLoadEnd={() => {
         console.debug(
           `[CustomAppWebView - ${
-            appName || "Default"
-          }] Finished loading URL: ${appUrl}`
+            appName || 'Default'
+          }] Finished loading URL: ${appUrl}`,
         );
         if (webViewRef.current) {
           // Ensure API is available after load
@@ -328,9 +328,9 @@ const CustomAppWebView = forwardRef<
           onLoadEndProp();
         }
       }}
-      onHttpError={(syntheticEvent) => {
+      onHttpError={syntheticEvent => {
         const { nativeEvent } = syntheticEvent;
-        console.error("CustomWebView HTTP error:", nativeEvent);
+        console.error('CustomWebView HTTP error:', nativeEvent);
       }}
       injectedJavaScriptBeforeContentLoaded={injectionScript}
       javaScriptEnabled={true}
@@ -342,14 +342,14 @@ const CustomAppWebView = forwardRef<
       // For custom apps from DocumentDirectoryPath, allow access to the app directory
       // For bundled assets (MainBundlePath), allow access to the bundle root
       allowingReadAccessToURL={
-        Platform.OS === "ios"
+        Platform.OS === 'ios'
           ? appUrl.includes(MainBundlePath)
             ? `file://${MainBundlePath}`
-            : appUrl.substring(0, appUrl.lastIndexOf("/"))
+            : appUrl.substring(0, appUrl.lastIndexOf('/'))
           : undefined
       }
       startInLoadingState={true}
-      originWhitelist={["*"]}
+      originWhitelist={['*']}
       renderLoading={() => (
         <View style={styles.centered}>
           <ActivityIndicator size="large" color={colors.semantic.info.ios} />
@@ -362,8 +362,8 @@ const CustomAppWebView = forwardRef<
 const styles = StyleSheet.create({
   centered: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

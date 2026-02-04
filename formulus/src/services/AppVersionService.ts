@@ -4,7 +4,7 @@
  * Uses react-native-device-info to get the actual app version instead of hardcoding
  */
 
-import DeviceInfo from "react-native-device-info";
+import DeviceInfo from 'react-native-device-info';
 
 export class AppVersionService {
   private static instance: AppVersionService;
@@ -31,14 +31,14 @@ export class AppVersionService {
 
     try {
       this.cachedVersion = DeviceInfo.getVersion();
-      console.log("AppVersionService: App version:", this.cachedVersion);
+      console.log('AppVersionService: App version:', this.cachedVersion);
       return this.cachedVersion;
     } catch (error) {
-      console.error("AppVersionService: Error getting app version:", error);
+      console.error('AppVersionService: Error getting app version:', error);
       throw new Error(
         `Failed to get app version: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
       );
     }
   }
@@ -54,14 +54,14 @@ export class AppVersionService {
 
     try {
       this.cachedBuildNumber = DeviceInfo.getBuildNumber();
-      console.log("AppVersionService: Build number:", this.cachedBuildNumber);
+      console.log('AppVersionService: Build number:', this.cachedBuildNumber);
       return this.cachedBuildNumber;
     } catch (error) {
-      console.error("AppVersionService: Error getting build number:", error);
+      console.error('AppVersionService: Error getting build number:', error);
       throw new Error(
         `Failed to get build number: ${
-          error instanceof Error ? error.message : "Unknown error"
-        }`
+          error instanceof Error ? error.message : 'Unknown error'
+        }`,
       );
     }
   }
@@ -76,7 +76,7 @@ export class AppVersionService {
       const buildNumber = await this.getBuildNumber();
       return `${version} (${buildNumber})`;
     } catch (error) {
-      console.error("AppVersionService: Error getting full version:", error);
+      console.error('AppVersionService: Error getting full version:', error);
       throw error;
     }
   }

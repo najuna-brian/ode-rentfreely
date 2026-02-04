@@ -1,10 +1,10 @@
-import { databaseService } from "../database/DatabaseService";
+import { databaseService } from '../database/DatabaseService';
 import {
   Observation,
   NewObservationInput,
   UpdateObservationInput,
-} from "../database/models/Observation";
-import RNFS from "react-native-fs";
+} from '../database/models/Observation';
+import RNFS from 'react-native-fs';
 
 /**
  * Interface representing a form type
@@ -30,66 +30,66 @@ export class FormService {
 
   private constructor() {
     console.log(
-      "FormService: Instance created - use await getInstance() to access singleton instance"
+      'FormService: Instance created - use await getInstance() to access singleton instance',
     );
   }
 
   private async _initialize(): Promise<void> {
-    console.log("FormService: Starting initialization...");
+    console.log('FormService: Starting initialization...');
     try {
       const specs = await this.getFormspecsFromStorage();
       this.formSpecs = specs;
       console.log(
-        `FormService: ${specs.length} form specs loaded successfully`
+        `FormService: ${specs.length} form specs loaded successfully`,
       );
     } catch (error) {
       console.error(
-        "Failed to load default form types during FormService construction:",
-        error
+        'Failed to load default form types during FormService construction:',
+        error,
       );
       this.formSpecs = []; // Initialize with empty array if loading fails
     }
   }
 
   private async loadFormspec(
-    formDir: RNFS.ReadDirItem
+    formDir: RNFS.ReadDirItem,
   ): Promise<FormSpec | null> {
     if (!formDir.isDirectory()) {
-      console.log("Skipping non-directory:", formDir.name);
+      console.log('Skipping non-directory:', formDir.name);
       return null;
     }
-    console.log("Loading form spec:", formDir.path);
+    console.log('Loading form spec:', formDir.path);
     let schema: unknown;
     try {
-      const filePath = formDir.path + "/schema.json";
-      const fileContent = await RNFS.readFile(filePath, "utf8");
+      const filePath = formDir.path + '/schema.json';
+      const fileContent = await RNFS.readFile(filePath, 'utf8');
       schema = JSON.parse(fileContent);
     } catch (error) {
       console.error(
-        "Failed to load schema for form spec:",
+        'Failed to load schema for form spec:',
         formDir.name,
-        error
+        error,
       );
       return null;
     }
     let uiSchema: unknown;
     try {
-      const uiSchemaPath = formDir.path + "/ui.json";
-      const uiSchemaContent = await RNFS.readFile(uiSchemaPath, "utf8");
+      const uiSchemaPath = formDir.path + '/ui.json';
+      const uiSchemaContent = await RNFS.readFile(uiSchemaPath, 'utf8');
       uiSchema = JSON.parse(uiSchemaContent);
     } catch (error) {
       console.error(
-        "Failed to load uiSchema for form spec:",
+        'Failed to load uiSchema for form spec:',
         formDir.name,
-        error
+        error,
       );
       return null;
     }
     return {
       id: formDir.name,
       name: formDir.name,
-      description: "Form for collecting " + formDir.name + " observations",
-      schemaVersion: "1.0", //TODO: Fix this
+      description: 'Form for collecting ' + formDir.name + ' observations',
+      schemaVersion: '1.0', //TODO: Fix this
       schema: schema,
       uiSchema: uiSchema,
     };
@@ -97,38 +97,38 @@ export class FormService {
 
   private async getFormspecsFromStorage(): Promise<FormSpec[]> {
     try {
-      const formSpecsDir = RNFS.DocumentDirectoryPath + "/forms";
+      const formSpecsDir = RNFS.DocumentDirectoryPath + '/forms';
 
       // Check if forms directory exists, if not create it
       const dirExists = await RNFS.exists(formSpecsDir);
       if (!dirExists) {
         console.log(
-          "FormService: Forms directory does not exist, creating it..."
+          'FormService: Forms directory does not exist, creating it...',
         );
         await RNFS.mkdir(formSpecsDir);
         console.log(
-          "FormService: No forms available yet - directory created for future downloads"
+          'FormService: No forms available yet - directory created for future downloads',
         );
         return [];
       }
 
       const formSpecFolders = await RNFS.readDir(formSpecsDir);
       console.log(
-        "FormSpec folders:",
-        formSpecFolders.map((f) => f.name)
+        'FormSpec folders:',
+        formSpecFolders.map(f => f.name),
       );
 
       if (formSpecFolders.length === 0) {
         console.log(
-          "FormService: Forms directory is empty - no forms available yet"
+          'FormService: Forms directory is empty - no forms available yet',
         );
         return [];
       }
 
       const formSpecs = await Promise.all(
-        formSpecFolders.map(async (formDir) => {
+        formSpecFolders.map(async formDir => {
           return this.loadFormspec(formDir);
-        })
+        }),
       );
 
       const validFormSpecs = formSpecs.filter((s): s is FormSpec => s !== null);
@@ -136,18 +136,18 @@ export class FormService {
 
       if (errorCount > 0) {
         console.warn(
-          `FormService: ${errorCount} form specs did not load correctly!`
+          `FormService: ${errorCount} form specs did not load correctly!`,
         );
       }
 
       console.log(
-        `FormService: Successfully loaded ${validFormSpecs.length} form specs`
+        `FormService: Successfully loaded ${validFormSpecs.length} form specs`,
       );
       return validFormSpecs;
     } catch (error) {
       console.error(
-        "FormService: Failed to load form types from storage:",
-        error
+        'FormService: Failed to load form types from storage:',
+        error,
       );
       return [];
     }
@@ -163,10 +163,10 @@ export class FormService {
     }
 
     if (!FormService.initializationPromise) {
-      console.log("FormService: Starting initialization...");
+      console.log('FormService: Starting initialization...');
       FormService.initializationPromise = FormService.instance
         ._initialize()
-        .catch((error) => {
+        .catch(error => {
           // Reset initializationPromise on error to allow retry
           FormService.initializationPromise = null;
           throw error;
@@ -200,29 +200,29 @@ export class FormService {
    * This should be called after app bundle updates
    */
   public async invalidateCache(): Promise<void> {
-    console.log("FormService: Invalidating cache and reloading form specs...");
+    console.log('FormService: Invalidating cache and reloading form specs...');
     try {
       const specs = await this.getFormspecsFromStorage();
       this.formSpecs = specs;
       console.log(
-        `FormService: Cache invalidated, ${specs.length} form specs reloaded`
+        `FormService: Cache invalidated, ${specs.length} form specs reloaded`,
       );
 
       // Notify all subscribers that cache has been invalidated
-      this.cacheInvalidationCallbacks.forEach((callback) => {
+      this.cacheInvalidationCallbacks.forEach(callback => {
         try {
           callback();
         } catch (error) {
           console.error(
-            "FormService: Error in cache invalidation callback:",
-            error
+            'FormService: Error in cache invalidation callback:',
+            error,
           );
         }
       });
     } catch (error) {
       console.error(
-        "FormService: Failed to reload form specs after cache invalidation:",
-        error
+        'FormService: Failed to reload form specs after cache invalidation:',
+        error,
       );
       throw error;
     }
@@ -234,16 +234,16 @@ export class FormService {
    * @returns Form type or undefined if not found
    */
   public getFormSpecById(id: string): FormSpec | undefined {
-    const found = this.formSpecs.find((formSpec) => formSpec.id === id);
+    const found = this.formSpecs.find(formSpec => formSpec.id === id);
     if (found) {
       console.log(
-        "FormService: Found form spec for",
+        'FormService: Found form spec for',
         id,
-        "sending schema and uiSchema"
+        'sending schema and uiSchema',
       );
     } else {
-      console.warn("FormService: Form spec not found for", id);
-      console.debug("FormService: Form specs:", this.formSpecs);
+      console.warn('FormService: Form spec not found for', id);
+      console.debug('FormService: Form specs:', this.formSpecs);
     }
     return found;
   }
@@ -254,7 +254,7 @@ export class FormService {
    * @returns Array of observations
    */
   public async getObservationsByFormType(
-    formTypeId: string
+    formTypeId: string,
   ): Promise<Observation[]> {
     const localRepo = databaseService.getLocalRepo();
     return await localRepo.getObservationsByFormType(formTypeId);
@@ -278,22 +278,22 @@ export class FormService {
    */
   public async addNewObservation(
     formType: string,
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ): Promise<string> {
     const input: NewObservationInput = {
       formType,
       data,
-      formVersion: "1.0", // Default version
+      formVersion: '1.0', // Default version
     };
 
-    console.debug("Observation input: ", input);
+    console.debug('Observation input: ', input);
     if (input.formType === undefined) {
-      throw new Error("Form type is required to save observation");
+      throw new Error('Form type is required to save observation');
     }
     if (input.data === undefined) {
-      throw new Error("Data is required to save observation");
+      throw new Error('Data is required to save observation');
     }
-    console.log("Saving observation of type: " + input.formType);
+    console.log('Saving observation of type: ' + input.formType);
     const localRepo = databaseService.getLocalRepo();
     return await localRepo.saveObservation(input);
   }
@@ -306,21 +306,21 @@ export class FormService {
    */
   public async updateObservation(
     observationId: string,
-    data: Record<string, unknown>
+    data: Record<string, unknown>,
   ): Promise<string> {
     const input: UpdateObservationInput = {
       observationId: observationId,
       data,
     };
 
-    console.debug("Observation update input: ", input);
+    console.debug('Observation update input: ', input);
     if (input.observationId === undefined) {
-      throw new Error("Observation ID is required to update observation");
+      throw new Error('Observation ID is required to update observation');
     }
     if (input.data === undefined) {
-      throw new Error("Data is required to update observation");
+      throw new Error('Data is required to update observation');
     }
-    console.log("Updating observation with ID: " + input.observationId);
+    console.log('Updating observation with ID: ' + input.observationId);
     const localRepo = databaseService.getLocalRepo();
     await localRepo.updateObservation(input);
     return input.observationId;
@@ -333,7 +333,7 @@ export class FormService {
   public async resetDatabase(): Promise<void> {
     const localRepo = databaseService.getLocalRepo();
     if (!localRepo) {
-      throw new Error("Database repository is not available");
+      throw new Error('Database repository is not available');
     }
 
     try {
@@ -344,7 +344,7 @@ export class FormService {
 
       for (const formSpec of allFormSpecs) {
         const observations = await localRepo.getObservationsByFormType(
-          formSpec.id
+          formSpec.id,
         );
         allObservations = [...allObservations, ...observations];
       }
@@ -355,10 +355,10 @@ export class FormService {
       }
 
       console.log(
-        `Database reset complete. Deleted ${allObservations.length} observations.`
+        `Database reset complete. Deleted ${allObservations.length} observations.`,
       );
     } catch (error) {
-      console.error("Error resetting database:", error);
+      console.error('Error resetting database:', error);
       throw error;
     }
   }
@@ -369,35 +369,35 @@ export class FormService {
    */
   public async debugDatabase(): Promise<void> {
     try {
-      console.log("=== DATABASE DEBUG INFO ===");
+      console.log('=== DATABASE DEBUG INFO ===');
 
       // Get the local repository
       const localRepo = databaseService.getLocalRepo();
       if (!localRepo) {
-        console.error("Repository not available");
+        console.error('Repository not available');
         return;
       }
 
       // Log some test observations
-      console.log("Creating test observations...");
+      console.log('Creating test observations...');
 
       // Create a test observation with person form type
       const testId1 = await localRepo.saveObservation({
-        formType: "person",
-        data: { test: "data1" },
+        formType: 'person',
+        data: { test: 'data1' },
       });
-      console.log("Created test observation 1:", testId1);
+      console.log('Created test observation 1:', testId1);
 
       // Create another test observation with a different form type
       const testId2 = await localRepo.saveObservation({
-        formType: "test_form",
-        data: { test: "data2" },
+        formType: 'test_form',
+        data: { test: 'data2' },
       });
-      console.log("Created test observation 2:", testId2);
+      console.log('Created test observation 2:', testId2);
 
-      console.log("=== END DEBUG INFO ===");
+      console.log('=== END DEBUG INFO ===');
     } catch (error) {
-      console.error("Error debugging database:", error);
+      console.error('Error debugging database:', error);
     }
   }
 
@@ -407,9 +407,7 @@ export class FormService {
    */
   public addFormSpec(formSpec: FormSpec): void {
     // Check if form type with same ID already exists
-    const existingIndex = this.formSpecs.findIndex(
-      (ft) => ft.id === formSpec.id
-    );
+    const existingIndex = this.formSpecs.findIndex(ft => ft.id === formSpec.id);
 
     if (existingIndex >= 0) {
       // Replace existing form type
@@ -427,7 +425,7 @@ export class FormService {
    */
   public removeFormSpec(id: string): boolean {
     const initialLength = this.formSpecs.length;
-    this.formSpecs = this.formSpecs.filter((formSpec) => formSpec.id !== id);
+    this.formSpecs = this.formSpecs.filter(formSpec => formSpec.id !== id);
     return this.formSpecs.length < initialLength;
   }
 }

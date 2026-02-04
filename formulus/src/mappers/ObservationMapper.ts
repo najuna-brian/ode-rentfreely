@@ -12,10 +12,10 @@
 //  - Represents how data is stored in WatermelonDB
 //  - Handles database-specific concerns (like relationships, indexing)
 
-import { Observation as ApiObservation } from "../api/synkronus/generated";
-import { Observation as DomainObservation } from "../database/models/Observation";
-import { ObservationModel } from "../database/models/ObservationModel";
-import { ObservationGeolocation } from "../types/Geolocation";
+import { Observation as ApiObservation } from '../api/synkronus/generated';
+import { Observation as DomainObservation } from '../database/models/Observation';
+import { ObservationModel } from '../database/models/ObservationModel';
+import { ObservationGeolocation } from '../types/Geolocation';
 
 export class ObservationMapper {
   // API -> Domain
@@ -47,8 +47,8 @@ export class ObservationMapper {
       synced_at: domainObs.syncedAt?.toISOString() ?? null,
       deleted: domainObs.deleted,
       geolocation: domainObs.geolocation ?? null,
-      author: domainObs.author ?? "",
-      device_id: domainObs.deviceId ?? "",
+      author: domainObs.author ?? '',
+      device_id: domainObs.deviceId ?? '',
     };
     return payload;
   }
@@ -60,12 +60,12 @@ export class ObservationMapper {
       formType: domainObs.formType,
       formVersion: domainObs.formVersion,
       data:
-        typeof domainObs.data === "string"
+        typeof domainObs.data === 'string'
           ? domainObs.data
           : JSON.stringify(domainObs.data),
       geolocation: domainObs.geolocation
         ? JSON.stringify(domainObs.geolocation)
-        : "",
+        : '',
       deleted: domainObs.deleted,
       createdAt: domainObs.createdAt,
       updatedAt: domainObs.updatedAt,
@@ -82,7 +82,7 @@ export class ObservationMapper {
       try {
         geolocation = JSON.parse(model.geolocation);
       } catch (error) {
-        console.warn("Failed to parse geolocation data:", error);
+        console.warn('Failed to parse geolocation data:', error);
       }
     }
 
@@ -91,14 +91,14 @@ export class ObservationMapper {
       formType: model.formType,
       formVersion: model.formVersion,
       data:
-        typeof model.data === "string" ? JSON.parse(model.data) : model.data,
+        typeof model.data === 'string' ? JSON.parse(model.data) : model.data,
       createdAt: model.createdAt,
       updatedAt: model.updatedAt,
       syncedAt: model.syncedAt,
       deleted: model.deleted,
       geolocation,
-      author: model.author ?? "",
-      deviceId: model.deviceId ?? "",
+      author: model.author ?? '',
+      deviceId: model.deviceId ?? '',
     };
   }
 }

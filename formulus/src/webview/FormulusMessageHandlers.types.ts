@@ -1,11 +1,11 @@
 // Type definitions for WebView message handlers
 // Must match the injected interface in FormulusInterfaceDefinition.ts
-import { Observation } from "../database/models/Observation";
+import { Observation } from '../database/models/Observation';
 import {
   FormInitData,
   FormCompletionResult,
   FormInfo,
-} from "./FormulusInterfaceDefinition";
+} from './FormulusInterfaceDefinition';
 
 export interface FormulusMessageHandlers {
   onInitForm?: (payload: unknown) => void; // Keep existing, adjust payload type as needed
@@ -29,12 +29,12 @@ export interface FormulusMessageHandlers {
   onRequestFile?: (fieldId: string) => void;
   onLaunchIntent?: (
     fieldId: string,
-    intentSpec: Record<string, unknown>
+    intentSpec: Record<string, unknown>,
   ) => void;
   onCallSubform?: (
     fieldId: string,
     formId: string,
-    options: Record<string, unknown>
+    options: Record<string, unknown>,
   ) => void;
   onRequestAudio?: (fieldId: string) => void;
   onRequestVideo?: (fieldId: string) => void;
@@ -45,14 +45,14 @@ export interface FormulusMessageHandlers {
   onRunLocalModel?: (
     fieldId: string,
     modelId: string,
-    input: Record<string, unknown>
+    input: Record<string, unknown>,
   ) => void;
   // New handlers to be added
   onGetAvailableForms?: () => Promise<FormInfo[]>;
   onGetObservations?: (
     formId: string,
     isDraft?: boolean,
-    includeDeleted?: boolean
+    includeDeleted?: boolean,
   ) => Promise<Observation[]>;
   onOpenFormplayer?: (data: FormInitData) => Promise<FormCompletionResult>;
   onGetCurrentUser?: () => Promise<{ username: string; displayName?: string }>;

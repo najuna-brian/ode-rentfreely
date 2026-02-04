@@ -1,4 +1,4 @@
-import { ToastAndroid, Platform, Alert } from "react-native";
+import { ToastAndroid, Platform, Alert } from 'react-native';
 
 /**
  * Cross-platform toast notification service
@@ -9,11 +9,11 @@ export class ToastService {
    * Show a short toast message
    */
   public static showShort(message: string): void {
-    if (Platform.OS === "android") {
+    if (Platform.OS === 'android') {
       ToastAndroid.show(message, ToastAndroid.SHORT);
     } else {
       // iOS fallback - could be replaced with a third-party toast library
-      Alert.alert("Info", message);
+      Alert.alert('Info', message);
     }
   }
 
@@ -21,11 +21,11 @@ export class ToastService {
    * Show a long toast message
    */
   public static showLong(message: string): void {
-    if (Platform.OS === "android") {
+    if (Platform.OS === 'android') {
       ToastAndroid.show(message, ToastAndroid.LONG);
     } else {
       // iOS fallback
-      Alert.alert("Info", message);
+      Alert.alert('Info', message);
     }
   }
 
@@ -34,7 +34,7 @@ export class ToastService {
    */
   public static showGeolocationUnavailable(): void {
     this.showShort(
-      "Location unavailable - observation saved without geolocation"
+      'Location unavailable - observation saved without geolocation',
     );
   }
 
@@ -42,6 +42,6 @@ export class ToastService {
    * Show a toast for successful geolocation capture
    */
   public static showGeolocationCaptured(): void {
-    this.showShort("Location captured with observation");
+    this.showShort('Location captured with observation');
   }
 }

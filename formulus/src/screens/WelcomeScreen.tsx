@@ -1,11 +1,11 @@
-import React from "react";
-import { View, Text, Image, StyleSheet, TouchableOpacity } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
-import { MainAppStackParamList } from "../types/NavigationTypes";
-import { colors } from "../theme/colors";
-import logo from "../../assets/images/logo.png";
+import React from 'react';
+import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { MainAppStackParamList } from '../types/NavigationTypes';
+import { colors } from '../theme/colors';
+import logo from '../../assets/images/logo.png';
 
 type WelcomeScreenNavigationProp = StackNavigationProp<MainAppStackParamList>;
 
@@ -13,7 +13,7 @@ const WelcomeScreen = () => {
   const navigation = useNavigation<WelcomeScreenNavigationProp>();
 
   const handleGetStarted = () => {
-    navigation.navigate("MainApp");
+    navigation.navigate('MainApp');
   };
 
   return (
@@ -39,8 +39,8 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     padding: 40,
   },
   logo: {
@@ -50,16 +50,16 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 28,
-    fontWeight: "bold",
+    fontWeight: 'bold',
     color: colors.neutral.black,
     marginBottom: 12,
-    textAlign: "center",
+    textAlign: 'center',
   },
   subtitle: {
     fontSize: 16,
     color: colors.neutral[600],
     marginBottom: 40,
-    textAlign: "center",
+    textAlign: 'center',
   },
   button: {
     backgroundColor: colors.semantic.info.medium,
@@ -71,8 +71,8 @@ const styles = StyleSheet.create({
   buttonText: {
     color: colors.neutral.white,
     fontSize: 16,
-    fontWeight: "600",
-    textAlign: "center",
+    fontWeight: '600',
+    textAlign: 'center',
   },
 });
 

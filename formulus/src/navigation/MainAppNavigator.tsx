@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { BackHandler, Platform } from "react-native";
-import { createStackNavigator } from "@react-navigation/stack";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
-import MainTabNavigator from "./MainTabNavigator";
-import WelcomeScreen from "../screens/WelcomeScreen";
-import FormManagementScreen from "../screens/FormManagementScreen";
-import ObservationDetailScreen from "../screens/ObservationDetailScreen";
-import { MainAppStackParamList } from "../types/NavigationTypes";
-import { serverConfigService } from "../services/ServerConfigService";
-import { colors } from "../theme/colors";
+import React, { useEffect, useState } from 'react';
+import { BackHandler, Platform } from 'react-native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import MainTabNavigator from './MainTabNavigator';
+import WelcomeScreen from '../screens/WelcomeScreen';
+import FormManagementScreen from '../screens/FormManagementScreen';
+import ObservationDetailScreen from '../screens/ObservationDetailScreen';
+import { MainAppStackParamList } from '../types/NavigationTypes';
+import { serverConfigService } from '../services/ServerConfigService';
+import { colors } from '../theme/colors';
 
 const Stack = createStackNavigator<MainAppStackParamList>();
 
@@ -27,7 +27,7 @@ const MainAppNavigator: React.FC = () => {
   // Handle Android hardware back button in a conservative way:
   // only intercept when there is actual stack history above the root.
   useEffect(() => {
-    if (Platform.OS !== "android") {
+    if (Platform.OS !== 'android') {
       return;
     }
 
@@ -39,10 +39,10 @@ const MainAppNavigator: React.FC = () => {
       // and prevents the app from getting into an odd state.
       if (
         state &&
-        state.type === "stack" &&
+        state.type === 'stack' &&
         Array.isArray(state.routes) &&
         state.routes.length > 1 &&
-        typeof state.index === "number" &&
+        typeof state.index === 'number' &&
         state.index > 0
       ) {
         navigation.goBack();
@@ -54,8 +54,8 @@ const MainAppNavigator: React.FC = () => {
     };
 
     const subscription = BackHandler.addEventListener(
-      "hardwareBackPress",
-      onBackPress
+      'hardwareBackPress',
+      onBackPress,
     );
 
     return () => {
@@ -70,7 +70,7 @@ const MainAppNavigator: React.FC = () => {
         setIsConfigured(!!serverUrl);
       };
       checkConfig();
-    }, [])
+    }, []),
   );
 
   if (isConfigured === null) {
@@ -84,8 +84,7 @@ const MainAppNavigator: React.FC = () => {
         headerTintColor: colors.neutral.black,
         headerTitleStyle: { color: colors.neutral.black },
       }}
-      initialRouteName={isConfigured ? "MainApp" : "Welcome"}
-    >
+      initialRouteName={isConfigured ? 'MainApp' : 'Welcome'}>
       <Stack.Screen
         name="Welcome"
         component={WelcomeScreen}
@@ -99,12 +98,12 @@ const MainAppNavigator: React.FC = () => {
       <Stack.Screen
         name="FormManagement"
         component={FormManagementScreen}
-        options={{ title: "Form Management" }}
+        options={{ title: 'Form Management' }}
       />
       <Stack.Screen
         name="ObservationDetail"
         component={ObservationDetailScreen}
-        options={{ title: "Observation Details" }}
+        options={{ title: 'Observation Details' }}
       />
     </Stack.Navigator>
   );

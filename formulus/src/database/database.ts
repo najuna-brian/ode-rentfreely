@@ -1,8 +1,8 @@
-import { Database } from "@nozbe/watermelondb";
-import SQLiteAdapter from "@nozbe/watermelondb/adapters/sqlite";
-import { schemas } from "./schema";
-import { ObservationModel } from "./models/ObservationModel";
-import { schemaMigrations } from "@nozbe/watermelondb/Schema/migrations";
+import { Database } from '@nozbe/watermelondb';
+import SQLiteAdapter from '@nozbe/watermelondb/adapters/sqlite';
+import { schemas } from './schema';
+import { ObservationModel } from './models/ObservationModel';
+import { schemaMigrations } from '@nozbe/watermelondb/Schema/migrations';
 
 // Define migrations
 const migrations = schemaMigrations({
@@ -12,9 +12,9 @@ const migrations = schemaMigrations({
       steps: [
         // Add form_type_id column to observations table
         {
-          type: "add_columns",
-          table: "observations",
-          columns: [{ name: "form_type_id", type: "string", isIndexed: true }],
+          type: 'add_columns',
+          table: 'observations',
+          columns: [{ name: 'form_type_id', type: 'string', isIndexed: true }],
         },
       ],
     },
@@ -23,9 +23,9 @@ const migrations = schemaMigrations({
       steps: [
         // Add geolocation column to observations table
         {
-          type: "add_columns",
-          table: "observations",
-          columns: [{ name: "geolocation", type: "string" }],
+          type: 'add_columns',
+          table: 'observations',
+          columns: [{ name: 'geolocation', type: 'string' }],
         },
       ],
     },
@@ -34,11 +34,11 @@ const migrations = schemaMigrations({
       steps: [
         // Add author and device_id columns to observations table
         {
-          type: "add_columns",
-          table: "observations",
+          type: 'add_columns',
+          table: 'observations',
           columns: [
-            { name: "author", type: "string" },
-            { name: "device_id", type: "string" },
+            { name: 'author', type: 'string' },
+            { name: 'device_id', type: 'string' },
           ],
         },
       ],
@@ -50,14 +50,14 @@ const migrations = schemaMigrations({
 const adapter = new SQLiteAdapter({
   schema: schemas,
   // Optional database name
-  dbName: "formulus",
+  dbName: 'formulus',
   // Configure migrations
   migrations: migrations,
   // Optional synchronous mode for development
   jsi: true,
   // Optional onSetUpError callback
-  onSetUpError: (error) => {
-    console.error("Database setup error:", error);
+  onSetUpError: error => {
+    console.error('Database setup error:', error);
   },
 });
 

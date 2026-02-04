@@ -15,7 +15,7 @@ Returns a ZIP file containing multiple Parquet files, each representing a flatte
 ### Example
 
 ```typescript
-import { DataExportApi, Configuration } from "./api";
+import { DataExportApi, Configuration } from './api';
 
 const configuration = new Configuration();
 const apiInstance = new DataExportApi(configuration);
