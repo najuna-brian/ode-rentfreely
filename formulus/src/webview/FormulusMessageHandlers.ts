@@ -952,7 +952,7 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
       }
     },
     onGetObservations: async (
-      formType: string,
+      formType: string | { formType: string },
       isDraft?: boolean,
       includeDeleted?: boolean,
     ) => {
@@ -960,14 +960,31 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
         'FormulusMessageHandlers: onGetObservations handler invoked.',
         { formType, isDraft, includeDeleted },
       );
-      if (typeof formType !== 'string') {
+
+      // Extract the actual formType string value
+      let formTypeString: string;
+      if (typeof formType === 'string') {
+        formTypeString = formType;
+      } else if (
+        typeof formType === 'object' &&
+        formType !== null &&
+        'formType' in formType
+      ) {
         console.debug(
-          'FormulusMessageHandlers: onGetObservations handler invoked with formType object, expected string',
+          'FormulusMessageHandlers: onGetObservations received formType as object, extracting string value',
         );
+        formTypeString = formType.formType;
+      } else {
+        console.error(
+          'FormulusMessageHandlers: onGetObservations received invalid formType parameter',
+          formType,
+        );
+        return [];
       }
+
       const service = await FormService.getInstance();
       //TODO: Handle deleted etc.
-      return await service.getObservationsByFormType(formType);
+      return await service.getObservationsByFormType(formTypeString);
     },
     onOpenFormplayer: async (data: FormInitData) => {
       return startFormplayerOperation(
