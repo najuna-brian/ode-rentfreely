@@ -20,8 +20,7 @@ on:
     types: [published]
 
 env:
-  NODE_VERSION_ASSETS: '20'
-  NODE_VERSION_ANDROID: '18.x'
+  NODE_VERSION: '24'
 
 jobs:
   build-formplayer-assets:
@@ -37,7 +36,7 @@ jobs:
       - name: Set up Node.js for assets
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION_ASSETS }}
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           cache-dependency-path: |
             formulus-formplayer/package-lock.json
@@ -84,7 +83,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ env.NODE_VERSION_ANDROID }}
+          node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
           cache-dependency-path: |
             formulus/package-lock.json
