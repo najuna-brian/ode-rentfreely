@@ -201,6 +201,15 @@ export class WatermelonDBRepo implements LocalRepoInterface {
     try {
       console.log('Fetching observations for form type ID:', formId);
 
+      // Validate formId parameter
+      if (!formId || typeof formId !== 'string' || formId.trim() === '') {
+        console.warn(
+          'Invalid formId provided to getObservationsByFormType:',
+          formId,
+        );
+        return [];
+      }
+
       // First, let's check all observations in the database for debugging
       const allObservations = await this.observationsCollection.query().fetch();
       console.log(`Total observations in database: ${allObservations.length}`);
