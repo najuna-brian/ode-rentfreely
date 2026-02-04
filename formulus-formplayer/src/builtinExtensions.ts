@@ -64,15 +64,6 @@ export async function getDynamicChoiceList(
   params: Record<string, any> = {},
   formData: Record<string, any> = {},
 ): Promise<Array<{ const: any; title: string }>> {
-  // #region agent log  
-  console.log('[getDynamicChoiceList] Called with:', {
-    queryName,
-    params,
-    formDataKeys: Object.keys(formData),
-    formDataSample: JSON.stringify(formData).substring(0, 200)
-  });
-  // #endregion
-  
   // Check if Formulus bridge is available
   if (!window.formulus?.getObservationsByQuery) {
     console.error('getDynamicChoiceList: getObservationsByQuery not available');
@@ -94,11 +85,6 @@ export async function getDynamicChoiceList(
     const filterParams = Object.entries(params)
       .filter(([key]) => key !== '_config' && key !== 'where' && key !== 'whereClause');
     
-    // #region agent log
-    console.log('[getDynamicChoiceList] Filter params:', filterParams);
-    console.log('[getDynamicChoiceList] WHERE clause from params:', whereClause);
-    // #endregion
-    
     // Build WHERE clause from filter params if we have any
     if (filterParams.length > 0) {
       // Check if any filter values are null/undefined/empty - if so, return empty result
@@ -107,9 +93,6 @@ export async function getDynamicChoiceList(
       );
       
       if (hasEmptyValue) {
-        // #region agent log
-        console.log('[getDynamicChoiceList] Has empty filter value, returning empty choices');
-        // #endregion
         // Return empty choices when dependency values are not yet selected
         return [];
       }
@@ -163,39 +146,15 @@ export async function getDynamicChoiceList(
       } else {
         whereClause = null; // No non-age conditions, fetch all and filter in JS
       }
-      
-      // #region agent log
-      console.log('[getDynamicChoiceList] Using age_from_dob(), SQL WHERE clause:', whereClause);
-      console.log('[getDynamicChoiceList] Original WHERE clause:', originalWhereClause);
-      // #endregion
     }
-    
-    // #region agent log
-    console.log('[getDynamicChoiceList] Final WHERE clause:', whereClause);
-    // #endregion
 
     // Query observations via bridge
-    // #region agent log
-    console.log('[getDynamicChoiceList] Calling getObservationsByQuery with:', {
-      formType: queryName,
-      whereClause
-    });
-    // #endregion
-    
     let observations = await window.formulus.getObservationsByQuery({
       formType: queryName,
       isDraft: false,
       includeDeleted: false,
       whereClause: whereClause,
     });
-    
-    // #region agent log
-    console.log('[getDynamicChoiceList] Got observations:', observations.length);
-    if (observations.length === 0) {
-      console.warn('[getDynamicChoiceList] No observations returned from database query');
-      console.warn('[getDynamicChoiceList] Query params:', { formType: queryName, whereClause });
-    }
-    // #endregion
 
     // If age_from_dob() was used, filter by calculated age in JavaScript
     if (usesAgeFromDob && originalWhereClause) {
@@ -228,26 +187,6 @@ export async function getDynamicChoiceList(
       }
       
       if (ageConditions.length > 0) {
-        // #region agent log
-        console.log('[getDynamicChoiceList] Filtering by calculated age in JavaScript:', ageConditions);
-        console.log('[getDynamicChoiceList] Total observations before age filtering:', observations.length);
-        // #endregion
-        
-        // Log sample observations to debug
-        if (observations.length > 0) {
-          const sampleObs = observations[0];
-          const dobField = ageConditions[0].dobField;
-          const sampleDob = getNestedValue(sampleObs, dobField);
-          const sampleAge = calculateAge(sampleDob);
-          console.log('[getDynamicChoiceList] Sample observation:', {
-            hasData: !!sampleObs.data,
-            dobField,
-            sampleDob,
-            sampleAge,
-            sampleDataKeys: sampleObs.data ? Object.keys(sampleObs.data).slice(0, 10) : []
-          });
-        }
-        
         try {
           observations = observations.filter((obs: any) => {
           // Get dob field (usually data.dob, but could be different)
@@ -255,25 +194,7 @@ export async function getDynamicChoiceList(
           const dob = getNestedValue(obs, dobField);
           const age = calculateAge(dob);
           
-          // #region agent log (detailed for first few)
-          if (observations.indexOf(obs) < 3) {
-            console.log('[getDynamicChoiceList] Age filter check:', {
-              dobField,
-              dob,
-              age,
-              hasData: !!obs.data
-            });
-          }
-          // #endregion
-          
-          if (age === null) {
-            // #region agent log
-            if (observations.indexOf(obs) < 3) {
-              console.log('[getDynamicChoiceList] Excluding observation - age is null (no valid dob)');
-            }
-            // #endregion
-            return false;
-          }
+          if (age === null) return false;
           
           // Helper to evaluate a single age condition
           const evaluateCondition = (condition: typeof ageConditions[0]): boolean => {
@@ -395,34 +316,10 @@ export async function getDynamicChoiceList(
             return finalResult;
           }
           });
-        } catch (filterError: any) {
-          // #region agent log
-          console.error('[getDynamicChoiceList] Error during age filtering:', filterError);
-          console.error('[getDynamicChoiceList] Error details:', {
-            message: filterError?.message,
-            stack: filterError?.stack,
-            name: filterError?.name,
-            ageConditionsCount: ageConditions.length,
-            observationsCount: observations.length
-          });
-          // #endregion
+        } catch (filterError: unknown) {
           // If filtering fails, return empty array (better than crashing)
           observations = [];
         }
-        
-        // #region agent log
-        console.log('[getDynamicChoiceList] After age filtering:', observations.length);
-        if (observations.length === 0) {
-          console.warn('[getDynamicChoiceList] No observations passed age filter. Possible issues:');
-          console.warn('  - No observations have valid dob values');
-          console.warn('  - All observations failed age conditions');
-          console.warn('  - dob field path might be incorrect');
-        }
-        // #endregion
-      } else {
-        // #region agent log
-        console.warn('[getDynamicChoiceList] age_from_dob() detected but no age conditions parsed from:', originalWhereClause);
-        // #endregion
       }
     }
 
@@ -450,28 +347,8 @@ export async function getDynamicChoiceList(
       });
     }
 
-    // #region agent log
-    console.log('[getDynamicChoiceList] Returning choices:', {
-      count: choices.length,
-      sample: choices.slice(0, 3)
-    });
-    // #endregion
-    
-    if (choices.length === 0) {
-      console.warn(`getDynamicChoiceList: No valid choices found for query '${queryName}'`);
-    }
-
     return choices;
-  } catch (error: any) {
-    // #region agent log
-    console.error('[getDynamicChoiceList] Top-level error:', error);
-    console.error('[getDynamicChoiceList] Error details:', {
-      message: error?.message,
-      stack: error?.stack,
-      name: error?.name,
-      toString: String(error)
-    });
-    // #endregion
+  } catch (error: unknown) {
     console.error('getDynamicChoiceList error:', error);
     return [];
   }

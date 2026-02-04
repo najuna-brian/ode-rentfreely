@@ -64,7 +64,7 @@ export function FormEvaluationProvider({
   children,
 }: FormEvaluationProviderProps) {
   const value: FormEvaluationContextValue = {
-    functions,
+    functions: functions ?? new Map(),
   };
 
   return (

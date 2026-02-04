@@ -93,14 +93,8 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
     // Create a debounced close handler to prevent multiple rapid close attempts
     const performClose = useCallback(() => {
       // Prevent multiple close attempts
-      if (isClosing || isSubmitting) {
-        console.log(
-          'FormplayerModal: Close attempt blocked - already closing or submitting',
-        );
-        return;
-      }
+      if (isClosing || isSubmitting) return;
 
-      console.log('FormplayerModal: Starting close process');
       setIsClosing(true);
 
       // Clear any existing timeout
@@ -110,10 +104,6 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
 
       // Only resolve with cancelled status if form hasn't been successfully submitted AND we have a valid operation
       if (!formSubmitted && currentOperationId) {
-        console.log(
-          'FormplayerModal: Resolving operation as cancelled:',
-          currentOperationId,
-        );
         const completionResult: FormCompletionResult = {
           status: 'cancelled',
           formType: currentFormType || 'unknown',
@@ -124,10 +114,6 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
         // Clear the operation ID immediately to prevent double resolution
         setCurrentOperationId(null);
       } else if (!formSubmitted && currentFormType) {
-        console.log(
-          'FormplayerModal: Resolving by form type as cancelled:',
-          currentFormType,
-        );
         const completionResult: FormCompletionResult = {
           status: 'cancelled',
           formType: currentFormType,
@@ -135,10 +121,6 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
         };
 
         resolveFormOperationByType(currentFormType, completionResult);
-      } else {
-        console.log(
-          'FormplayerModal: Form was already submitted or no operation to resolve',
-        );
       }
 
       // Call the parent's onClose immediately
@@ -158,12 +140,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
     ]);
 
     const handleClose = useCallback(() => {
-      if (isClosing || isSubmitting) {
-        console.log(
-          'FormplayerModal: Close attempt blocked - already closing or submitting',
-        );
-        return;
-      }
+      if (isClosing || isSubmitting) return;
 
       Alert.alert(
         'Close form?',
@@ -197,7 +174,7 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
 
     // Handle WebView load complete
     const handleWebViewLoad = () => {
-      console.log('FormplayerModal: WebView loaded successfully (onLoadEnd).');
+      // WebView ready - no action needed
     };
 
     // Initialize a form with the given form type and optional existing data
@@ -235,18 +212,11 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
           formType.id,
         );
 
-        // Ensure getDynamicChoiceList is always available as a fallback
+        // Note: getDynamicChoiceList is provided by formplayer's builtinExtensions.
+        // Do NOT add a fallback pointing to queryHelpers.js - that file may not exist
+        // in the app bundle, and dynamic import of file:// in WebView often fails.
         if (!mergedExtensions.functions) {
           mergedExtensions.functions = {};
-        }
-        if (!mergedExtensions.functions.getDynamicChoiceList) {
-          mergedExtensions.functions.getDynamicChoiceList = {
-            name: 'getDynamicChoiceList',
-            // Path is relative to the custom app root that is mounted at
-            // file://<DocumentDirectory>/app in the WebView
-            module: '/extensions/helpers/queryHelpers.js',
-            export: 'getDynamicChoiceList',
-          };
         }
 
         // Convert to formplayer format
@@ -295,13 +265,25 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
         // Continue without extensions - not a fatal error
       }
 
+      if (!formType.schema) {
+        console.error(
+          'FormplayerModal: formType.schema is null/undefined for form:',
+          formType.id,
+        );
+        Alert.alert(
+          'Form Error',
+          `Form "${formType.name}" has no schema. The form may not have loaded correctly from storage. Try syncing again.`,
+        );
+        return;
+      }
+
       const formInitData = {
         formType: formType.id,
         observationId: observationId,
         params: formParams,
         savedData: existingObservationData || {},
-        formSchema: formSchemaToSend,
-        uiSchema: formType.uiSchema,
+        formSchema: formType.schema,
+        uiSchema: formType.uiSchema ?? {},
         extensions,
       } as FormInitData;
 
@@ -314,7 +296,6 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
 
       try {
         await webViewRef.current.sendFormInit(formInitData);
-        console.log('FormplayerModal: Form init acknowledged by WebView');
       } catch (error) {
         console.error('FormplayerModal: Error sending form init data:', error);
         Alert.alert(
@@ -331,10 +312,6 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
         finalData: Record<string, unknown>;
       }): Promise<string> => {
         const { formType, finalData } = data;
-        console.log('FormplayerModal: handleSubmission called', {
-          formType,
-          finalData,
-        });
 
         // Set submitting state
         setIsSubmitting(true);
@@ -349,10 +326,6 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
           // Save the observation
           let resultObservationId: string;
           if (currentObservationId) {
-            console.log(
-              'FormplayerModal: Updating existing observation:',
-              currentObservationId,
-            );
             const updateSuccess = await localRepo.updateObservation({
               observationId: currentObservationId,
               data: finalData,
@@ -362,10 +335,6 @@ const FormplayerModal = forwardRef<FormplayerModalHandle, FormplayerModalProps>(
             }
             resultObservationId = currentObservationId;
           } else {
-            console.log(
-              'FormplayerModal: Creating new observation for form type:',
-              formType,
-            );
             const newId = await localRepo.saveObservation({
               formType,
               data: finalData,

@@ -822,9 +822,28 @@ function App() {
   }
 
   if (loadError || !schema || !uischema) {
-    // Log error but don't display it - user has logs for debugging
     if (loadError) {
       console.error('[Formplayer] Load error:', loadError);
+      // Show the actual error so user knows what went wrong (not blank white screen)
+      return (
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            height: '100dvh',
+            p: 3,
+            backgroundColor: 'background.paper',
+          }}>
+          <Typography variant="h6" color="error" sx={{ mb: 2, textAlign: 'center' }}>
+            Error Loading Form
+          </Typography>
+          <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary' }}>
+            {loadError}
+          </Typography>
+        </Box>
+      );
     }
     if (!schema) {
       console.warn('[Formplayer] Schema not loaded yet');
@@ -832,7 +851,7 @@ function App() {
     if (!uischema) {
       console.warn('[Formplayer] UI schema not loaded yet');
     }
-    // Show loading state instead of error
+    // Still waiting for schema/uischema - show loading
     return (
       <Box
         sx={{
@@ -841,8 +860,7 @@ function App() {
           alignItems: 'center',
           justifyContent: 'center',
           height: '100dvh',
-        }}
-      >
+        }}>
         <CircularProgress />
         <Typography variant="h6" sx={{ mt: 2 }}>
           Loading form...

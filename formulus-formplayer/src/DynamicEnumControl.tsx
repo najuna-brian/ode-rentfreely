@@ -88,8 +88,8 @@ function resolveTemplateParams(
           break;
         }
       }
-      
-      resolved[key] = resolvedValue !== undefined ? resolvedValue : value; // Fallback to original if not found
+      // Use undefined when unresolved so getDynamicChoiceList returns [] (no options until dependency selected)
+      resolved[key] = resolvedValue !== undefined ? resolvedValue : undefined;
     } else {
       resolved[key] = value;
     }
@@ -216,13 +216,21 @@ const DynamicEnumControl: React.FC<ControlProps> = ({
     }
   }, [dynamicConfig, functions, path, localSchema, currentFormData]); // Use currentFormData instead
 
-  // Load choices on mount and when config changes
+  // Load choices on mount, when config changes, and when form data changes (for cascading filters)
+  // currentFormData must be in deps so fields that use {{data.field}} templates reload
+  // when the user selects a value in a dependent field (e.g. sex -> filter person list)
   useEffect(() => {
     if (dynamicConfig && visible && enabled) {
       loadChoices();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dynamicConfig?.query, JSON.stringify(dynamicConfig?.params), visible, enabled]);
+  }, [
+    dynamicConfig?.query,
+    JSON.stringify(dynamicConfig?.params),
+    visible,
+    enabled,
+    JSON.stringify(currentFormData),
+  ]);
 
   // Early returns after all hooks
   if (!visible) {

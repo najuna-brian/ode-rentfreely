@@ -102,16 +102,23 @@ Dynamic Choice Lists enable:
 └───────────────────────┬─────────────────────────────────┘
                         │
 ┌───────────────────────▼─────────────────────────────────┐
-│ builtinExtensions.ts                                    │
-│ - Builds WHERE clause from params                       │
-│ - Calls window.formulus.getObservationsByQuery          │
+│ builtinExtensions.ts (formulus-formplayer)              │
+│ - Builds WHERE clause from params + whereClause          │
+│ - Handles age_from_dob() via JS filtering                │
+│ - Calls window.formulus.getObservationsByQuery           │
 └───────────────────────┬─────────────────────────────────┘
                         │
 ┌───────────────────────▼─────────────────────────────────┐
-│ WebView Bridge (FormulusInjectionScript.js)            │
-│ - Parses WHERE clause                                   │
-│ - Queries WatermelonDB                                  │
-│ - Returns filtered observations                         │
+│ WebView Bridge (formulus-load.js / FormulusInjection)   │
+│ - getObservationsByQuery sends message to native host   │
+└───────────────────────┬─────────────────────────────────┘
+                        │
+┌───────────────────────▼─────────────────────────────────┐
+│ FormulusMessageHandlers → FormService                   │
+│ - filterObservationsByWhereClause supports:              │
+│   - data.field = 'value' (builtinExtensions)             │
+│   - json_extract(data, '$.field') = 'value' (extensions) │
+│ - Queries WatermelonDB, returns filtered observations   │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -580,14 +587,9 @@ Equivalent to: `WHERE data.sex = 'female' AND age_from_dob(data.dob) >= 18`
    - Solution: Relax filters or add observations that match
 
 **Debug:**
-1. Open Chrome DevTools (`chrome://inspect`)
-2. Check console logs:
-   ```
-   [builtinExtensions] Found X observations for query 'household'
-   [builtinExtensions] Returning Y choices
-   ```
-3. If X > 0 but Y = 0: Field doesn't exist or all values null
-4. If X = 0: No observations in database
+1. Open Chrome DevTools (`chrome://inspect`) and inspect the Formulus WebView
+2. Verify observations exist for the queried form type in the database
+3. If dropdown is empty: check valueField/labelField paths match observation structure
 
 ### Problem: Filtered Dropdown Shows All Items
 
@@ -608,10 +610,7 @@ Equivalent to: `WHERE data.sex = 'female' AND age_from_dob(data.dob) >= 18`
    - Solution: Verify filter value exists in database
 
 **Debug:**
-Check console for resolved WHERE clause:
-```
-[builtinExtensions] Built WHERE clause: data.hh_village_name = 'kopria'
-```
+Verify param names match database field names (e.g. `hh_village_name` not `village_name`).
 
 ### Problem: "Failed to load form" Error
 
@@ -676,7 +675,7 @@ npx react-native start
 - [ ] `distinct` set appropriately
 - [ ] `params` filter fields exist
 - [ ] Tested with real data
-- [ ] Console shows expected results
+- [ ] Dropdown populates with expected choices
 - [ ] Performance < 1 second load time
 
 ### Best Practices
@@ -760,8 +759,10 @@ Dynamic Choice Lists provide:
 
 **Implementation:**
 - `formulus-formplayer/src/DynamicEnumControl.tsx` - Renderer
-- `formulus-formplayer/src/builtinExtensions.ts` - Query logic
-- `formulus/assets/webview/FormulusInjectionScript.js` - Bridge
+- `formulus-formplayer/src/builtinExtensions.ts` - Query logic, WHERE clause building, age_from_dob filtering
+- `formulus-formplayer/public/formulus-load.js` - getObservationsByQuery polyfill (ensures correct message routing)
+- `formulus/src/webview/FormulusMessageHandlers.ts` - onGetObservationsByQuery handler
+- `formulus/src/services/FormService.ts` - getObservationsByQuery, filterObservationsByWhereClause
 
 **Documentation:**
 - This file - Complete reference
@@ -776,4 +777,4 @@ Dynamic Choice Lists provide:
 ---
 
 *Version 1.0 - Production Ready*  
-*Last Updated: 2026-01-29*
+*Last Updated: 2026-02-06*

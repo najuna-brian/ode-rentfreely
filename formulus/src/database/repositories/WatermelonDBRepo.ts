@@ -199,7 +199,14 @@ export class WatermelonDBRepo implements LocalRepoInterface {
    */
   async getObservationsByFormType(formId: string): Promise<Observation[]> {
     try {
-      console.log('Fetching observations for form type ID:', formId);
+      // Validate formId parameter
+      if (!formId || typeof formId !== 'string' || formId.trim() === '') {
+        console.warn(
+          'Invalid formId provided to getObservationsByFormType:',
+          formId,
+        );
+        return [];
+      }
 
       // First, let's check all observations in the database for debugging
       const allObservations = await this.observationsCollection.query().fetch();
@@ -209,10 +216,6 @@ export class WatermelonDBRepo implements LocalRepoInterface {
       const observations = await this.observationsCollection
         .query(Q.where('form_type', formId))
         .fetch();
-
-      console.log(
-        `Found ${observations.length} total observations for form type: ${formId}`,
-      );
 
       return observations.map(observation =>
         this.mapObservationModelToInterface(observation),
@@ -588,7 +591,6 @@ export class WatermelonDBRepo implements LocalRepoInterface {
   // Helper method to map WatermelonDB model to our interface
   private mapObservationModelToInterface(model: ObservationModel): Observation {
     const parsedData = model.getParsedData();
-    console.log(`Mapping model to interface. ID: ${model.id}`);
 
     // Parse geolocation data if available
     let geolocation = null;
