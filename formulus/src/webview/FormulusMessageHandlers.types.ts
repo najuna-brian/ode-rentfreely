@@ -54,6 +54,12 @@ export interface FormulusMessageHandlers {
     isDraft?: boolean,
     includeDeleted?: boolean,
   ) => Promise<Observation[]>;
+  onGetObservationsByQuery?: (options: {
+    formType: string;
+    isDraft?: boolean;
+    includeDeleted?: boolean;
+    whereClause?: string | null;
+  }) => Promise<Observation[]>;
   onOpenFormplayer?: (data: FormInitData) => Promise<FormCompletionResult>;
   onGetCurrentUser?: () => Promise<{ username: string; displayName?: string }>;
   // Called when the Formplayer WebView signals that it has completed initialization
