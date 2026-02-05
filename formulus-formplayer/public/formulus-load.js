@@ -48,7 +48,50 @@
       }
 
       function getExistingAPI() {
-        return window.formulus || window.globalThis?.formulus;
+        const api = window.formulus || window.globalThis?.formulus;
+        ensureGetObservationsByQuery(api);
+        return api;
+      }
+
+      function ensureGetObservationsByQuery(api) {
+        if (!api) return;
+        // Always replace: injected API may have buggy getObservationsByQuery that delegates to getObservations (drops whereClause)
+        api.getObservationsByQuery = function (options) {
+          return new Promise(function (resolve, reject) {
+            const messageId =
+              'msg_' + Date.now() + '_' + Math.floor(Math.random() * 1000);
+            const callback = function (event) {
+              try {
+                var data =
+                  typeof event.data === 'string'
+                    ? JSON.parse(event.data)
+                    : event.data;
+                if (
+                  data.type === 'getObservationsByQuery_response' &&
+                  data.messageId === messageId
+                ) {
+                  window.removeEventListener('message', callback);
+                  if (data.error) reject(new Error(data.error));
+                  else resolve(data.result);
+                }
+              } catch (e) {
+                window.removeEventListener('message', callback);
+                reject(e);
+              }
+            };
+            window.addEventListener('message', callback);
+            window.ReactNativeWebView.postMessage(
+              JSON.stringify({
+                type: 'getObservationsByQuery',
+                messageId: messageId,
+                formType: options.formType,
+                isDraft: options.isDraft,
+                includeDeleted: options.includeDeleted,
+                whereClause: options.whereClause,
+              })
+            );
+          });
+        };
       }
 
       function initiateRecovery() {
