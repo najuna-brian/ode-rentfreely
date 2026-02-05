@@ -48,7 +48,7 @@
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  filter: blur(4px) brightness(0.4) saturate(0);
+  filter: blur(var(--filter-blur-12)) brightness(0.4) saturate(0);
   opacity: var(--opacity-70);
   z-index: 0;
   pointer-events: none;
@@ -57,7 +57,7 @@
 }
 
 [data-theme="light"] .login-container::after {
-  filter: blur(7px) brightness(1) saturate(1);
+  filter: blur(var(--filter-blur-16)) brightness(1) saturate(1);
   opacity: var(--opacity-70);
 }
 
