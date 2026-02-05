@@ -170,13 +170,32 @@
   background: var(--color-semantic-ui-surface-dropdown-dark);
   backdrop-filter: blur(40px) saturate(180%);
   -webkit-backdrop-filter: blur(40px) saturate(180%);
-  border: var(--border-width-thin) solid var(--color-brand-primary-alpha-20);
+  border: none;
+  border-left: var(--border-width-thin) solid var(--color-brand-primary-alpha-30);
+  border-right: none;
   border-radius: var(--border-radius-lg);
   box-shadow: var(--shadow-portal-lg), inset 0 1px 0 var(--color-neutral-white-alpha-5);
   padding: var(--spacing-2);
   z-index: var(--z-index-dropdown);
   animation: slideDownFade var(--duration-normal) var(--easing-ease-out);
   overflow: visible;
+}
+
+/* Top and bottom borders: fade from left to right */
+.theme-switcher-dropdown::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    linear-gradient(to right, var(--color-brand-primary-alpha-30), transparent) 0 0 / 100% var(--border-width-thin) no-repeat,
+    linear-gradient(to right, var(--color-brand-primary-alpha-30), transparent) 0 100% / 100% var(--border-width-thin) no-repeat;
+  background-origin: border-box;
 }
 
 @media (min-width: 1025px) {
@@ -186,6 +205,8 @@
     right: 0;
     left: auto;
     border: none;
+    border-left: var(--border-width-thin) solid var(--color-brand-primary-alpha-30);
+    border-right: none;
     border-radius: 0 0 0 var(--border-radius-xl);
   }
 
@@ -355,14 +376,23 @@
 
 [data-theme="light"] .theme-switcher-dropdown {
   background: var(--color-semantic-ui-surface-dropdown-light);
-  border-color: var(--color-brand-primary-alpha-15);
+  border-left: var(--border-width-thin) solid var(--color-brand-primary-400);
+  border-right: none;
   box-shadow: 0 8px 32px var(--color-neutral-black-alpha-10),
     inset 0 1px 0 var(--color-neutral-black-alpha-3);
+}
+
+[data-theme="light"] .theme-switcher-dropdown::before {
+  background:
+    linear-gradient(to right, var(--color-brand-primary-400), transparent) 0 0 / 100% var(--border-width-thin) no-repeat,
+    linear-gradient(to right, var(--color-brand-primary-400), transparent) 0 100% / 100% var(--border-width-thin) no-repeat;
 }
 
 @media (min-width: 1025px) {
   [data-theme="light"] .user-info .theme-switcher-container .theme-switcher-dropdown {
     border: none;
+    border-left: var(--border-width-thin) solid var(--color-brand-primary-400);
+    border-right: none;
   }
 
   [data-theme="light"] .user-info .theme-switcher-container .theme-switcher-dropdown::after {
