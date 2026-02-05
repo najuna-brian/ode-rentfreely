@@ -1022,36 +1022,6 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
         whereClause?: string | null;
       },
     ) => {
-      // Support both formats: { options: {...} } from injection script, or flattened { formType, whereClause } from polyfill
-      const options = (payload?.options ?? payload) as {
-        formType: string;
-        isDraft?: boolean;
-        includeDeleted?: boolean;
-        whereClause?: string | null;
-      };
-      if (!options?.formType) {
-        console.warn('onGetObservationsByQuery: missing formType');
-        return [];
-      }
-
-      const service = await FormService.getInstance();
-      return await service.getObservationsByQuery(options);
-    },
-    onGetObservationsByQuery: async (
-      payload: {
-        options?: {
-          formType: string;
-          isDraft?: boolean;
-          includeDeleted?: boolean;
-          whereClause?: string | null;
-        };
-        formType?: string;
-        isDraft?: boolean;
-        includeDeleted?: boolean;
-        whereClause?: string | null;
-      },
-    ) => {
-      // Support both formats: { options: {...} } from injection script, or flattened { formType, whereClause } from polyfill
       const options = (payload?.options ?? payload) as {
         formType: string;
         isDraft?: boolean;
