@@ -100,7 +100,7 @@ html::-webkit-scrollbar-thumb:hover {
   background-position: center;
   background-repeat: no-repeat;
   background-attachment: fixed;
-  filter: blur(var(--filter-blur-2)) brightness(0.5) saturate(0);
+  filter: blur(var(--filter-blur-14)) brightness(0.5) saturate(0);
   opacity: var(--opacity-70);
   z-index: 0;
   pointer-events: none;
@@ -109,7 +109,7 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 [data-theme="light"] .dashboard::after {
-  filter: blur(var(--filter-blur-4)) brightness(1) saturate(1);
+  filter: blur(var(--filter-blur-18)) brightness(1) saturate(1);
   opacity: var(--opacity-70);
 }
 
@@ -2871,10 +2871,9 @@ html::-webkit-scrollbar-thumb:hover {
 .modal-content {
   position: relative;
   z-index: 10001;
-  background: var(--color-neutral-900-alpha-95);
-  backdrop-filter: blur(var(--filter-blur-40));
+  background: var(--color-neutral-900);
   border-radius: var(--border-radius-xl);
-  border: var(--border-width-thin) solid var(--color-neutral-white-alpha-10);
+  border: var(--border-width-medium) solid var(--color-neutral-700);
   box-shadow: var(--shadow-2xl);
   max-width: 600px;
   width: 100%;
@@ -3089,6 +3088,16 @@ html::-webkit-scrollbar-thumb:hover {
 .modal-close:hover {
   color: var(--color-neutral-white);
   background: var(--color-neutral-white-alpha-10);
+  transform: rotate(90deg);
+}
+
+[data-theme="light"] .modal-close {
+  color: var(--color-text-primary);
+}
+
+[data-theme="light"] .modal-close:hover {
+  color: var(--color-neutral-900);
+  background: var(--color-neutral-black-alpha-10);
   transform: rotate(90deg);
 }
 
@@ -3911,23 +3920,64 @@ html::-webkit-scrollbar-thumb:hover {
   color: var(--color-neutral-white);
 }
 
-/* Modal Close Button */
-.modal-actions button[type="button"] {
-  padding: var(--spacing-3) var(--spacing-6);
-  background: var(--color-neutral-white-alpha-5);
-  border: var(--border-width-thin) solid var(--color-neutral-white-alpha-10);
-  border-radius: var(--border-radius-md);
-  color: var(--color-neutral-white);
-  cursor: pointer;
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-semibold);
-  transition: all var(--duration-normal) var(--easing-ease-out);
+/* Cancel / Close buttons in modals (except Create User) – match modal close (X): same color and hover */
+.modal-content:not(.modal-create-user) .modal-actions button[type="button"],
+.modal-content:not(.modal-create-user) .modal-actions .ode-button--neutral {
+  padding: var(--spacing-3) var(--spacing-6) !important;
+  background: transparent !important;
+  border: var(--border-width-thin) solid transparent !important;
+  border-radius: var(--border-radius-md) !important;
+  color: var(--color-neutral-white-alpha-70) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  transition: all var(--duration-fast) var(--easing-ease-out) !important;
 }
 
-.modal-actions button[type="button"]:hover {
-  background: var(--color-neutral-white-alpha-10);
-  border-color: var(--color-neutral-white-alpha-20);
-  transform: translateY(-1px);
+.modal-content:not(.modal-create-user) .modal-actions button[type="button"]:hover:not(:disabled),
+.modal-content:not(.modal-create-user) .modal-actions .ode-button--neutral:hover:not(:disabled) {
+  color: var(--color-neutral-white) !important;
+  background: var(--color-brand-primary-500) !important;
+  border-color: var(--color-brand-primary-500) !important;
+  transform: translateY(-1px) !important;
+}
+
+[data-theme="light"] .modal-content:not(.modal-create-user) .modal-actions button[type="button"],
+[data-theme="light"] .modal-content:not(.modal-create-user) .modal-actions .ode-button--neutral {
+  color: var(--color-text-primary) !important;
+}
+
+[data-theme="light"] .modal-content:not(.modal-create-user) .modal-actions button[type="button"]:hover:not(:disabled),
+[data-theme="light"] .modal-content:not(.modal-create-user) .modal-actions .ode-button--neutral:hover:not(:disabled) {
+  color: var(--color-neutral-white) !important;
+  background: var(--color-brand-primary-500) !important;
+  border-color: var(--color-brand-primary-500) !important;
+}
+
+[data-theme="light"] .modal-content:not(.modal-create-user) .modal-actions button[type="button"]:hover:not(:disabled) span,
+[data-theme="light"] .modal-content:not(.modal-create-user) .modal-actions button[type="button"]:hover:not(:disabled) *,
+[data-theme="light"] .modal-content:not(.modal-create-user) .modal-actions .ode-button--neutral:hover:not(:disabled) span,
+[data-theme="light"] .modal-content:not(.modal-create-user) .modal-actions .ode-button--neutral:hover:not(:disabled) * {
+  color: var(--color-neutral-white) !important;
+}
+
+/* Create User modal – restore original button styles (visible background and border); hover stays green for both via rules below */
+.modal-create-user .modal-actions button[type="button"],
+.modal-create-user .modal-actions .ode-button--neutral {
+  padding: var(--spacing-2) var(--spacing-4) !important;
+  background: var(--color-neutral-white-alpha-5) !important;
+  border: var(--border-width-thin) solid var(--color-neutral-white-alpha-10) !important;
+  border-radius: var(--border-radius-md) !important;
+  color: var(--color-neutral-white) !important;
+  font-size: var(--font-size-sm) !important;
+  font-weight: var(--font-weight-semibold) !important;
+  transition: all var(--duration-normal) var(--easing-ease-out) !important;
+}
+
+[data-theme="light"] .modal-create-user .modal-actions button[type="button"],
+[data-theme="light"] .modal-create-user .modal-actions .ode-button--neutral {
+  background: var(--color-neutral-black-alpha-5) !important;
+  border-color: var(--color-border-default) !important;
+  color: var(--color-text-primary) !important;
 }
 
 /* Info Row Column Layout */
@@ -4020,6 +4070,7 @@ html::-webkit-scrollbar-thumb:hover {
 [data-theme="light"] .user-search-empty h3,
 [data-theme="light"] .modal-header h2,
 [data-theme="light"] .files-list h3,
+[data-theme="light"] .files-table th,
 [data-theme="light"] .changes-section h3,
 [data-theme="light"] .users-table th,
 [data-theme="light"] .observations-table th,
@@ -4029,12 +4080,17 @@ html::-webkit-scrollbar-thumb:hover {
 }
 
 [data-theme="light"] .section-card,
-[data-theme="light"] .modal-content,
 [data-theme="light"] .tab-content,
 [data-theme="light"] .search-bar,
 [data-theme="light"] .role-dropdown-menu {
   background: var(--color-background-card);
   border-color: var(--color-border-default);
+}
+
+/* Modal content – solid background and green border in light mode */
+[data-theme="light"] .modal-content {
+  background: var(--color-neutral-white);
+  border: var(--border-width-medium) solid var(--color-brand-primary-500);
 }
 
 /* Different shades for containers in light mode - similar to dark mode hierarchy */

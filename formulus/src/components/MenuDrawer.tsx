@@ -65,12 +65,6 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
 
   const menuItems: MenuItem[] = [
     {
-      icon: 'clipboard-list',
-      label: 'Form Management',
-      screen: 'FormManagement',
-      minRole: 'admin',
-    },
-    {
       icon: 'cog',
       label: 'App Settings',
       screen: 'Settings',

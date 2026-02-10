@@ -8,7 +8,6 @@ import RNFS from 'react-native-fs';
 import * as Keychain from 'react-native-keychain';
 import { Alert } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
-import NitroSound, { AudioSet } from 'react-native-nitro-sound';
 import {
   pick,
   types,
@@ -21,6 +20,19 @@ import {
   FormInfo,
 } from './FormulusInterfaceDefinition';
 import { FormulusMessageHandlers } from './FormulusMessageHandlers.types';
+
+// NitroSound is disabled for emulator in react-native.config.js - do not load the module
+// to avoid "Sound HybridObject not registered" console errors. Load lazily only when
+// the native module is available (re-enable in react-native.config.js and rebuild).
+let NitroSound: {
+  startRecorder: (path: string, opts: unknown) => Promise<void>;
+  stopRecorder: () => Promise<void>;
+} | null = null;
+type AudioSet = {
+  AudioSamplingRate: number;
+  AudioEncodingBitRate: number;
+  AudioChannels: number;
+};
 import { FormService } from '../services/FormService';
 import { Observation, ObservationData } from '../database/models/Observation';
 
@@ -787,6 +799,24 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
       console.log('Call subform handler called', fieldId, formType, options);
     },
     onRequestAudio: async (fieldId: string) => {
+      // Lazy-load NitroSound only when audio is requested (avoids console error on startup when disabled)
+      if (!NitroSound) {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-require-imports
+          const ns = require('react-native-nitro-sound');
+          NitroSound = ns.default;
+        } catch {
+          NitroSound = null;
+        }
+      }
+      if (!NitroSound) {
+        return {
+          fieldId,
+          status: 'error' as const,
+          message:
+            'Audio recording not available. Re-enable react-native-nitro-sound in react-native.config.js and rebuild.',
+        };
+      }
       try {
         const filename = `audio_${Date.now()}.m4a`;
         const path = `${RNFS.DocumentDirectoryPath}/${filename}`;
@@ -986,6 +1016,32 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
       //TODO: Handle deleted etc.
       return await service.getObservationsByFormType(formTypeString);
     },
+    onGetObservationsByQuery: async (payload: {
+      options?: {
+        formType: string;
+        isDraft?: boolean;
+        includeDeleted?: boolean;
+        whereClause?: string | null;
+      };
+      formType?: string;
+      isDraft?: boolean;
+      includeDeleted?: boolean;
+      whereClause?: string | null;
+    }) => {
+      const options = (payload?.options ?? payload) as {
+        formType: string;
+        isDraft?: boolean;
+        includeDeleted?: boolean;
+        whereClause?: string | null;
+      };
+      if (!options?.formType) {
+        console.warn('onGetObservationsByQuery: missing formType');
+        return [];
+      }
+
+      const service = await FormService.getInstance();
+      return await service.getObservationsByQuery(options);
+    },
     onOpenFormplayer: async (data: FormInitData) => {
       return startFormplayerOperation(
         data.formType,
@@ -994,28 +1050,20 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
         data.observationId ?? null,
       );
     },
-    onFormplayerInitialized: (data: { formType?: string; status?: string }) => {
-      console.log(
-        'FormulusMessageHandlers: onFormplayerInitialized handler invoked.',
-        data,
-      );
+    onFormplayerInitialized: (_data: {
+      formType?: string;
+      status?: string;
+    }) => {
       // Reserved for future hooks (e.g., native-side loading indicators or analytics).
-      // Currently used only for logging/diagnostics so other WebViews are unaffected.
     },
     onFormulusReady: () => {
-      console.log(
-        'FormulusMessageHandlers: onFormulusReady handler invoked. WebView is ready.',
-      );
       // TODO: Perform any actions needed when the WebView content signals it's ready
     },
     onReceiveFocus: () => {
-      console.log(
-        'FormulusMessageHandlers: onReceiveFocus handler invoked. WebView is ready.',
-      );
       // TODO: Perform any actions needed when the WebView content signals it's ready
     },
-    onUnknownMessage: (message: unknown) => {
-      console.warn('Unknown message received:', message);
+    onUnknownMessage: (_message: unknown) => {
+      // Unhandled message type - no-op by default
     },
     onError: (error: Error) => {
       console.error('WebView Handler Error:', error);

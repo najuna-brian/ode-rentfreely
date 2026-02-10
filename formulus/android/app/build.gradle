@@ -186,5 +186,7 @@ task copyWebviewAssets(type: Copy) {
     from "${rootDir}/../assets/webview"
     into "${projectDir}/src/main/assets/webview"
     include '**/*.js'
+    include '**/*.jsx'
+    include '**/*.html'
 }
 preBuild.dependsOn(copyWebviewAssets)

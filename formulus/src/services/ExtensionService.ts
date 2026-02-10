@@ -93,23 +93,55 @@ export class ExtensionService {
       renderers: {},
     };
 
-    // Load app-level extensions
-    const appLevelExt = await this.loadExtensionFile(
-      `${customAppPath}/forms/ext.json`,
+    console.log(
+      `[ExtensionService] Loading extensions for app: ${customAppPath}, form: ${formName || 'none'}`,
     );
+
+    // Load app-level extensions
+    const appExtPath = `${customAppPath}/forms/ext.json`;
+    console.log(
+      `[ExtensionService] Loading app-level ext.json from: ${appExtPath}`,
+    );
+    const appLevelExt = await this.loadExtensionFile(appExtPath);
     if (appLevelExt) {
+      console.log(`[ExtensionService] App-level extensions loaded:`, {
+        functionCount: Object.keys(appLevelExt.functions || {}).length,
+        functionNames: Object.keys(appLevelExt.functions || {}),
+      });
       this.mergeExtension(result, appLevelExt);
+    } else {
+      console.warn(
+        `[ExtensionService] App-level ext.json not found or failed to load: ${appExtPath}`,
+      );
     }
 
     // Load form-level extensions (higher precedence)
     if (formName) {
-      const formLevelExt = await this.loadExtensionFile(
-        `${customAppPath}/forms/${formName}/ext.json`,
+      const formExtPath = `${customAppPath}/forms/${formName}/ext.json`;
+      console.log(
+        `[ExtensionService] Loading form-level ext.json from: ${formExtPath}`,
       );
+      const formLevelExt = await this.loadExtensionFile(formExtPath);
       if (formLevelExt) {
+        console.log(`[ExtensionService] Form-level extensions loaded:`, {
+          functionCount: Object.keys(formLevelExt.functions || {}).length,
+          functionNames: Object.keys(formLevelExt.functions || {}),
+        });
         this.mergeExtension(result, formLevelExt);
       }
     }
+
+    console.log(`[ExtensionService] Final merged extensions:`, {
+      definitionKeys: Object.keys(result.definitions),
+      functionKeys: Object.keys(result.functions),
+      functionDetails: Object.entries(result.functions).map(([k, v]) => ({
+        key: k,
+        name: v.name,
+        module: v.module,
+        export: v.export,
+      })),
+      rendererKeys: Object.keys(result.renderers),
+    });
 
     return result;
   }
@@ -123,19 +155,102 @@ export class ExtensionService {
     try {
       const exists = await RNFS.exists(filePath);
       if (!exists) {
+        console.log(`[ExtensionService] File does not exist: ${filePath}`);
         return null;
       }
 
       const content = await RNFS.readFile(filePath, 'utf8');
-      const extension = JSON.parse(content) as ExtensionDefinition;
+      const rawExtension = JSON.parse(content) as Record<string, unknown>;
+
+      console.log(`[ExtensionService] Loaded ext.json from ${filePath}:`, {
+        hasSchemas: !!rawExtension.schemas,
+        hasDefinitions: !!rawExtension.definitions,
+        hasFunctions: !!rawExtension.functions,
+        functionKeys: rawExtension.functions
+          ? Object.keys(rawExtension.functions)
+          : [],
+        hasRenderers: !!rawExtension.renderers,
+      });
+
+      // Normalize the extension format to match ExtensionDefinition interface
+      const extension: ExtensionDefinition = {
+        // Handle both "schemas.definitions" and direct "definitions"
+        definitions:
+          rawExtension.definitions || rawExtension.schemas?.definitions || {},
+
+        // Transform functions from {key: {path, export}} to {key: {name, module, export}}
+        functions: rawExtension.functions
+          ? Object.entries(rawExtension.functions).reduce(
+              (acc, [key, func]: [string, Record<string, unknown>]) => {
+                acc[key] = {
+                  name: key, // Use key as name
+                  module: func.path || func.module || '', // Support both "path" and "module"
+                  export: func.export || key, // Use export if provided, otherwise use key
+                };
+                return acc;
+              },
+              {} as Record<string, ExtensionFunction>,
+            )
+          : undefined,
+
+        // Transform renderers (similar structure)
+        renderers: rawExtension.renderers
+          ? Object.entries(rawExtension.renderers).reduce(
+              (acc, [key, renderer]: [string, Record<string, unknown>]) => {
+                // Handle both flat structure and nested structure
+                const rendererObj = renderer.renderer || renderer;
+                const testerObj = renderer.tester || {};
+
+                acc[key] = {
+                  name: key,
+                  format: renderer.format || rendererObj?.format || '',
+                  module:
+                    rendererObj?.path ||
+                    rendererObj?.module ||
+                    renderer.module ||
+                    '',
+                  tester: testerObj?.export || renderer.tester?.export,
+                  renderer:
+                    rendererObj?.export || renderer.renderer?.export || key,
+                };
+                return acc;
+              },
+              {} as Record<string, ExtensionRenderer>,
+            )
+          : undefined,
+      };
+
+      console.log(`[ExtensionService] Normalized extension:`, {
+        definitionKeys: Object.keys(extension.definitions || {}),
+        functionKeys: Object.keys(extension.functions || {}),
+        functionDetails: extension.functions
+          ? Object.entries(extension.functions).map(([k, v]) => ({
+              key: k,
+              name: v.name,
+              module: v.module,
+              export: v.export,
+            }))
+          : [],
+        rendererKeys: Object.keys(extension.renderers || {}),
+      });
 
       // Validate structure
       this.validateExtension(extension, filePath);
 
       return extension;
     } catch (error) {
-      console.error('Unknown error', error);
-      console.warn(`Failed to load extension file ${filePath}:`, error);
+      if (
+        error instanceof Error &&
+        'code' in error &&
+        (error as NodeJS.ErrnoException).code === 'ENOENT'
+      ) {
+        // File doesn't exist - this is OK
+        return null;
+      }
+      console.warn(
+        `[ExtensionService] Failed to load extension file ${filePath}:`,
+        error,
+      );
       return null;
     }
   }
@@ -180,11 +295,7 @@ export class ExtensionService {
             `Invalid extension file ${filePath}: renderer ${key} must have a name`,
           );
         }
-        if (!renderer.format) {
-          throw new Error(
-            `Invalid extension file ${filePath}: renderer ${key} must have a format`,
-          );
-        }
+        // Format can be empty for custom renderers that handle their own testers
         if (!renderer.module) {
           throw new Error(
             `Invalid extension file ${filePath}: renderer ${key} must have a module path`,

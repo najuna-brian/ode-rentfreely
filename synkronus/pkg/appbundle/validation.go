@@ -48,6 +48,7 @@ func (s *Service) validateBundleStructure(zipReader *zip.Reader) error {
 		}
 
 		// Track form directories (exclude ext.json files)
+		// Root-level: forms/{formName}/...
 		if strings.HasPrefix(file.Name, "forms/") && !strings.HasSuffix(file.Name, "/") {
 			// Skip ext.json files - they're not form directories
 			// Skip both root-level (forms/ext.json) and form-level (forms/{formName}/ext.json)
@@ -57,6 +58,16 @@ func (s *Service) validateBundleStructure(zipReader *zip.Reader) error {
 			formParts := strings.Split(file.Name, "/")
 			if len(formParts) >= 2 {
 				formDirs[formParts[1]] = struct{}{}
+			}
+		}
+		// AnthroCollect-style: app/forms/{formName}/...
+		if strings.HasPrefix(file.Name, "app/forms/") && !strings.HasSuffix(file.Name, "/") {
+			if file.Name == "app/forms/ext.json" || strings.HasSuffix(file.Name, "/ext.json") {
+				continue
+			}
+			formParts := strings.Split(file.Name, "/")
+			if len(formParts) >= 3 {
+				formDirs[formParts[2]] = struct{}{}
 			}
 		}
 	}
@@ -92,6 +103,24 @@ func (s *Service) validateBundleStructure(zipReader *zip.Reader) error {
 					hasFormUI[formName] = true
 				}
 			}
+		} else if strings.HasPrefix(file.Name, "app/forms/") {
+			// AnthroCollect-style: app/forms/{formName}/schema.json or ui.json
+			if file.Name == "app/forms/ext.json" || strings.HasSuffix(file.Name, "/ext.json") {
+				continue
+			}
+			if err := s.validateFormFileAppForms(file); err != nil {
+				return err
+			}
+			parts := strings.Split(file.Name, "/")
+			if len(parts) >= 4 {
+				formName := parts[2]
+				switch parts[3] {
+				case "schema.json":
+					hasFormSchema[formName] = true
+				case "ui.json":
+					hasFormUI[formName] = true
+				}
+			}
 		} else if strings.HasPrefix(file.Name, "renderers/") {
 			if err := s.validateRendererFile(file); err != nil {
 				return err
@@ -108,6 +137,34 @@ func (s *Service) validateBundleStructure(zipReader *zip.Reader) error {
 
 	// Third pass: validate form references to renderers
 	return s.validateFormRendererReferences(zipReader)
+}
+
+// getFormNameFromSchemaPath extracts form name from schema path.
+// Supports forms/{name}/schema.json and app/forms/{name}/schema.json.
+func getFormNameFromSchemaPath(path string) string {
+	parts := strings.Split(path, "/")
+	if len(parts) == 3 && parts[0] == "forms" {
+		return parts[1]
+	}
+	if len(parts) == 4 && parts[0] == "app" && parts[1] == "forms" {
+		return parts[2]
+	}
+	return ""
+}
+
+// validateFormFileAppForms validates app/forms/{formName}/schema.json or ui.json
+func (s *Service) validateFormFileAppForms(file *zip.File) error {
+	if file.FileInfo().IsDir() {
+		return nil
+	}
+	parts := strings.Split(file.Name, "/")
+	if len(parts) != 4 || (parts[3] != "schema.json" && parts[3] != "ui.json") {
+		return fmt.Errorf("%w: invalid form file path: %s", ErrInvalidFormStructure, file.Name)
+	}
+	if parts[3] == "schema.json" {
+		return s.validateFormSchema(file)
+	}
+	return nil
 }
 
 // validateFormFile validates a single form file
@@ -146,12 +203,11 @@ func (s *Service) validateFormSchema(file *zip.File) error {
 		return fmt.Errorf("invalid JSON in form schema: %w", err)
 	}
 
-	// Get form name from path
-	parts := strings.Split(file.Name, "/")
-	if len(parts) < 2 {
+	// Get form name from path (forms/{name}/schema.json or app/forms/{name}/schema.json)
+	formName := getFormNameFromSchemaPath(file.Name)
+	if formName == "" {
 		return fmt.Errorf("invalid file path: %s", file.Name)
 	}
-	formName := parts[1]
 
 	// Check for core field modifications
 	if currentHash, exists := s.getCoreFieldsHash(formName); exists {

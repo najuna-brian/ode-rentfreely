@@ -30,12 +30,17 @@ export class FormulusWebViewMessageManager {
   private pendingRequests: Map<
     string,
     {
+      callbackName: string;
+      data: unknown;
       resolve: (value: unknown) => void;
       reject: (reason?: unknown) => void;
       timeout: number;
     }
   > = new Map();
   private nativeSideHandlers: ReturnType<typeof createFormulusMessageHandlers>;
+  private formInitRetryCount = 0;
+  private static readonly FORM_INIT_MAX_RETRIES = 12; // 12 * 500ms = 6 seconds
+  private formInitRetryTimeout: ReturnType<typeof setTimeout> | null = null;
 
   constructor(
     webViewRef: React.RefObject<WebView | null>,
@@ -45,18 +50,11 @@ export class FormulusWebViewMessageManager {
     this.appName = appName;
     this.logPrefix = `[${this.appName}]`;
     this.nativeSideHandlers = createFormulusMessageHandlers(); // Initialize native handlers
-    console.log(`${this.logPrefix} FormulusWebViewMessageManager initialized`);
   }
 
   public setWebViewReady(isReady: boolean): void {
     this.isWebViewReady = isReady;
-    console.log(`${this.logPrefix} WebView readiness set to: ${isReady}`);
-    if (isReady) {
-      console.log(
-        `${this.logPrefix} WebView is ready, processing unknown queued messages (count=${this.messageQueue.length})`,
-      );
-      this.processMessageQueue();
-    }
+    if (isReady) this.processMessageQueue();
   }
 
   private queueMessage<T>(
@@ -65,7 +63,6 @@ export class FormulusWebViewMessageManager {
     resolve: (value: T | PromiseLike<T>) => void,
     reject: (reason?: unknown) => void,
   ): void {
-    console.log(`${this.logPrefix} Queuing message: ${callbackName}`, data);
     this.messageQueue.push({
       callbackName,
       data,
@@ -75,9 +72,6 @@ export class FormulusWebViewMessageManager {
   }
 
   private processMessageQueue(): void {
-    console.log(
-      `${this.logPrefix} Processing ${this.messageQueue.length} queued messages`,
-    );
     while (this.messageQueue.length > 0) {
       const message = this.messageQueue.shift();
       if (message) {
@@ -107,9 +101,6 @@ export class FormulusWebViewMessageManager {
     }
     const script = `
       (function() {
-        console.debug("[${
-          this.appName
-        }] Injecting script for callback ${callbackName}, requestId ${requestId}");
         try {
           if (window.${callbackName}) {
             Promise.resolve(window.${callbackName}(${JSON.stringify(data)}))
@@ -133,20 +124,12 @@ export class FormulusWebViewMessageManager {
       })();
       true; // Return true to prevent iOS warning
     `;
-    console.log(
-      `${this.logPrefix} Sending to WebView (${callbackName}, ${requestId}):`,
-      data,
-    );
     this.webViewRef.current.injectJavaScript(script);
   }
 
   public send<T = void>(callbackName: string, data: unknown = {}): Promise<T> {
     return new Promise<T>((resolve, reject) => {
       if (!this.isWebViewReady) {
-        console.log(
-          `${this.logPrefix} WebView not ready, queuing message for callback ${callbackName}`,
-          data,
-        );
         this.queueMessage(callbackName, data, resolve, reject);
         return;
       }
@@ -166,6 +149,8 @@ export class FormulusWebViewMessageManager {
       }, FormulusWebViewMessageManager.REQUEST_TIMEOUT);
 
       this.pendingRequests.set(requestId, {
+        callbackName,
+        data,
         resolve: resolve as (value: unknown) => void,
         reject,
         timeout,
@@ -189,6 +174,13 @@ export class FormulusWebViewMessageManager {
 
       if (type === 'formplayerReadyToReceiveInit') {
         this.handleReadySignal(payload);
+      } else if (type === 'onFormulusReady') {
+        // Injection script sends onFormulusReady when API is injected (runs before
+        // formplayer mounts). Formplayer sends formplayerReadyToReceiveInit when ready.
+        // Treat onFormulusReady as fallback: delay so formplayer React app can load
+        // and mount (register window.onFormInit) before we process the queued form init.
+        const delayMs = 1200;
+        setTimeout(() => this.handleReadySignal(payload), delayMs);
       } else if (type === 'response') {
         const actualRequestId = messageId || payload.requestId;
         if (actualRequestId) {
@@ -257,8 +249,7 @@ export class FormulusWebViewMessageManager {
     }
   };
 
-  private handleReadySignal(data?: unknown): void {
-    console.log(`${this.logPrefix} WebView is ready.`, data || '');
+  private handleReadySignal(_data?: unknown): void {
     this.setWebViewReady(true);
     // Optionally call native-side handler if it exists for onFormulusReady
     if (this.nativeSideHandlers.onFormulusReady) {
@@ -274,7 +265,6 @@ export class FormulusWebViewMessageManager {
   }
 
   public handleReceiveFocus(): void {
-    console.log(`${this.logPrefix} WebView is receiving focus.`);
     // Optionally call native-side handler if it exists for onReceiveFocus
     if (this.nativeSideHandlers.onReceiveFocus) {
       try {
@@ -302,20 +292,56 @@ export class FormulusWebViewMessageManager {
       return;
     }
     clearTimeout(pendingRequest.timeout as unknown as number); // Cast to number for clearTimeout
+    this.pendingRequests.delete(messageId);
+
     if (error) {
+      const errorStr = String(error);
+      // Form init was sent before formplayer registered window.onFormInit.
+      // Re-queue so formplayerReadyToReceiveInit can deliver it when formplayer mounts.
+      if (
+        errorStr.includes('Callback onFormInit not found') &&
+        pendingRequest.callbackName === 'onFormInit'
+      ) {
+        this.formInitRetryCount += 1;
+        if (
+          this.formInitRetryCount >
+          FormulusWebViewMessageManager.FORM_INIT_MAX_RETRIES
+        ) {
+          console.error(
+            `${this.logPrefix} Form init failed after ${this.formInitRetryCount} retries. Formplayer may not have loaded.`,
+          );
+          pendingRequest.reject(
+            new Error(
+              'Formplayer did not load in time. Please close and try again.',
+            ),
+          );
+          this.formInitRetryCount = 0;
+          return;
+        }
+        this.queueMessage(
+          pendingRequest.callbackName,
+          pendingRequest.data,
+          pendingRequest.resolve,
+          pendingRequest.reject,
+        );
+        // Schedule retry - formplayer may mount later
+        this.formInitRetryTimeout = setTimeout(() => {
+          this.formInitRetryTimeout = null;
+          this.processMessageQueue();
+        }, 500);
+        return;
+      }
       console.error(
         `${this.logPrefix} Received error for request ${messageId}:`,
         error,
       );
-      pendingRequest.reject(new Error(String(error)));
+      pendingRequest.reject(new Error(errorStr));
     } else {
-      console.log(
-        `${this.logPrefix} Received result for request ${messageId}:`,
-        result,
-      );
+      if (pendingRequest.callbackName === 'onFormInit') {
+        this.formInitRetryCount = 0;
+      }
       pendingRequest.resolve(result);
     }
-    this.pendingRequests.delete(messageId);
   }
 
   private async handleIncomingAction(
@@ -324,10 +350,6 @@ export class FormulusWebViewMessageManager {
     data: any,
     messageId?: string,
   ): Promise<void> {
-    console.log(
-      `${this.logPrefix} Handling incoming action: type=${type}, messageId=${messageId}`,
-      data,
-    );
     const handlerName = `on${
       type.charAt(0).toUpperCase() + type.slice(1)
     }` as keyof typeof this.nativeSideHandlers;
@@ -379,11 +401,6 @@ export class FormulusWebViewMessageManager {
         error: error,
       };
 
-      console.log(
-        `${this.logPrefix} Sending response for incoming action ${type} (messageId: ${messageId}):`,
-        responsePayload,
-      );
-
       // Directly post a message to the webview, which will be caught by the event listeners
       // in FormulusInjectionScript.js
       this.webViewRef.current?.injectJavaScript(
@@ -394,9 +411,11 @@ export class FormulusWebViewMessageManager {
   }
 
   public reset(): void {
-    console.log(
-      `${this.logPrefix} Resetting FormulusWebViewMessageManager state.`,
-    );
+    if (this.formInitRetryTimeout) {
+      clearTimeout(this.formInitRetryTimeout);
+      this.formInitRetryTimeout = null;
+    }
+    this.formInitRetryCount = 0;
     this.pendingRequests.forEach(request => {
       clearTimeout(request.timeout as unknown as number); // Cast to number
       request.reject(new Error('WebViewMessageManager reset'));
@@ -404,7 +423,6 @@ export class FormulusWebViewMessageManager {
     this.pendingRequests.clear();
     this.messageQueue = [];
     this.isWebViewReady = false;
-    console.log(`${this.logPrefix} State reset complete.`);
   }
 
   // Convenience methods for common actions (can be added in Phase 2/3)
@@ -412,24 +430,10 @@ export class FormulusWebViewMessageManager {
     if (!formData.formType) {
       throw new Error('Form type is required for form init');
     }
-    console.log(
-      `${this.logPrefix} sendFormInit called for formType='${formData.formType}', isWebViewReady=${this.isWebViewReady}`,
-    );
-    if (!this.isWebViewReady) {
-      console.log(
-        `${this.logPrefix} Form init will be queued until WebView is ready`,
-        formData,
-      );
-    }
-    console.log(
-      `${this.logPrefix} Sending form init now (or queuing via send):`,
-      formData.formType,
-    );
     return this.send<void>('onFormInit', formData);
   }
 
   public sendAttachmentData(attachmentData: unknown): Promise<void> {
-    console.log(`${this.logPrefix} Sending attachment data.`);
     return this.send<void>('onAttachmentData', attachmentData);
   }
 }
