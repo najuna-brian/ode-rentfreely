@@ -14,7 +14,7 @@ import Icon from '@react-native-vector-icons/material-design-icons';
 import { FormService, FormSpec } from '../services';
 import { Observation } from '../database/models/Observation';
 import { openFormplayerFromNative } from '../webview/FormulusMessageHandlers';
-import { ObservationCard, EmptyState } from '../components/common';
+import { ObservationCard, EmptyState, Button } from '../components/common';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainAppStackParamList } from '../types/NavigationTypes';
@@ -283,15 +283,12 @@ const FormManagementScreen = () => {
             </View>
           </View>
           <View style={styles.formTypeActions}>
-            <TouchableOpacity
-              style={styles.addButton}
-              onPress={e => {
-                e.stopPropagation();
-                handleAddObservation(item);
-              }}>
-              <Icon name="plus" size={20} color={colors.neutral.white} />
-              <Text style={styles.buttonText}>Add</Text>
-            </TouchableOpacity>
+            <Button
+              title="Add"
+              onPress={() => handleAddObservation(item)}
+              variant="primary"
+              size="small"
+            />
             <Icon
               name={isExpanded ? 'chevron-up' : 'chevron-down'}
               size={24}
@@ -358,16 +355,13 @@ const FormManagementScreen = () => {
           />
 
           <View style={styles.footer}>
-            <TouchableOpacity
-              style={styles.resetButton}
-              onPress={handleResetDatabase}>
-              <Icon
-                name="database-remove"
-                size={20}
-                color={colors.neutral.white}
-              />
-              <Text style={styles.buttonText}>Reset Database</Text>
-            </TouchableOpacity>
+            <Button
+              title="Reset Database"
+              onPress={handleResetDatabase}
+              variant="secondary"
+              size="medium"
+              fullWidth
+            />
           </View>
         </>
       ) : (
@@ -478,20 +472,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  addButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: colors.semantic.info.ios,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 8,
-    gap: 4,
-  },
-  buttonText: {
-    color: colors.neutral.white,
-    fontWeight: '600',
-    fontSize: 14,
-  },
   observationsWrapper: {
     borderTopWidth: 1,
     borderTopColor: colors.ui.gray.light,
@@ -505,15 +485,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.neutral.white,
     borderTopWidth: 1,
     borderTopColor: colors.ui.gray.light,
-  },
-  resetButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colors.semantic.error.ios,
-    padding: 12,
-    borderRadius: 8,
-    gap: 8,
   },
   loadingContainer: {
     flex: 1,

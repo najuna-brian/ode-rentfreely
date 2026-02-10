@@ -3,7 +3,6 @@ import {
   Modal,
   View,
   Text,
-  TouchableOpacity,
   StyleSheet,
   Alert,
   Dimensions,
@@ -11,6 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Signature, { SignatureViewRef } from 'react-native-signature-canvas';
 import { colors } from '../theme/colors';
+import { Button } from './common/Button';
 
 interface SignatureCaptureModalProps {
   visible: boolean;
@@ -160,23 +160,24 @@ const SignatureCaptureModal: React.FC<SignatureCaptureModalProps> = ({
         </View>
 
         <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={[styles.button, styles.clearButton]}
-            onPress={handleClearSignature}>
-            <Text style={styles.clearButtonText}>Clear</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.cancelButton]}
-            onPress={handleCancel}>
-            <Text style={styles.cancelButtonText}>Cancel</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.button, styles.saveButton]}
-            onPress={handleSaveSignature}>
-            <Text style={styles.saveButtonText}>Save Signature</Text>
-          </TouchableOpacity>
+          <Button
+            title="Clear"
+            onPress={handleClearSignature}
+            variant="tertiary"
+            size="medium"
+          />
+          <Button
+            title="Cancel"
+            onPress={handleCancel}
+            variant="secondary"
+            size="medium"
+          />
+          <Button
+            title="Save Signature"
+            onPress={handleSaveSignature}
+            variant="primary"
+            size="medium"
+          />
         </View>
       </SafeAreaView>
     </Modal>
@@ -228,41 +229,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.neutral[300],
     justifyContent: 'space-around',
-  },
-  button: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 8,
-    minWidth: 80,
-    alignItems: 'center',
-  },
-  clearButton: {
-    backgroundColor: colors.neutral[200],
-    borderWidth: 1,
-    borderColor: colors.ui.gray.medium,
-  },
-  clearButtonText: {
-    color: colors.neutral[600],
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  cancelButton: {
-    backgroundColor: colors.neutral[200],
-    borderWidth: 1,
-    borderColor: colors.ui.gray.medium,
-  },
-  cancelButtonText: {
-    color: colors.neutral[600],
-    fontSize: 16,
-    fontWeight: '600',
-  },
-  saveButton: {
-    backgroundColor: colors.semantic.info.ios,
-  },
-  saveButtonText: {
-    color: colors.neutral.white,
-    fontSize: 16,
-    fontWeight: '600',
+    gap: 12,
   },
 });
 

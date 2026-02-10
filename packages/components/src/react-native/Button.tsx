@@ -17,7 +17,7 @@ import {
 } from 'react-native';
 import { ButtonProps, ButtonVariant, ButtonPosition } from '../shared/types';
 import { getOppositeVariant, getFadeDirection } from '../shared/utils';
-import { tokens } from '@ode/tokens/dist/react-native/tokens';
+import tokens from '@ode/tokens/dist/react-native/tokens-resolved';
 
 export interface NativeButtonProps extends ButtonProps {
   /**
@@ -78,11 +78,11 @@ const Button: React.FC<NativeButtonProps> = ({
 
   const backgroundColor = isPressed ? borderColor : 'transparent';
 
-  // Size-based spacing
+  const parsePx = (v: string) => parseInt(String(v).replace('px', ''), 10) || 0;
   const paddingMap = {
-    small: { vertical: tokens.spacing[2], horizontal: tokens.spacing[4] },
-    medium: { vertical: tokens.spacing[3], horizontal: tokens.spacing[6] },
-    large: { vertical: tokens.spacing[4], horizontal: tokens.spacing[8] },
+    small: { vertical: parsePx(tokens.spacing[2]), horizontal: parsePx(tokens.spacing[4]) },
+    medium: { vertical: parsePx(tokens.spacing[3]), horizontal: parsePx(tokens.spacing[6]) },
+    large: { vertical: parsePx(tokens.spacing[4]), horizontal: parsePx(tokens.spacing[8]) },
   };
 
   const fontSizeMap = {

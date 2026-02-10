@@ -7,7 +7,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { InputProps } from '../shared/types';
-import { tokens } from '@ode/tokens/dist/react-native/tokens';
+import tokens from '@ode/tokens/dist/react-native/tokens-resolved';
 
 const Input: React.FC<InputProps> = ({
   label,
@@ -17,6 +17,7 @@ const Input: React.FC<InputProps> = ({
   error,
   disabled = false,
   required = false,
+  secureTextEntry = false,
   style,
   testID,
 }) => {
@@ -47,6 +48,7 @@ const Input: React.FC<InputProps> = ({
         placeholder={placeholder}
         placeholderTextColor={tokens.color.neutral[400]}
         editable={!disabled}
+        secureTextEntry={secureTextEntry}
         style={[
           styles.input,
           {

@@ -1,80 +1,64 @@
 /**
  * ODE Design System Color Tokens
- * Based on @ode/tokens package
+ * Sourced from @ode/tokens package (single source of truth).
  *
  * Primary: Green (#4F7F4E)
  * Secondary: Gold (#E9B85B)
  */
 
+import tokens from '@ode/tokens/dist/react-native/tokens-resolved';
+
+const c = (tokens as { color: Record<string, unknown> }).color as Record<string, unknown>;
+const n = c.neutral as Record<string, string>;
+const brand = c.brand as { primary: Record<string, unknown>; secondary: Record<string, unknown> };
+
 export const colors = {
   brand: {
-    primary: {
-      50: '#F0F7EF',
-      100: '#D9E9D8',
-      200: '#B9D5B8',
-      300: '#90BD8F',
-      400: '#6FA46E',
-      500: '#4F7F4E', // Main brand color
-      600: '#3F6A3E',
-      700: '#30552F',
-      800: '#224021',
-      900: '#173016',
-    },
-    secondary: {
-      50: '#FEF9EE',
-      100: '#FCEFD2',
-      200: '#F9E0A8',
-      300: '#F5CC75',
-      400: '#F0B84D',
-      500: '#E9B85B', // Secondary brand color (gold)
-      600: '#D9A230',
-      700: '#B8861C',
-      800: '#976D1A',
-      900: '#7C5818',
-    },
+    primary: brand.primary as Record<string, string>,
+    secondary: brand.secondary as Record<string, string>,
   },
   neutral: {
-    white: '#FFFFFF',
-    50: '#FAFAFA',
-    100: '#F5F5F5',
-    200: '#EEEEEE',
-    300: '#E0E0E0',
-    400: '#BDBDBD',
-    500: '#9E9E9E',
-    600: '#757575',
-    700: '#616161',
-    800: '#424242',
-    900: '#212121',
-    black: '#000000',
+    white: n.white,
+    50: n['50'],
+    100: n['100'],
+    200: n['200'],
+    300: n['300'],
+    400: n['400'],
+    500: n['500'],
+    600: n['600'],
+    700: n['700'],
+    800: n['800'],
+    900: n['900'],
+    black: n.black,
     transparent: 'transparent',
   },
   semantic: {
     success: {
-      50: '#F0F9F0',
-      500: '#34C759',
-      600: '#2E7D32',
+      50: (c.semantic as Record<string, Record<string, Record<string, string>>>).success['50'],
+      500: (c.semantic as Record<string, Record<string, Record<string, string>>>).success['500'],
+      600: (c.semantic as Record<string, Record<string, Record<string, string>>>).success['600'],
     },
     error: {
-      50: '#FEF2F2',
-      500: '#F44336',
-      600: '#DC2626',
-      ios: '#FF3B30', // iOS error red
+      50: (c.semantic as Record<string, Record<string, Record<string, string>>>).error['50'],
+      500: (c.semantic as Record<string, Record<string, Record<string, string>>>).error['500'],
+      600: (c.semantic as Record<string, Record<string, Record<string, string>>>).error['600'],
+      ios: '#FF3B30', // iOS system error red (platform override)
     },
     warning: {
-      50: '#FFFBEB',
-      500: '#FF9500',
-      600: '#D97706',
+      50: (c.semantic as Record<string, Record<string, Record<string, string>>>).warning['50'],
+      500: (c.semantic as Record<string, Record<string, Record<string, string>>>).warning['500'],
+      600: (c.semantic as Record<string, Record<string, Record<string, string>>>).warning['600'],
     },
     info: {
-      50: '#EFF6FF',
-      500: '#2196F3',
-      600: '#2563EB',
-      ios: '#007AFF', // iOS blue
-      light: '#E3F2FD', // Light blue background
-      medium: '#4A90E2', // Medium blue
+      50: (c.semantic as Record<string, Record<string, Record<string, string>>>).info['50'],
+      500: (c.semantic as Record<string, Record<string, Record<string, string>>>).info['500'],
+      600: (c.semantic as Record<string, Record<string, Record<string, string>>>).info['600'],
+      ios: '#007AFF', // iOS system blue (platform override)
+      light: '#E3F2FD',
+      medium: '#4A90E2',
     },
     scanner: {
-      success: '#00ff00', // Bright green for QR scanner success
+      success: '#00ff00', // QR scanner overlay (platform-specific)
     },
   },
   ui: {
@@ -83,7 +67,7 @@ export const colors = {
       lighter: '#F0F2F5',
       light: '#E5E5E5',
       medium: '#CCCCCC',
-      ios: '#8E8E93', // iOS system gray
+      ios: '#8E8E93',
     },
     background: 'rgba(0, 0, 0, 0.5)',
   },

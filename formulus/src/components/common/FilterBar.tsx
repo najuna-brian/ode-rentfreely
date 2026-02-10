@@ -1,14 +1,10 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  TextInput,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import Icon from '@react-native-vector-icons/material-design-icons';
 import { SortOption, FilterOption } from './FilterBar.types';
 import { colors } from '../../theme/colors';
+import { Input as ODEInput } from '@ode/components/react-native';
+import { Button } from './Button';
 
 export type { SortOption, FilterOption };
 
@@ -53,15 +49,14 @@ const FilterBar: React.FC<FilterBarProps> = ({
           color={colors.neutral[500]}
           style={styles.searchIcon}
         />
-        <TextInput
-          style={styles.searchInput}
+        <ODEInput
           placeholder="Search..."
-          placeholderTextColor={colors.neutral[500]}
           value={searchQuery}
           onChangeText={onSearchChange}
+          style={styles.searchInput}
         />
         {searchQuery.length > 0 && (
-          <TouchableOpacity onPress={() => onSearchChange('')}>
+          <TouchableOpacity onPress={() => onSearchChange('')} hitSlop={8}>
             <Icon name="close-circle" size={20} color={colors.neutral[500]} />
           </TouchableOpacity>
         )}
@@ -71,21 +66,14 @@ const FilterBar: React.FC<FilterBarProps> = ({
         <View style={styles.sortContainer}>
           <Text style={styles.label}>Sort:</Text>
           {sortOptions.map(option => (
-            <TouchableOpacity
+            <Button
               key={option.value}
-              style={[
-                styles.optionButton,
-                sortOption === option.value && styles.optionButtonActive,
-              ]}
-              onPress={() => onSortChange(option.value)}>
-              <Text
-                style={[
-                  styles.optionText,
-                  sortOption === option.value && styles.optionTextActive,
-                ]}>
-                {option.label}
-              </Text>
-            </TouchableOpacity>
+              title={option.label}
+              onPress={() => onSortChange(option.value)}
+              variant={sortOption === option.value ? 'primary' : 'tertiary'}
+              size="small"
+              style={styles.optionButton}
+            />
           ))}
         </View>
 
@@ -93,21 +81,14 @@ const FilterBar: React.FC<FilterBarProps> = ({
           <View style={styles.filterContainer}>
             <Text style={styles.label}>Filter:</Text>
             {filterOptions.map(option => (
-              <TouchableOpacity
+              <Button
                 key={option.value}
-                style={[
-                  styles.optionButton,
-                  filterOption === option.value && styles.optionButtonActive,
-                ]}
-                onPress={() => onFilterChange(option.value)}>
-                <Text
-                  style={[
-                    styles.optionText,
-                    filterOption === option.value && styles.optionTextActive,
-                  ]}>
-                  {option.label}
-                </Text>
-              </TouchableOpacity>
+                title={option.label}
+                onPress={() => onFilterChange(option.value)}
+                variant={filterOption === option.value ? 'primary' : 'tertiary'}
+                size="small"
+                style={styles.optionButton}
+              />
             ))}
           </View>
         )}
@@ -136,9 +117,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 14,
-    color: colors.neutral[800],
-    paddingVertical: 8,
+    marginBottom: 0,
   },
   controlsRow: {
     flexDirection: 'row',
@@ -164,23 +143,8 @@ const styles = StyleSheet.create({
     fontWeight: '500',
   },
   optionButton: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 12,
-    backgroundColor: colors.neutral[100],
     marginRight: 6,
     marginBottom: 4,
-  },
-  optionButtonActive: {
-    backgroundColor: colors.semantic.info.ios,
-  },
-  optionText: {
-    fontSize: 12,
-    color: colors.neutral[600],
-    fontWeight: '500',
-  },
-  optionTextActive: {
-    color: colors.neutral.white,
   },
 });
 

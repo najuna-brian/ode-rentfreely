@@ -7,7 +7,7 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { CardProps } from '../shared/types';
-import { tokens } from '@ode/tokens/dist/react-native/tokens';
+import tokens from '@ode/tokens/dist/react-native/tokens-resolved';
 
 const Card: React.FC<CardProps> = ({
   children,

@@ -1,10 +1,11 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, Image, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { MainAppStackParamList } from '../types/NavigationTypes';
 import { colors } from '../theme/colors';
+import { Button } from '../components/common';
 import logo from '../../assets/images/logo.png';
 
 type WelcomeScreenNavigationProp = StackNavigationProp<MainAppStackParamList>;
@@ -24,9 +25,12 @@ const WelcomeScreen = () => {
         <Text style={styles.subtitle}>
           Configure your server to get started
         </Text>
-        <TouchableOpacity style={styles.button} onPress={handleGetStarted}>
-          <Text style={styles.buttonText}>Get Started</Text>
-        </TouchableOpacity>
+        <Button
+          title="Get Started"
+          onPress={handleGetStarted}
+          variant="primary"
+          size="large"
+        />
       </View>
     </SafeAreaView>
   );
@@ -59,19 +63,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.neutral[600],
     marginBottom: 40,
-    textAlign: 'center',
-  },
-  button: {
-    backgroundColor: colors.semantic.info.medium,
-    paddingHorizontal: 40,
-    paddingVertical: 14,
-    borderRadius: 8,
-    minWidth: 200,
-  },
-  buttonText: {
-    color: colors.neutral.white,
-    fontSize: 16,
-    fontWeight: '600',
     textAlign: 'center',
   },
 });

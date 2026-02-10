@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 import colors from '../../theme/colors';
+import { Button } from './Button';
 
 export type SyncStatus = 'all' | 'synced' | 'pending';
 
@@ -24,19 +25,14 @@ const SyncStatusButtons: React.FC<SyncStatusButtonsProps> = ({
       {buttons.map(button => {
         const isActive = selectedStatus === button.id;
         return (
-          <TouchableOpacity
+          <Button
             key={button.id}
-            style={[styles.button, isActive && styles.buttonActive]}
+            title={button.label}
             onPress={() => onStatusChange(button.id)}
-            activeOpacity={0.7}>
-            <Text
-              style={[styles.buttonText, isActive && styles.buttonTextActive]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.8}>
-              {button.label}
-            </Text>
-          </TouchableOpacity>
+            variant={isActive ? 'primary' : 'tertiary'}
+            size="small"
+            style={styles.button}
+          />
         );
       })}
     </View>
@@ -56,29 +52,6 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    borderRadius: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonActive: {
-    backgroundColor: colors.neutral.white,
-    shadowColor: colors.neutral.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  buttonText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: colors.neutral[600],
-    textAlign: 'center',
-  },
-  buttonTextActive: {
-    color: colors.brand.primary[500],
-    fontWeight: '600',
   },
 });
 

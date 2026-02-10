@@ -18,6 +18,8 @@
     "prebuild": "npm run generate"
   },
   "dependencies": {
+    "@ode/components": "file:../packages/components",
+    "@ode/tokens": "file:../packages/tokens",
     "@notifee/react-native": "^9.1.8",
     "@nozbe/watermelondb": "^0.28.0",
     "@react-native-async-storage/async-storage": "^2.2.0",

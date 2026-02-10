@@ -1,13 +1,11 @@
+/**
+ * Formulus Button – uses ODE design system Button from @ode/components.
+ * Wraps ODE Button to support existing Formulus API (title, tertiary, fullWidth).
+ */
+
 import React from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  ViewStyle,
-  TextStyle,
-} from 'react-native';
-import { colors } from '../../theme/colors';
+import { ViewStyle, TextStyle } from 'react-native';
+import { Button as ODEButton } from '@ode/components/react-native';
 
 export interface ButtonProps {
   title: string;
@@ -23,6 +21,15 @@ export interface ButtonProps {
   accessibilityLabel?: string;
 }
 
+/**
+ * Maps Formulus tertiary variant to ODE neutral (same visual: text-only style).
+ */
+const variantMap = {
+  primary: 'primary' as const,
+  secondary: 'secondary' as const,
+  tertiary: 'neutral' as const,
+};
+
 const Button: React.FC<ButtonProps> = ({
   title,
   onPress,
@@ -36,109 +43,19 @@ const Button: React.FC<ButtonProps> = ({
   testID,
   accessibilityLabel,
 }) => {
-  const buttonStyle = [
-    styles.button,
-    styles[`button_${variant}`],
-    styles[`button_${size}`],
-    fullWidth && styles.button_fullWidth,
-    (disabled || loading) && styles.button_disabled,
-    style,
-  ];
-
-  const textStyles = [
-    styles.text,
-    styles[`text_${variant}`],
-    styles[`text_${size}`],
-    textStyle,
-  ];
-
   return (
-    <TouchableOpacity
-      style={buttonStyle}
+    <ODEButton
       onPress={onPress}
-      disabled={disabled || loading}
-      activeOpacity={0.7}
+      variant={variantMap[variant]}
+      size={size}
+      disabled={disabled}
+      loading={loading}
+      style={[fullWidth && { width: '100%' }, style]}
       testID={testID}
-      accessibilityLabel={accessibilityLabel || title}
-      accessibilityRole="button"
-      accessibilityState={{ disabled: disabled || loading }}>
-      {loading ? (
-        <ActivityIndicator
-          size="small"
-          color={
-            variant === 'primary'
-              ? colors.neutral.white
-              : colors.semantic.info.ios
-          }
-        />
-      ) : (
-        <Text style={textStyles}>{title}</Text>
-      )}
-    </TouchableOpacity>
+      accessibilityLabel={accessibilityLabel ?? title}>
+      {title}
+    </ODEButton>
   );
 };
-
-const styles = StyleSheet.create({
-  button: {
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  button_primary: {
-    backgroundColor: colors.semantic.info.ios,
-  },
-  button_secondary: {
-    backgroundColor: colors.neutral.transparent,
-    borderWidth: 1,
-    borderColor: colors.semantic.info.ios,
-  },
-  button_tertiary: {
-    backgroundColor: colors.neutral.transparent,
-  },
-  button_small: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    minHeight: 36,
-  },
-  button_medium: {
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    minHeight: 48,
-  },
-  button_large: {
-    paddingVertical: 16,
-    paddingHorizontal: 32,
-    minHeight: 56,
-  },
-  button_fullWidth: {
-    width: '100%',
-  },
-  button_disabled: {
-    opacity: 0.5,
-  },
-  text: {
-    fontWeight: '600',
-    textAlign: 'center',
-  },
-  text_primary: {
-    color: colors.neutral.white,
-  },
-  text_secondary: {
-    color: colors.semantic.info.ios,
-  },
-  text_tertiary: {
-    color: colors.semantic.info.ios,
-  },
-  text_small: {
-    fontSize: 14,
-  },
-  text_medium: {
-    fontSize: 16,
-  },
-  text_large: {
-    fontSize: 18,
-  },
-});
 
 export default Button;

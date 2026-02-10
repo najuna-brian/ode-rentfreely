@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
@@ -11,6 +10,7 @@ import {
   Alert,
   AlertButton,
 } from 'react-native';
+import { Input as ODEInput } from '@ode/components/react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
@@ -27,6 +27,7 @@ import Icon from '@react-native-vector-icons/material-design-icons';
 import { ToastService } from '../services/ToastService';
 import { serverSwitchService } from '../services/ServerSwitchService';
 import { syncService } from '../services/SyncService';
+import { Button } from '../components/common';
 import Logo from '../../assets/images/logo.png';
 
 type SettingsScreenNavigationProp = BottomTabNavigationProp<
@@ -335,75 +336,48 @@ const SettingsScreen = () => {
         </Text>
 
         <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Server URL"
-            placeholderTextColor={colors.neutral[400]}
-            value={serverUrl}
-            onChangeText={setServerUrl}
-            autoCapitalize="none"
-            keyboardType="url"
-            autoCorrect={false}
-          />
-          <TouchableOpacity
-            style={styles.qrButton}
-            onPress={() => setShowQRScanner(true)}>
-            <Icon
-              name="qrcode-scan"
-              size={24}
-              color={colors.brand.primary[500]}
+          <View style={styles.inputWithIcon}>
+            <ODEInput
+              placeholder="Server URL"
+              value={serverUrl}
+              onChangeText={setServerUrl}
+              style={styles.odeInputFlex}
             />
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.qrButton}
+              onPress={() => setShowQRScanner(true)}
+              accessibilityLabel="Scan QR code">
+              <Icon
+                name="qrcode-scan"
+                size={24}
+                color={colors.brand.primary[500]}
+              />
+            </TouchableOpacity>
+          </View>
         </View>
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Username"
-            placeholderTextColor={colors.neutral[400]}
-            value={username}
-            onChangeText={setUsername}
-            autoCapitalize="none"
-            autoCorrect={false}
-          />
-        </View>
+        <ODEInput
+          placeholder="Username"
+          value={username}
+          onChangeText={setUsername}
+        />
 
-        <View style={styles.inputContainer}>
-          <TextInput
-            style={styles.input}
-            placeholder="Password"
-            placeholderTextColor={colors.neutral[400]}
-            value={password}
-            onChangeText={setPassword}
-            autoCapitalize="none"
-            autoCorrect={false}
-            secureTextEntry
-          />
-        </View>
+        <ODEInput
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
 
-        <TouchableOpacity
-          style={[
-            styles.nextButton,
-            isButtonDisabled && styles.nextButtonDisabled,
-          ]}
+        <Button
+          title={isLoggingIn ? 'Logging in...' : 'Login'}
           onPress={handleLogin}
+          variant="primary"
+          size="large"
+          loading={isLoggingIn}
           disabled={isButtonDisabled}
-          activeOpacity={isButtonDisabled ? 1 : 0.7}>
-          <Icon
-            name="arrow-right"
-            size={20}
-            color={
-              isButtonDisabled ? colors.neutral[500] : colors.neutral.white
-            }
-          />
-          <Text
-            style={[
-              styles.nextButtonText,
-              isButtonDisabled && styles.nextButtonTextDisabled,
-            ]}>
-            {isLoggingIn ? 'Logging in...' : 'Login'}
-          </Text>
-        </TouchableOpacity>
+          fullWidth
+        />
       </ScrollView>
 
       <QRScannerModal
@@ -468,50 +442,21 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   inputContainer: {
+    marginBottom: 0,
+  },
+  inputWithIcon: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: colors.neutral[50],
-    borderBottomWidth: 2,
-    borderBottomColor: colors.brand.primary[500],
-    marginBottom: 20,
   },
-  input: {
+  odeInputFlex: {
     flex: 1,
-    height: 56,
-    paddingHorizontal: 12,
-    fontSize: 16,
-    color: colors.neutral[900],
-    backgroundColor: colors.neutral.transparent,
+    marginBottom: 0,
   },
   qrButton: {
     width: 56,
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  nextButton: {
-    flexDirection: 'row',
-    height: 56,
-    borderRadius: 8,
-    backgroundColor: colors.brand.primary[500],
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: 8,
-  },
-  nextButtonDisabled: {
-    backgroundColor: colors.neutral[200],
-  },
-  nextButtonIcon: {
-    fontSize: 20,
-    color: colors.neutral[500],
-  },
-  nextButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.neutral.white,
-  },
-  nextButtonTextDisabled: {
-    color: colors.neutral[500],
   },
 });
 

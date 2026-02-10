@@ -104,6 +104,11 @@ export interface InputProps {
   type?: 'text' | 'email' | 'password' | 'number' | 'tel';
   
   /**
+   * Mask input (React Native: secureTextEntry for password fields)
+   */
+  secureTextEntry?: boolean;
+  
+  /**
    * Whether input is required
    */
   required?: boolean;

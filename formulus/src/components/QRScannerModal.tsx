@@ -16,6 +16,7 @@ import {
   CodeType,
 } from 'react-native-vision-camera';
 import { colors } from '../theme/colors';
+import { Button } from './common/Button';
 const { width } = Dimensions.get('window');
 
 export interface ScannerModalResults {
@@ -146,14 +147,18 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
             <Text style={styles.permissionText}>
               Camera permission is required to scan QR codes
             </Text>
-            <TouchableOpacity style={styles.button} onPress={requestPermission}>
-              <Text style={styles.buttonText}>Grant Permission</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={handleCancel}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
+            <Button
+              title="Grant Permission"
+              onPress={requestPermission}
+              variant="primary"
+              size="medium"
+            />
+            <Button
+              title="Cancel"
+              onPress={handleCancel}
+              variant="secondary"
+              size="medium"
+            />
           </View>
         </View>
       </Modal>
@@ -166,11 +171,12 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
         <View style={styles.container}>
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>No camera device found</Text>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={handleCancel}>
-              <Text style={styles.cancelButtonText}>Close</Text>
-            </TouchableOpacity>
+            <Button
+              title="Close"
+              onPress={handleCancel}
+              variant="secondary"
+              size="medium"
+            />
           </View>
         </View>
       </Modal>
@@ -217,24 +223,27 @@ const QRScannerModal: React.FC<QRScannerModalProps> = ({
                   {scannedData}
                 </Text>
                 <View style={styles.buttonRow}>
-                  <TouchableOpacity
-                    style={styles.retryButton}
-                    onPress={handleRetry}>
-                    <Text style={styles.buttonText}>Scan Again</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.confirmButton}
-                    onPress={handleConfirm}>
-                    <Text style={styles.buttonText}>Confirm</Text>
-                  </TouchableOpacity>
+                  <Button
+                    title="Scan Again"
+                    onPress={handleRetry}
+                    variant="secondary"
+                    size="medium"
+                  />
+                  <Button
+                    title="Confirm"
+                    onPress={handleConfirm}
+                    variant="primary"
+                    size="medium"
+                  />
                 </View>
               </View>
             ) : (
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={handleCancel}>
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
+              <Button
+                title="Cancel"
+                onPress={handleCancel}
+                variant="secondary"
+                size="medium"
+              />
             )}
           </View>
         </View>
