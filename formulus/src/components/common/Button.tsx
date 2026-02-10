@@ -39,7 +39,7 @@ const Button: React.FC<ButtonProps> = ({
   loading = false,
   fullWidth = false,
   style,
-  textStyle,
+  textStyle: _textStyle,
   testID,
   accessibilityLabel,
 }) => {

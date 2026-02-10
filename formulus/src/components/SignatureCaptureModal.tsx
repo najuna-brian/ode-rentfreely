@@ -1,16 +1,9 @@
 import React, { useState, useRef } from 'react';
-import {
-  Modal,
-  View,
-  Text,
-  StyleSheet,
-  Alert,
-  Dimensions,
-} from 'react-native';
+import { Modal, View, Text, StyleSheet, Alert, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Signature, { SignatureViewRef } from 'react-native-signature-canvas';
 import { colors } from '../theme/colors';
-import { Button } from './common/Button';
+import Button from './common/Button';
 
 interface SignatureCaptureModalProps {
   visible: boolean;

@@ -8,9 +8,15 @@
 
 import tokens from '@ode/tokens/dist/react-native/tokens-resolved';
 
-const c = (tokens as { color: Record<string, unknown> }).color as Record<string, unknown>;
+const c = (tokens as { color: Record<string, unknown> }).color as Record<
+  string,
+  unknown
+>;
 const n = c.neutral as Record<string, string>;
-const brand = c.brand as { primary: Record<string, unknown>; secondary: Record<string, unknown> };
+const brand = c.brand as {
+  primary: Record<string, unknown>;
+  secondary: Record<string, unknown>;
+};
 
 export const colors = {
   brand: {
@@ -34,25 +40,45 @@ export const colors = {
   },
   semantic: {
     success: {
-      50: (c.semantic as Record<string, Record<string, Record<string, string>>>).success['50'],
-      500: (c.semantic as Record<string, Record<string, Record<string, string>>>).success['500'],
-      600: (c.semantic as Record<string, Record<string, Record<string, string>>>).success['600'],
+      50: (c.semantic as Record<string, Record<string, Record<string, string>>>)
+        .success['50'],
+      500: (
+        c.semantic as Record<string, Record<string, Record<string, string>>>
+      ).success['500'],
+      600: (
+        c.semantic as Record<string, Record<string, Record<string, string>>>
+      ).success['600'],
     },
     error: {
-      50: (c.semantic as Record<string, Record<string, Record<string, string>>>).error['50'],
-      500: (c.semantic as Record<string, Record<string, Record<string, string>>>).error['500'],
-      600: (c.semantic as Record<string, Record<string, Record<string, string>>>).error['600'],
+      50: (c.semantic as Record<string, Record<string, Record<string, string>>>)
+        .error['50'],
+      500: (
+        c.semantic as Record<string, Record<string, Record<string, string>>>
+      ).error['500'],
+      600: (
+        c.semantic as Record<string, Record<string, Record<string, string>>>
+      ).error['600'],
       ios: '#FF3B30', // iOS system error red (platform override)
     },
     warning: {
-      50: (c.semantic as Record<string, Record<string, Record<string, string>>>).warning['50'],
-      500: (c.semantic as Record<string, Record<string, Record<string, string>>>).warning['500'],
-      600: (c.semantic as Record<string, Record<string, Record<string, string>>>).warning['600'],
+      50: (c.semantic as Record<string, Record<string, Record<string, string>>>)
+        .warning['50'],
+      500: (
+        c.semantic as Record<string, Record<string, Record<string, string>>>
+      ).warning['500'],
+      600: (
+        c.semantic as Record<string, Record<string, Record<string, string>>>
+      ).warning['600'],
     },
     info: {
-      50: (c.semantic as Record<string, Record<string, Record<string, string>>>).info['50'],
-      500: (c.semantic as Record<string, Record<string, Record<string, string>>>).info['500'],
-      600: (c.semantic as Record<string, Record<string, Record<string, string>>>).info['600'],
+      50: (c.semantic as Record<string, Record<string, Record<string, string>>>)
+        .info['50'],
+      500: (
+        c.semantic as Record<string, Record<string, Record<string, string>>>
+      ).info['500'],
+      600: (
+        c.semantic as Record<string, Record<string, Record<string, string>>>
+      ).info['600'],
       ios: '#007AFF', // iOS system blue (platform override)
       light: '#E3F2FD',
       medium: '#4A90E2',

@@ -528,16 +528,12 @@ const SyncScreen = () => {
           />
 
           <Button
-            title={
-              syncState.isActive ? 'Updating...' : 'Update App Bundle'
-            }
+            title={syncState.isActive ? 'Updating...' : 'Update App Bundle'}
             onPress={handleCustomAppUpdate}
             variant="secondary"
             size="large"
             loading={syncState.isActive}
-            disabled={
-              syncState.isActive || (!updateAvailable && !isAdmin)
-            }
+            disabled={syncState.isActive || (!updateAvailable && !isAdmin)}
             fullWidth
           />
 
