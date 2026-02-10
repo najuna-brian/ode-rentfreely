@@ -77,7 +77,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: formulus/package-lock.json
+          cache-dependency-path: |
+            formulus/package-lock.json
+            packages/tokens/package-lock.json
+      
+      - name: Install and build @ode/tokens
+        working-directory: .
+        run: |
+          cd packages/tokens
+          npm install
+          npm run build
       
       - name: Install dependencies
         run: npm install
