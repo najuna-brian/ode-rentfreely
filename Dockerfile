@@ -31,6 +31,7 @@ COPY packages/tokens/package*.json ./packages/tokens/
 COPY packages/tokens/package-lock.json ./packages/tokens/
 COPY packages/tokens/style-dictionary.config.js ./packages/tokens/
 COPY packages/tokens/config.json ./packages/tokens/
+COPY packages/tokens/scripts ./packages/tokens/scripts
 COPY packages/tokens/src ./packages/tokens/src
 COPY packages/components/package*.json ./packages/components/
 COPY synkronus-portal/package*.json ./synkronus-portal/
