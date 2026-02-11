@@ -14,7 +14,7 @@ import {
 import Icon from '@react-native-vector-icons/material-design-icons';
 import { getUserInfo, UserInfo, UserRole } from '../api/synkronus/Auth';
 import { colors } from '../theme/colors';
-import { Button } from './common/Button';
+import Button from './common/Button';
 
 interface MenuItem {
   icon: React.ComponentProps<typeof Icon>['name'];

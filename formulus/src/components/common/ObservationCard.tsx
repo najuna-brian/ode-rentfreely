@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from '@react-native-vector-icons/material-design-icons';
 import { Observation } from '../../database/models/Observation';
 import colors from '../../theme/colors';
-import { Button } from './Button';
+import Button from './Button';
 
 interface ObservationCardProps {
   observation: Observation;

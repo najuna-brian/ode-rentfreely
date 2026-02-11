@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import colors from '../../theme/colors';
-import { Button } from './Button';
+import Button from './Button';
 
 export type SyncStatus = 'all' | 'synced' | 'pending';
 

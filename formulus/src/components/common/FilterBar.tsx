@@ -4,7 +4,7 @@ import Icon from '@react-native-vector-icons/material-design-icons';
 import { SortOption, FilterOption } from './FilterBar.types';
 import { colors } from '../../theme/colors';
 import { Input as ODEInput } from '@ode/components/react-native';
-import { Button } from './Button';
+import Button from './Button';
 
 export type { SortOption, FilterOption };
 
