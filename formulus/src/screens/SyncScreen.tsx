@@ -557,7 +557,7 @@ const SyncScreen = () => {
             <Text style={styles.actionButtonText}>
               {isSyncButtonActive ? 'Syncing...' : 'Sync Data'}
             </Text>
-          </TouchableOpacity>
+          </Button>
 
           <Button
             title={syncState.isActive ? 'Updating...' : 'Update App Bundle'}
@@ -578,7 +578,7 @@ const SyncScreen = () => {
             <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>
               {isUpdateButtonActive ? 'Updating...' : 'Update App Bundle'}
             </Text>
-          </TouchableOpacity>
+          </Button>
 
           {!syncState.isActive && updateAvailable && (
             <Text style={styles.updateNotification}>Update available</Text>
