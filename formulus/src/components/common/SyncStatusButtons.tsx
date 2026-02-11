@@ -24,7 +24,11 @@ const SyncStatusButtons: React.FC<SyncStatusButtonsProps> = ({
       {buttons.map((button, index) => {
         const isActive = selectedStatus === button.id;
         const position =
-          index === 0 ? 'left' : index === buttons.length - 1 ? 'right' : 'middle';
+          index === 0
+            ? 'left'
+            : index === buttons.length - 1
+              ? 'right'
+              : 'middle';
         return (
           <Button
             key={button.id}

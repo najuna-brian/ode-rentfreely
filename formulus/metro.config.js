@@ -25,7 +25,10 @@ const forcedModules = {
 };
 const extraModules = {
   ...forcedModules,
-  'react-native-svg': path.resolve(projectRoot, 'node_modules/react-native-svg'),
+  'react-native-svg': path.resolve(
+    projectRoot,
+    'node_modules/react-native-svg',
+  ),
 };
 
 /**
@@ -42,7 +45,10 @@ const config = {
     extraNodeModules: extraModules,
     resolveRequest(context, moduleName, platform) {
       if (forcedModules[moduleName]) {
-        return { type: 'sourceFile', filePath: path.join(forcedModules[moduleName], 'index.js') };
+        return {
+          type: 'sourceFile',
+          filePath: path.join(forcedModules[moduleName], 'index.js'),
+        };
       }
       return context.resolveRequest(context, moduleName, platform);
     },

@@ -58,7 +58,9 @@ export const colors = {
       600: (
         c.semantic as Record<string, Record<string, Record<string, string>>>
       ).error['600'],
-      ios: (c.semantic as Record<string, Record<string, string>>)?.error?.ios ?? '#FF3B30',
+      ios:
+        (c.semantic as Record<string, Record<string, string>>)?.error?.ios ??
+        '#FF3B30',
     },
     warning: {
       50: (c.semantic as Record<string, Record<string, Record<string, string>>>)
@@ -79,23 +81,43 @@ export const colors = {
       600: (
         c.semantic as Record<string, Record<string, Record<string, string>>>
       ).info['600'],
-      ios: (c.semantic as Record<string, Record<string, string>>)?.info?.ios ?? '#007AFF',
-      light: (c.semantic as Record<string, Record<string, string>>)?.info?.light ?? '#E3F2FD',
-      medium: (c.semantic as Record<string, Record<string, string>>)?.info?.medium ?? '#4A90E2',
+      ios:
+        (c.semantic as Record<string, Record<string, string>>)?.info?.ios ??
+        '#007AFF',
+      light:
+        (c.semantic as Record<string, Record<string, string>>)?.info?.light ??
+        '#E3F2FD',
+      medium:
+        (c.semantic as Record<string, Record<string, string>>)?.info?.medium ??
+        '#4A90E2',
     },
     scanner: {
-      success: (c.semantic as Record<string, Record<string, Record<string, string>>>)?.scanner?.success ?? '#00ff00',
+      success:
+        (c.semantic as Record<string, Record<string, Record<string, string>>>)
+          ?.scanner?.success ?? '#00ff00',
     },
   },
   ui: {
     gray: {
-      lightest: (c.semantic as Record<string, Record<string, Record<string, string>>>)?.ui?.gray?.lightest ?? '#F8F8F8',
-      lighter: (c.semantic as Record<string, Record<string, Record<string, string>>>)?.ui?.gray?.lighter ?? '#F0F2F5',
-      light: (c.semantic as Record<string, Record<string, Record<string, string>>>)?.ui?.gray?.light ?? '#E5E5E5',
-      medium: (c.semantic as Record<string, Record<string, Record<string, string>>>)?.ui?.gray?.medium ?? '#CCCCCC',
-      ios: (c.semantic as Record<string, Record<string, Record<string, string>>>)?.ui?.gray?.ios ?? '#8E8E93',
+      lightest:
+        (c.semantic as Record<string, Record<string, Record<string, string>>>)
+          ?.ui?.gray?.lightest ?? '#F8F8F8',
+      lighter:
+        (c.semantic as Record<string, Record<string, Record<string, string>>>)
+          ?.ui?.gray?.lighter ?? '#F0F2F5',
+      light:
+        (c.semantic as Record<string, Record<string, Record<string, string>>>)
+          ?.ui?.gray?.light ?? '#E5E5E5',
+      medium:
+        (c.semantic as Record<string, Record<string, Record<string, string>>>)
+          ?.ui?.gray?.medium ?? '#CCCCCC',
+      ios:
+        (c.semantic as Record<string, Record<string, Record<string, string>>>)
+          ?.ui?.gray?.ios ?? '#8E8E93',
     },
-    background: (c.semantic as Record<string, Record<string, Record<string, string>>>)?.ui?.overlay?.background ?? 'rgba(0, 0, 0, 0.5)',
+    background:
+      (c.semantic as Record<string, Record<string, Record<string, string>>>)?.ui
+        ?.overlay?.background ?? 'rgba(0, 0, 0, 0.5)',
   },
 };
 
