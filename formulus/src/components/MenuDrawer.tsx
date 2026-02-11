@@ -178,7 +178,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
                 <Button
                   title="Logout"
                   onPress={onLogout}
-                  variant="secondary"
+                  variant="danger"
                   size="medium"
                   fullWidth
                 />

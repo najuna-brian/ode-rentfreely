@@ -9,7 +9,8 @@
       "error": {
         "50": { "value": "#FEF2F2" },
         "500": { "value": "#F44336" },
-        "600": { "value": "#DC2626" }
+        "600": { "value": "#DC2626" },
+        "ios": { "value": "#FF3B30" }
       },
       "warning": {
         "50": { "value": "#FFFBEB" },
@@ -19,7 +20,13 @@
       "info": {
         "50": { "value": "#EFF6FF" },
         "500": { "value": "#2196F3" },
-        "600": { "value": "#2563EB" }
+        "600": { "value": "#2563EB" },
+        "ios": { "value": "#007AFF" },
+        "light": { "value": "#E3F2FD" },
+        "medium": { "value": "#4A90E2" }
+      },
+      "scanner": {
+        "success": { "value": "#00ff00" }
       },
       "theme": {
         "background": {

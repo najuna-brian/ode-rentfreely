@@ -98,16 +98,18 @@ const ObservationCard: React.FC<ObservationCardProps> = ({
             <Button
               title="Edit"
               onPress={onEdit}
-              variant="secondary"
+              variant="primary"
               size="small"
+              position="left"
             />
           )}
           {onDelete && (
             <Button
               title="Delete"
               onPress={onDelete}
-              variant="secondary"
+              variant="danger"
               size="small"
+              position="right"
             />
           )}
         </View>

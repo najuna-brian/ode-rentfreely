@@ -12,71 +12,89 @@ import type { ButtonVariant, ButtonPosition, ThemeMode } from './types';
 export function getOppositeVariant(variant: ButtonVariant): ButtonVariant {
   switch (variant) {
     case 'primary':
-      return 'secondary';
+      return 'neutral';
     case 'secondary':
       return 'primary';
     case 'neutral':
-      return 'neutral';
+      return 'primary';
+    case 'danger':
+      return 'danger';
     default:
       return 'primary';
   }
 }
 
 /**
- * Get text color for button based on variant and mode
+ * Get text color for button based on variant and mode.
+ * Prefer passing getToken from @ode/tokens so values come from the design system.
  */
 export function getButtonTextColor(
   _variant: ButtonVariant,
   isHovered: boolean,
-  mode: ThemeMode = 'light'
+  mode: ThemeMode = 'light',
+  getToken?: (path: string) => string
 ): string {
   if (isHovered) {
-    // When hovered, text should contrast with the background
+    if (getToken) return getToken(mode === 'light' ? 'color.neutral.white' : 'color.neutral.black');
     return mode === 'light' ? '#FFFFFF' : '#000000';
   }
-  
-  // When not hovered, text matches border color
-  // This will be handled by the component implementation
   return 'inherit';
 }
 
 /**
- * Get border color for button variant
+ * Get border color for button variant.
+ * Prefer passing getToken from @ode/tokens so values come from the design system.
  */
-export function getButtonBorderColor(variant: ButtonVariant): string {
-  // These will be replaced with actual token values in implementations
+export function getButtonBorderColor(variant: ButtonVariant, getToken?: (path: string) => string): string {
+  if (getToken) {
+    switch (variant) {
+      case 'primary': return getToken('color.brand.primary.500');
+      case 'secondary': return getToken('color.brand.secondary.500');
+      case 'neutral': return getToken('color.neutral.600');
+      case 'danger': return getToken('color.neutral.600');
+      default: return getToken('color.brand.primary.500');
+    }
+  }
   switch (variant) {
-    case 'primary':
-      return '#4F7F4E'; // brand.primary[500]
-    case 'secondary':
-      return '#E9B85B'; // brand.secondary[500]
-    case 'neutral':
-      return '#757575'; // neutral[600]
-    default:
-      return '#4F7F4E';
+    case 'primary': return '#4F7F4E';
+    case 'secondary': return '#E9B85B';
+    case 'neutral': return '#757575';
+    case 'danger': return '#757575';
+    default: return '#4F7F4E';
   }
 }
 
 /**
- * Get background color for button variant (used on hover)
+ * Get background color for button variant (used on hover).
+ * Prefer passing getToken so values come from tokens.
  */
-export function getButtonBackgroundColor(variant: ButtonVariant): string {
-  return getButtonBorderColor(variant);
+export function getButtonBackgroundColor(variant: ButtonVariant, getToken?: (path: string) => string): string {
+  return getButtonBorderColor(variant, getToken);
 }
 
 /**
- * Determine if button should fade on left or right
- * Left button fades on right, right button fades on left
+ * Border fade style:
+ * - toLeft: no left border; right + tapered top/bottom; right-side radii
+ * - toRight: no right border; left + tapered top/bottom; left-side radii
+ * - full: all four borders, all radii (e.g. middle button in a group of three)
+ *
+ * Usage:
+ * - Single: toLeft. Horizontal pair: left→toLeft, right→toRight.
+ * - Horizontal three: left→toLeft, middle→full, right→toRight.
+ * - Vertical stack: top→toRight, bottom→toLeft.
  */
-export function getFadeDirection(position: ButtonPosition): 'left' | 'right' {
+export function getBorderFadeDirection(position: ButtonPosition): 'toLeft' | 'toRight' | 'full' {
   switch (position) {
-    case 'left':
-      return 'right';
-    case 'right':
-      return 'left';
     case 'standalone':
-      return 'right'; // Default fade on right for standalone
+    case 'left':
+    case 'bottom':
+      return 'toLeft';
+    case 'right':
+    case 'top':
+      return 'toRight';
+    case 'middle':
+      return 'full';
     default:
-      return 'right';
+      return 'toLeft';
   }
 }

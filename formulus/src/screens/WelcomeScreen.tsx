@@ -31,12 +31,15 @@ const WelcomeScreen = () => {
         <Text style={styles.subtitle}>
           Configure your server to get started
         </Text>
-        <Button
-          title="Get Started"
-          onPress={handleGetStarted}
-          variant="primary"
-          size="large"
-        />
+        <View style={styles.buttonContainer}>
+          <Button
+            title="Get Started"
+            onPress={handleGetStarted}
+            variant="primary"
+            size="large"
+            fullWidth
+          />
+        </View>
       </View>
     </SafeAreaView>
   );
@@ -68,8 +71,13 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 16,
     color: colors.neutral[600],
-    marginBottom: 40,
+    marginBottom: 32,
     textAlign: 'center',
+  },
+  buttonContainer: {
+    alignSelf: 'stretch',
+    maxWidth: 320,
+    marginTop: 8,
   },
 });
 

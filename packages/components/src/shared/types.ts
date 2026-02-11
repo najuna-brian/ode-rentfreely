@@ -4,9 +4,10 @@
  * Platform-agnostic type definitions used across React Native and React Web implementations
  */
 
-export type ButtonVariant = 'primary' | 'secondary' | 'neutral';
+export type ButtonVariant = 'primary' | 'secondary' | 'neutral' | 'danger';
 export type ButtonSize = 'small' | 'medium' | 'large';
-export type ButtonPosition = 'left' | 'right' | 'standalone';
+/** Horizontal: left/middle/right. Vertical stack: top/bottom. Single: standalone. */
+export type ButtonPosition = 'left' | 'right' | 'middle' | 'standalone' | 'top' | 'bottom';
 
 export interface ButtonProps {
   /**
@@ -44,11 +45,18 @@ export interface ButtonProps {
   loading?: boolean;
   
   /**
-   * Position when used in a button group
-   * 'left' = first button, 'right' = last button, 'standalone' = single button
+   * Position when used in a button group.
+   * Horizontal: 'left' | 'middle' | 'right'. Vertical: 'top' | 'bottom'. Single: 'standalone'.
    * @default 'standalone'
    */
   position?: ButtonPosition;
+
+  /**
+   * When true, show the same style as hover (e.g. filled background, contrast text).
+   * Use for the selected/active option in a group (e.g. filter tabs).
+   * @default false
+   */
+  active?: boolean;
   
   /**
    * Additional className/style (platform-specific)

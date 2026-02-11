@@ -489,7 +489,7 @@ const SyncScreen = () => {
               <Button
                 title="Cancel"
                 onPress={cancelSync}
-                variant="secondary"
+                variant="danger"
                 size="medium"
               />
             )}
@@ -510,7 +510,7 @@ const SyncScreen = () => {
             <Button
               title="Dismiss"
               onPress={clearError}
-              variant="secondary"
+              variant="danger"
               size="medium"
             />
           </View>
@@ -522,6 +522,7 @@ const SyncScreen = () => {
             onPress={handleSync}
             variant="primary"
             size="large"
+            position="right"
             loading={syncState.isActive}
             disabled={syncState.isActive}
             fullWidth
@@ -530,8 +531,9 @@ const SyncScreen = () => {
           <Button
             title={syncState.isActive ? 'Updating...' : 'Update App Bundle'}
             onPress={handleCustomAppUpdate}
-            variant="secondary"
+            variant="tertiary"
             size="large"
+            position="left"
             loading={syncState.isActive}
             disabled={syncState.isActive || (!updateAvailable && !isAdmin)}
             fullWidth

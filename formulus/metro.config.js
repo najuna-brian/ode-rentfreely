@@ -15,6 +15,20 @@ const monorepoRoot = path.resolve(__dirname, '..');
 const projectRoot = __dirname;
 
 /**
+ * Force react and react-native to always resolve from the app's node_modules
+ * (avoids incomplete copy in packages/components). react-native-svg only uses
+ * extraNodeModules so Metro resolves its real entry (lib/commonjs/index.js).
+ */
+const forcedModules = {
+  react: path.resolve(projectRoot, 'node_modules/react'),
+  'react-native': path.resolve(projectRoot, 'node_modules/react-native'),
+};
+const extraModules = {
+  ...forcedModules,
+  'react-native-svg': path.resolve(projectRoot, 'node_modules/react-native-svg'),
+};
+
+/**
  * Metro configuration
  * https://reactnative.dev/docs/metro
  *
@@ -25,9 +39,12 @@ const config = {
   resolver: {
     unstable_enableSymlinks: true,
     unstable_enablePackageExports: true,
-    extraNodeModules: {
-      react: path.resolve(projectRoot, 'node_modules/react'),
-      'react-native': path.resolve(projectRoot, 'node_modules/react-native'),
+    extraNodeModules: extraModules,
+    resolveRequest(context, moduleName, platform) {
+      if (forcedModules[moduleName]) {
+        return { type: 'sourceFile', filePath: path.join(forcedModules[moduleName], 'index.js') };
+      }
+      return context.resolveRequest(context, moduleName, platform);
     },
   },
 };

@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import colors from '../../theme/colors';
 import Button from './Button';
 
 export type SyncStatus = 'all' | 'synced' | 'pending';
@@ -22,15 +21,19 @@ const SyncStatusButtons: React.FC<SyncStatusButtonsProps> = ({
 
   return (
     <View style={styles.container}>
-      {buttons.map(button => {
+      {buttons.map((button, index) => {
         const isActive = selectedStatus === button.id;
+        const position =
+          index === 0 ? 'left' : index === buttons.length - 1 ? 'right' : 'middle';
         return (
           <Button
             key={button.id}
             title={button.label}
             onPress={() => onStatusChange(button.id)}
-            variant={isActive ? 'primary' : 'tertiary'}
+            variant="primary"
             size="small"
+            position={position}
+            active={isActive}
             style={styles.button}
           />
         );
@@ -42,9 +45,6 @@ const SyncStatusButtons: React.FC<SyncStatusButtonsProps> = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: colors.neutral[100],
-    borderRadius: 8,
-    padding: 4,
     gap: 4,
     flex: 1,
     maxWidth: 300,

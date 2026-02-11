@@ -1,13 +1,13 @@
 /**
  * ODE Button Component - React Web
- * 
- * Modern minimalist button with fading border effect.
- * When two buttons are placed together, they have opposite styles.
+ *
+ * Synkronus-style: partial border fade (no left or no right) and one-sided radii.
+ * Single: fade right-to-left. Horizontal pair: left→toLeft, right→toRight. Vertical: top→toRight, bottom→toLeft.
  */
 
 import React, { useState, useMemo } from 'react';
 import type { ButtonProps, ButtonVariant } from '../shared/types';
-import { getOppositeVariant, getFadeDirection } from '../shared/utils';
+import { getOppositeVariant, getBorderFadeDirection } from '../shared/utils';
 import tokensJson from '@ode/tokens/dist/json/tokens.json';
 
 export interface WebButtonProps extends ButtonProps {
@@ -33,6 +33,7 @@ const Button: React.FC<WebButtonProps> = ({
   disabled = false,
   loading = false,
   position = 'standalone',
+  active = false,
   isPaired = false,
   pairedVariant,
   className = '',
@@ -41,6 +42,7 @@ const Button: React.FC<WebButtonProps> = ({
   accessibilityLabel,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const isActiveOrHovered = active || isHovered;
 
   // Determine actual variant - if paired, use opposite of paired variant
   const actualVariant: ButtonVariant = useMemo(() => {
@@ -50,63 +52,122 @@ const Button: React.FC<WebButtonProps> = ({
     return variant;
   }, [isPaired, pairedVariant, variant]);
 
-  // Get fade direction based on position
-  const fadeDirection = getFadeDirection(position);
+  const borderFade = getBorderFadeDirection(position);
 
-  // Get colors from tokens
-  const getColor = (colorPath: string): string => {
-    const parts = colorPath.split('.');
-    let value: any = tokens;
+  const getToken = (path: string): string => {
+    const parts = path.split('.');
+    let value: unknown = tokens;
     for (const part of parts) {
-      value = value?.[part];
+      value = (value as Record<string, unknown>)?.[part];
     }
-    return value?.value || value || '#000000';
+    const resolved = (value as { value?: string })?.value ?? (value as string);
+    return resolved ?? (tokens?.color?.neutral?.black?.value ?? tokens?.color?.neutral?.black ?? '#000000');
   };
 
+  const primaryGreen = getToken('color.brand.primary.500');
+  const errorRed = getToken('color.semantic.error.500');
+  const errorRedAlpha = getToken('color.semantic.error.alpha.15');
+  const textOnFill = getToken('color.neutral.white');
+
+  const neutralGrey = getToken('color.neutral.600');
   const borderColor = useMemo(() => {
     switch (actualVariant) {
       case 'primary':
-        return getColor('color.brand.primary.500');
+        return primaryGreen;
       case 'secondary':
-        return getColor('color.brand.secondary.500');
+        return getToken('color.brand.secondary.500');
       case 'neutral':
-        return getColor('color.neutral.600');
+        return neutralGrey;
+      case 'danger':
+        return errorRed;
       default:
-        return getColor('color.brand.primary.500');
+        return primaryGreen;
     }
-  }, [actualVariant]);
+  }, [actualVariant, primaryGreen, neutralGrey, errorRed]);
 
-  const borderRadius = getColor('border.radius.md');
-  const borderWidth = getColor('border.width.thin');
+  // Danger: default = red (border, text, tint bg); hover = grey (border, text), transparent
+  const dangerDefaultBorder = errorRed;
+  const dangerHoverBorder = neutralGrey;
+  const hoverBg =
+    actualVariant === 'danger'
+      ? 'transparent'
+      : actualVariant === 'neutral' && position === 'left'
+        ? primaryGreen
+        : borderColor;
+  const activeBorderColor =
+    actualVariant === 'danger'
+      ? isHovered ? dangerHoverBorder : dangerDefaultBorder
+      : isActiveOrHovered ? 'transparent' : borderColor;
+  const activeTextColor =
+    actualVariant === 'danger'
+      ? isHovered ? neutralGrey : errorRed
+      : isActiveOrHovered
+        ? textOnFill
+        : borderColor;
+  const activeBg = actualVariant === 'danger' ? (isHovered ? 'transparent' : (errorRedAlpha || 'transparent')) : (isActiveOrHovered ? hoverBg : 'transparent');
 
-  // Size-based spacing
+  const borderRadius = getToken('border.radius.md');
+  const borderWidth = getToken('border.width.thin');
+
   const paddingMap = {
-    small: { vertical: getColor('spacing.2'), horizontal: getColor('spacing.4') },
-    medium: { vertical: getColor('spacing.3'), horizontal: getColor('spacing.6') },
-    large: { vertical: getColor('spacing.4'), horizontal: getColor('spacing.8') },
+    small: { vertical: getToken('spacing.2'), horizontal: getToken('spacing.4') },
+    medium: { vertical: getToken('spacing.3'), horizontal: getToken('spacing.6') },
+    large: { vertical: getToken('spacing.4'), horizontal: getToken('spacing.8') },
   };
 
   const fontSizeMap = {
-    small: getColor('font.size.sm'),
-    medium: getColor('font.size.base'),
-    large: getColor('font.size.lg'),
+    small: getToken('font.size.sm'),
+    medium: getToken('font.size.base'),
+    large: getToken('font.size.lg'),
   };
 
   const padding = paddingMap[size];
   const fontSize = fontSizeMap[size];
 
+  const isFull = borderFade === 'full';
+  const isToLeft = borderFade === 'toLeft';
+  const showTaper = !isFull && actualVariant !== 'danger' && !isActiveOrHovered;
+  const taperGradient =
+    borderFade === 'toLeft'
+      ? `linear-gradient(to right, transparent, ${borderColor})`
+      : `linear-gradient(to right, ${borderColor}, transparent)`;
+
+  const borderStyle: React.CSSProperties = isFull
+    ? {
+        border: `${borderWidth} solid ${activeBorderColor}`,
+        borderRadius,
+      }
+    : isToLeft
+      ? {
+          borderLeft: 'none',
+          borderRight: `${borderWidth} solid ${activeBorderColor}`,
+          borderTop: showTaper ? 'none' : `${borderWidth} solid ${activeBorderColor}`,
+          borderBottom: showTaper ? 'none' : `${borderWidth} solid ${activeBorderColor}`,
+          borderTopLeftRadius: 0,
+          borderBottomLeftRadius: 0,
+          borderTopRightRadius: borderRadius,
+          borderBottomRightRadius: borderRadius,
+        }
+      : {
+          borderLeft: `${borderWidth} solid ${activeBorderColor}`,
+          borderRight: 'none',
+          borderTop: showTaper ? 'none' : `${borderWidth} solid ${activeBorderColor}`,
+          borderBottom: showTaper ? 'none' : `${borderWidth} solid ${activeBorderColor}`,
+          borderTopLeftRadius: borderRadius,
+          borderBottomLeftRadius: borderRadius,
+          borderTopRightRadius: 0,
+          borderBottomRightRadius: 0,
+        };
+
   const buttonStyle: React.CSSProperties = {
     position: 'relative',
     padding: `${padding.vertical} ${padding.horizontal}`,
     fontSize,
-    fontFamily: getColor('font.family.sans'),
-    fontWeight: getColor('font.weight.medium'),
-    color: isHovered 
-      ? (document.documentElement.classList.contains('dark') ? '#000000' : '#FFFFFF')
-      : borderColor,
-    backgroundColor: isHovered ? borderColor : 'transparent',
-    border: 'none',
-    borderRadius,
+    fontFamily: getToken('font.family.sans'),
+    fontWeight: getToken('font.weight.medium'),
+    color: activeTextColor,
+    backgroundColor: activeBg,
+    ...borderStyle,
     cursor: disabled || loading ? 'not-allowed' : 'pointer',
     opacity: disabled ? 0.5 : 1,
     transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
@@ -114,15 +175,12 @@ const Button: React.FC<WebButtonProps> = ({
     display: 'inline-flex',
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: getColor('touchTarget.comfortable') || '48px',
+    minHeight: getToken('touchTarget.comfortable') || getToken('spacing.12'),
     textTransform: 'none',
-    letterSpacing: getColor('font.letterSpacing.wide'),
+    letterSpacing: getToken('font.letterSpacing.wide'),
     overflow: 'hidden',
     ...style,
   };
-
-  // Border effect using SVG mask for better fade control
-  const borderId = `border-fade-${fadeDirection}-${actualVariant}`;
 
   const handleClick = () => {
     if (!disabled && !loading && onPress) {
@@ -143,57 +201,43 @@ const Button: React.FC<WebButtonProps> = ({
       aria-label={accessibilityLabel || (typeof children === 'string' ? children : undefined)}
       aria-disabled={disabled || loading}
     >
-      {/* SVG for fading border effect */}
-      <svg
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          pointerEvents: 'none',
-          opacity: isHovered ? 0 : 1,
-          transition: 'opacity 0.3s ease',
-        }}
-        preserveAspectRatio="none"
-      >
-        <defs>
-          <linearGradient id={borderId} x1="0%" y1="0%" x2="100%" y2="0%">
-            {fadeDirection === 'right' ? (
-              <>
-                <stop offset="0%" stopColor={borderColor} stopOpacity="1" />
-                <stop offset="85%" stopColor={borderColor} stopOpacity="1" />
-                <stop offset="100%" stopColor={borderColor} stopOpacity="0" />
-              </>
-            ) : (
-              <>
-                <stop offset="0%" stopColor={borderColor} stopOpacity="0" />
-                <stop offset="15%" stopColor={borderColor} stopOpacity="1" />
-                <stop offset="100%" stopColor={borderColor} stopOpacity="1" />
-              </>
-            )}
-          </linearGradient>
-        </defs>
-        <rect
-          x="0"
-          y="0"
-          width="100%"
-          height="100%"
-          rx={borderRadius}
-          ry={borderRadius}
-          fill="none"
-          stroke={`url(#${borderId})`}
-          strokeWidth={borderWidth}
-        />
-      </svg>
-
+      {showTaper && (
+        <>
+          <span
+            style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              height: borderWidth,
+              background: taperGradient,
+              pointerEvents: 'none',
+              borderTopLeftRadius: isToLeft ? 0 : borderRadius,
+              borderTopRightRadius: isToLeft ? borderRadius : 0,
+            }}
+          />
+          <span
+            style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: borderWidth,
+              background: taperGradient,
+              pointerEvents: 'none',
+              borderBottomLeftRadius: isToLeft ? 0 : borderRadius,
+              borderBottomRightRadius: isToLeft ? borderRadius : 0,
+            }}
+          />
+        </>
+      )}
       {loading ? (
         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', position: 'relative', zIndex: 1 }}>
           <span
             style={{
               width: '16px',
               height: '16px',
-              border: `2px solid ${isHovered ? (document.documentElement.classList.contains('dark') ? '#000000' : '#FFFFFF') : borderColor}`,
+              border: `2px solid ${activeTextColor}`,
               borderTopColor: 'transparent',
               borderRadius: '50%',
               animation: 'spin 0.6s linear infinite',

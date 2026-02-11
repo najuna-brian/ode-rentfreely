@@ -224,14 +224,16 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
           <Button
             title="Edit"
             onPress={handleEdit}
-            variant="secondary"
+            variant="primary"
             size="small"
+            position="left"
           />
           <Button
             title="Delete"
             onPress={handleDelete}
-            variant="secondary"
+            variant="danger"
             size="small"
+            position="right"
           />
         </View>
       </View>

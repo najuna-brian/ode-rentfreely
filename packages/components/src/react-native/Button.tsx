@@ -1,8 +1,8 @@
 /**
  * ODE Button Component - React Native
- * 
- * Modern minimalist button with fading border effect.
- * When two buttons are placed together, they have opposite styles.
+ *
+ * Synkronus-style: border.radius.md, thin border, token-based spacing/typography.
+ * Border fade: no left or no right border; top and bottom are solid (same as danger).
  */
 
 import React, { useState, useMemo } from 'react';
@@ -12,11 +12,9 @@ import {
   StyleSheet,
   View,
   ActivityIndicator,
-  ViewStyle,
-  TextStyle,
 } from 'react-native';
 import { ButtonProps, ButtonVariant, ButtonPosition } from '../shared/types';
-import { getOppositeVariant, getFadeDirection } from '../shared/utils';
+import { getOppositeVariant, getBorderFadeDirection } from '../shared/utils';
 import tokens from '@ode/tokens/dist/react-native/tokens-resolved';
 
 export interface NativeButtonProps extends ButtonProps {
@@ -39,6 +37,7 @@ const Button: React.FC<NativeButtonProps> = ({
   disabled = false,
   loading = false,
   position = 'standalone',
+  active = false,
   isPaired = false,
   pairedVariant,
   style,
@@ -46,6 +45,8 @@ const Button: React.FC<NativeButtonProps> = ({
   accessibilityLabel,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
+  const borderFade = getBorderFadeDirection(position);
+  const isActiveOrPressed = active || isPressed;
 
   // Determine actual variant - if paired, use opposite of paired variant
   const actualVariant: ButtonVariant = useMemo(() => {
@@ -55,28 +56,53 @@ const Button: React.FC<NativeButtonProps> = ({
     return variant;
   }, [isPaired, pairedVariant, variant]);
 
-  // Get fade direction based on position
-  const fadeDirection = getFadeDirection(position);
+  const primaryGreen = tokens.color.brand.primary[500];
+  const errorRed = (tokens.color.semantic as any)?.error?.[500] ?? tokens.color.semantic?.error?.[500];
+  const errorRedAlpha = (tokens.color.semantic as any)?.error?.alpha?.[15];
+  const neutralGrey = tokens.color.neutral[600];
+  const textOnFill = tokens.color.neutral.white;
 
-  // Get colors from tokens
   const borderColor = useMemo(() => {
     switch (actualVariant) {
       case 'primary':
-        return tokens.color.brand.primary[500];
+        return primaryGreen;
       case 'secondary':
         return tokens.color.brand.secondary[500];
       case 'neutral':
-        return tokens.color.neutral[600];
+        return neutralGrey;
+      case 'danger':
+        return errorRed ?? neutralGrey;
       default:
-        return tokens.color.brand.primary[500];
+        return primaryGreen;
     }
-  }, [actualVariant]);
+  }, [actualVariant, primaryGreen, neutralGrey, errorRed]);
 
-  const textColor = isPressed 
-    ? '#FFFFFF' // Light text on dark background when pressed
-    : borderColor;
+  const dangerRed = errorRed ?? tokens.color.semantic?.error?.[500];
+  const dangerRedAlpha = errorRedAlpha ?? (tokens.color.semantic as any)?.error?.alpha?.[15];
+  const dangerDefaultBorder = dangerRed;
+  const dangerPressedBorder = neutralGrey;
+  const pressedBg =
+    actualVariant === 'danger'
+      ? 'transparent'
+      : actualVariant === 'neutral' && position === 'left'
+        ? primaryGreen
+        : borderColor;
+  const pressedBorderColor = actualVariant === 'danger' ? dangerPressedBorder : 'transparent';
 
-  const backgroundColor = isPressed ? borderColor : 'transparent';
+  const textColor =
+    actualVariant === 'danger'
+      ? isPressed ? neutralGrey : dangerRed
+      : isActiveOrPressed
+        ? textOnFill
+        : borderColor;
+  const activeBorderColor =
+    actualVariant === 'danger'
+      ? isPressed ? dangerPressedBorder : dangerDefaultBorder
+      : isActiveOrPressed ? pressedBorderColor : borderColor;
+  const backgroundColor =
+    actualVariant === 'danger'
+      ? isPressed ? 'transparent' : (dangerRedAlpha ?? 'transparent')
+      : isActiveOrPressed ? pressedBg : 'transparent';
 
   const parsePx = (v: string) => parseInt(String(v).replace('px', ''), 10) || 0;
   const paddingMap = {
@@ -93,92 +119,98 @@ const Button: React.FC<NativeButtonProps> = ({
 
   const padding = paddingMap[size];
   const fontSize = fontSizeMap[size];
-  const borderRadius = parseInt(tokens.border.radius.full.replace('px', '')) || 9999;
-  const borderWidth = parseInt(tokens.border.width.thin.replace('px', '')) || 1;
+  // Match portal (react-web): border.radius.md (8px), not full/pill
+  const borderRadius = parseInt(String(tokens.border.radius.md).replace('px', ''), 10) || 8;
+  const borderWidth = parseInt(String(tokens.border.width.thin).replace('px', ''), 10) || 1;
+  const letterSpacing = Number(String(tokens.font.letterSpacing?.wide ?? 0.025).replace('em', '')) * (fontSizeMap[size] || 16);
 
+  // Partial border: toLeft / toRight = no left or no right; top and bottom always solid (like danger)
+  const borderStyle = useMemo(() => {
+    if (borderFade === 'full') {
+      return {
+        borderLeftWidth: borderWidth,
+        borderRightWidth: borderWidth,
+        borderTopWidth: borderWidth,
+        borderBottomWidth: borderWidth,
+        borderTopLeftRadius: borderRadius,
+        borderBottomLeftRadius: borderRadius,
+        borderTopRightRadius: borderRadius,
+        borderBottomRightRadius: borderRadius,
+      };
+    }
+    const isToLeft = borderFade === 'toLeft';
+    return {
+      borderLeftWidth: isToLeft ? 0 : borderWidth,
+      borderRightWidth: isToLeft ? borderWidth : 0,
+      borderTopWidth: borderWidth,
+      borderBottomWidth: borderWidth,
+      borderTopLeftRadius: isToLeft ? 0 : borderRadius,
+      borderBottomLeftRadius: isToLeft ? 0 : borderRadius,
+      borderTopRightRadius: isToLeft ? borderRadius : 0,
+      borderBottomRightRadius: isToLeft ? borderRadius : 0,
+    };
+  }, [borderFade, borderWidth, borderRadius]);
 
   return (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      onPress={onPress}
-      onPressIn={() => setIsPressed(true)}
-      onPressOut={() => setIsPressed(false)}
-      disabled={disabled || loading}
-      style={[
-        styles.button,
-        {
-          paddingVertical: padding.vertical,
-          paddingHorizontal: padding.horizontal,
-          borderRadius,
-          backgroundColor,
-          borderWidth,
-          borderColor: isPressed ? 'transparent' : borderColor,
-          opacity: disabled ? 0.5 : 1,
-        },
-        style,
-      ]}
-      testID={testID}
-      accessibilityLabel={accessibilityLabel || (typeof children === 'string' ? children : undefined)}
-      accessibilityRole="button"
-      accessibilityState={{ disabled: disabled || loading }}
-    >
-      {/* Border fade effect - simplified approach for React Native */}
-      {!isPressed && (
-        <View
-          style={[
-            styles.borderFadeOverlay,
-            {
-              borderColor,
-              borderWidth,
-              borderRadius,
-              // Create fade effect by positioning overlay
-              [fadeDirection === 'right' ? 'right' : 'left']: 0,
-              width: fadeDirection === 'right' ? '15%' : '15%',
-              opacity: 0.3, // Subtle fade effect
-            },
-          ]}
-          pointerEvents="none"
-        />
-      )}
-
-      {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator
-            size="small"
-            color={textColor}
-            style={styles.loader}
-          />
-          <Text style={[styles.text, { color: textColor, fontSize }]}>
+    <View style={[styles.wrapper, style]} pointerEvents="box-none">
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={onPress}
+        onPressIn={() => setIsPressed(true)}
+        onPressOut={() => setIsPressed(false)}
+        disabled={disabled || loading}
+        style={[
+          styles.button,
+          borderStyle,
+          {
+            paddingVertical: padding.vertical,
+            paddingHorizontal: padding.horizontal,
+            backgroundColor,
+            borderColor: activeBorderColor,
+            opacity: disabled ? 0.5 : 1,
+          },
+        ]}
+        testID={testID}
+        accessibilityLabel={accessibilityLabel || (typeof children === 'string' ? children : undefined)}
+        accessibilityRole="button"
+        accessibilityState={{ disabled: disabled || loading }}>
+        {loading ? (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator
+              size="small"
+              color={textColor}
+              style={styles.loader}
+            />
+            <Text style={[styles.text, { color: textColor, fontSize, letterSpacing }]}>
+              {children}
+            </Text>
+          </View>
+        ) : (
+          <Text style={[styles.text, { color: textColor, fontSize, letterSpacing }]}>
             {children}
           </Text>
-        </View>
-      ) : (
-        <Text style={[styles.text, { color: textColor, fontSize }]}>
-          {children}
-        </Text>
-      )}
-    </TouchableOpacity>
+        )}
+      </TouchableOpacity>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  button: {
+  wrapper: {
     position: 'relative',
+    minHeight: 48,
+    overflow: 'hidden',
+  },
+  button: {
+    flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    minHeight: 48, // tokens.touchTarget.comfortable
-    overflow: 'visible', // Allow border fade to be visible
-  },
-  borderFadeOverlay: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    backgroundColor: 'transparent',
+    minHeight: 48,
+    overflow: 'hidden',
   },
   text: {
     fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     fontWeight: '500',
-    letterSpacing: 0.025,
     textAlign: 'center',
     zIndex: 1,
   },
