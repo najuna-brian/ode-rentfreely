@@ -1,6 +1,6 @@
 /**
  * ODE Input Component - React Native
- * 
+ *
  * Modern minimalist input with clean styling and error states
  */
 
@@ -26,10 +26,12 @@ const Input: React.FC<InputProps> = ({
   const borderColor = error
     ? tokens.color.semantic.error[500]
     : isFocused
-    ? tokens.color.brand.primary[500]
-    : tokens.color.neutral[400];
+      ? tokens.color.brand.primary[500]
+      : tokens.color.neutral[400];
 
-  const borderWidth = isFocused ? parseInt(tokens.border.width.medium.replace('px', '')) : parseInt(tokens.border.width.thin.replace('px', ''));
+  const borderWidth = isFocused
+    ? parseInt(tokens.border.width.medium.replace('px', ''))
+    : parseInt(tokens.border.width.thin.replace('px', ''));
   const borderRadius = parseInt(tokens.border.radius.sm.replace('px', ''));
 
   return (

@@ -1,6 +1,6 @@
 /**
  * Shared Utilities for ODE Components
- * 
+ *
  * Platform-agnostic utility functions
  */
 
@@ -45,22 +45,35 @@ export function getButtonTextColor(
  * Get border color for button variant.
  * Prefer passing getToken from @ode/tokens so values come from the design system.
  */
-export function getButtonBorderColor(variant: ButtonVariant, getToken?: (path: string) => string): string {
+export function getButtonBorderColor(
+  variant: ButtonVariant,
+  getToken?: (path: string) => string
+): string {
   if (getToken) {
     switch (variant) {
-      case 'primary': return getToken('color.brand.primary.500');
-      case 'secondary': return getToken('color.brand.secondary.500');
-      case 'neutral': return getToken('color.neutral.600');
-      case 'danger': return getToken('color.neutral.600');
-      default: return getToken('color.brand.primary.500');
+      case 'primary':
+        return getToken('color.brand.primary.500');
+      case 'secondary':
+        return getToken('color.brand.secondary.500');
+      case 'neutral':
+        return getToken('color.neutral.600');
+      case 'danger':
+        return getToken('color.neutral.600');
+      default:
+        return getToken('color.brand.primary.500');
     }
   }
   switch (variant) {
-    case 'primary': return '#4F7F4E';
-    case 'secondary': return '#E9B85B';
-    case 'neutral': return '#757575';
-    case 'danger': return '#757575';
-    default: return '#4F7F4E';
+    case 'primary':
+      return '#4F7F4E';
+    case 'secondary':
+      return '#E9B85B';
+    case 'neutral':
+      return '#757575';
+    case 'danger':
+      return '#757575';
+    default:
+      return '#4F7F4E';
   }
 }
 
@@ -68,7 +81,10 @@ export function getButtonBorderColor(variant: ButtonVariant, getToken?: (path: s
  * Get background color for button variant (used on hover).
  * Prefer passing getToken so values come from tokens.
  */
-export function getButtonBackgroundColor(variant: ButtonVariant, getToken?: (path: string) => string): string {
+export function getButtonBackgroundColor(
+  variant: ButtonVariant,
+  getToken?: (path: string) => string
+): string {
   return getButtonBorderColor(variant, getToken);
 }
 

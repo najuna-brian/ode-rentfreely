@@ -1,20 +1,14 @@
 /**
  * ODE Button Component - React Native
  *
- * Synkronus-style: border.radius.md, thin border, token-based spacing/typography.
- * Border fade: no left or no right border; top and bottom are solid (same as danger).
+ * Synkronus-style: full borders on all sides, border.radius.md (8px), thin border,
+ * token-based spacing/typography. Same border radius in px for common design language.
  */
 
 import React, { useState, useMemo } from 'react';
-import {
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  View,
-  ActivityIndicator,
-} from 'react-native';
-import { ButtonProps, ButtonVariant, ButtonPosition } from '../shared/types';
-import { getOppositeVariant, getBorderFadeDirection } from '../shared/utils';
+import { TouchableOpacity, Text, StyleSheet, View, ActivityIndicator } from 'react-native';
+import { ButtonProps, ButtonVariant } from '../shared/types';
+import { getOppositeVariant } from '../shared/utils';
 import tokens from '@ode/tokens/dist/react-native/tokens-resolved';
 
 export interface NativeButtonProps extends ButtonProps {
@@ -22,7 +16,7 @@ export interface NativeButtonProps extends ButtonProps {
    * Whether this button is part of a pair (for opposite styling)
    */
   isPaired?: boolean;
-  
+
   /**
    * The variant of the paired button (if any)
    */
@@ -45,7 +39,6 @@ const Button: React.FC<NativeButtonProps> = ({
   accessibilityLabel,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
-  const borderFade = getBorderFadeDirection(position);
   const isActiveOrPressed = active || isPressed;
 
   // Determine actual variant - if paired, use opposite of paired variant
@@ -57,7 +50,8 @@ const Button: React.FC<NativeButtonProps> = ({
   }, [isPaired, pairedVariant, variant]);
 
   const primaryGreen = tokens.color.brand.primary[500];
-  const errorRed = (tokens.color.semantic as any)?.error?.[500] ?? tokens.color.semantic?.error?.[500];
+  const errorRed =
+    (tokens.color.semantic as any)?.error?.[500] ?? tokens.color.semantic?.error?.[500];
   const errorRedAlpha = (tokens.color.semantic as any)?.error?.alpha?.[15];
   const neutralGrey = tokens.color.neutral[600];
   const textOnFill = tokens.color.neutral.white;
@@ -81,28 +75,33 @@ const Button: React.FC<NativeButtonProps> = ({
   const dangerRedAlpha = errorRedAlpha ?? (tokens.color.semantic as any)?.error?.alpha?.[15];
   const dangerDefaultBorder = dangerRed;
   const dangerPressedBorder = neutralGrey;
-  const pressedBg =
-    actualVariant === 'danger'
-      ? 'transparent'
-      : actualVariant === 'neutral' && position === 'left'
-        ? primaryGreen
-        : borderColor;
+  const pressedBg = actualVariant === 'danger' ? 'transparent' : borderColor;
   const pressedBorderColor = actualVariant === 'danger' ? dangerPressedBorder : 'transparent';
 
   const textColor =
     actualVariant === 'danger'
-      ? isPressed ? neutralGrey : dangerRed
+      ? isPressed
+        ? neutralGrey
+        : dangerRed
       : isActiveOrPressed
         ? textOnFill
         : borderColor;
   const activeBorderColor =
     actualVariant === 'danger'
-      ? isPressed ? dangerPressedBorder : dangerDefaultBorder
-      : isActiveOrPressed ? pressedBorderColor : borderColor;
+      ? isPressed
+        ? dangerPressedBorder
+        : dangerDefaultBorder
+      : isActiveOrPressed
+        ? pressedBorderColor
+        : borderColor;
   const backgroundColor =
     actualVariant === 'danger'
-      ? isPressed ? 'transparent' : (dangerRedAlpha ?? 'transparent')
-      : isActiveOrPressed ? pressedBg : 'transparent';
+      ? isPressed
+        ? 'transparent'
+        : (dangerRedAlpha ?? 'transparent')
+      : isActiveOrPressed
+        ? pressedBg
+        : 'transparent';
 
   const parsePx = (v: string) => parseInt(String(v).replace('px', ''), 10) || 0;
   const paddingMap = {
@@ -119,37 +118,27 @@ const Button: React.FC<NativeButtonProps> = ({
 
   const padding = paddingMap[size];
   const fontSize = fontSizeMap[size];
-  // Match portal (react-web): border.radius.md (8px), not full/pill
+  // Common design language: border.radius.md in px (8px from tokens)
   const borderRadius = parseInt(String(tokens.border.radius.md).replace('px', ''), 10) || 8;
   const borderWidth = parseInt(String(tokens.border.width.thin).replace('px', ''), 10) || 1;
-  const letterSpacing = Number(String(tokens.font.letterSpacing?.wide ?? 0.025).replace('em', '')) * (fontSizeMap[size] || 16);
+  const letterSpacing =
+    Number(String(tokens.font.letterSpacing?.wide ?? 0.025).replace('em', '')) *
+    (fontSizeMap[size] || 16);
 
-  // Partial border: toLeft / toRight = no left or no right; top and bottom always solid (like danger)
-  const borderStyle = useMemo(() => {
-    if (borderFade === 'full') {
-      return {
-        borderLeftWidth: borderWidth,
-        borderRightWidth: borderWidth,
-        borderTopWidth: borderWidth,
-        borderBottomWidth: borderWidth,
-        borderTopLeftRadius: borderRadius,
-        borderBottomLeftRadius: borderRadius,
-        borderTopRightRadius: borderRadius,
-        borderBottomRightRadius: borderRadius,
-      };
-    }
-    const isToLeft = borderFade === 'toLeft';
-    return {
-      borderLeftWidth: isToLeft ? 0 : borderWidth,
-      borderRightWidth: isToLeft ? borderWidth : 0,
+  // Full borders on all sides, same radius on all corners (px)
+  const borderStyle = useMemo(
+    () => ({
+      borderLeftWidth: borderWidth,
+      borderRightWidth: borderWidth,
       borderTopWidth: borderWidth,
       borderBottomWidth: borderWidth,
-      borderTopLeftRadius: isToLeft ? 0 : borderRadius,
-      borderBottomLeftRadius: isToLeft ? 0 : borderRadius,
-      borderTopRightRadius: isToLeft ? borderRadius : 0,
-      borderBottomRightRadius: isToLeft ? borderRadius : 0,
-    };
-  }, [borderFade, borderWidth, borderRadius]);
+      borderTopLeftRadius: borderRadius,
+      borderBottomLeftRadius: borderRadius,
+      borderTopRightRadius: borderRadius,
+      borderBottomRightRadius: borderRadius,
+    }),
+    [borderWidth, borderRadius]
+  );
 
   return (
     <View style={[styles.wrapper, style]} pointerEvents="box-none">
@@ -171,16 +160,15 @@ const Button: React.FC<NativeButtonProps> = ({
           },
         ]}
         testID={testID}
-        accessibilityLabel={accessibilityLabel || (typeof children === 'string' ? children : undefined)}
+        accessibilityLabel={
+          accessibilityLabel || (typeof children === 'string' ? children : undefined)
+        }
         accessibilityRole="button"
-        accessibilityState={{ disabled: disabled || loading }}>
+        accessibilityState={{ disabled: disabled || loading }}
+      >
         {loading ? (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator
-              size="small"
-              color={textColor}
-              style={styles.loader}
-            />
+            <ActivityIndicator size="small" color={textColor} style={styles.loader} />
             <Text style={[styles.text, { color: textColor, fontSize, letterSpacing }]}>
               {children}
             </Text>

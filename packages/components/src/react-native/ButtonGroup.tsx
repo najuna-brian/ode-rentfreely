@@ -1,6 +1,6 @@
 /**
  * ODE Button Group Component - React Native
- * 
+ *
  * Container for paired buttons with opposite styling
  */
 
@@ -20,23 +20,19 @@ interface ButtonGroupProps {
    * Buttons to render
    */
   children: React.ReactElement<ButtonProps>[];
-  
+
   /**
    * Variant for the first button (second will be opposite)
    */
   variant?: ButtonVariant;
-  
+
   /**
    * Additional style
    */
   style?: ViewStyle;
 }
 
-const ButtonGroup: React.FC<ButtonGroupProps> = ({
-  children,
-  variant = 'primary',
-  style,
-}) => {
+const ButtonGroup: React.FC<ButtonGroupProps> = ({ children, variant = 'primary', style }) => {
   const buttons = React.Children.toArray(children) as React.ReactElement<NativeButtonProps>[];
 
   return (

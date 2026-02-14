@@ -1,6 +1,6 @@
 /**
  * ODE Button Group Component - React Web
- * 
+ *
  * Container for paired buttons with opposite styling
  */
 
@@ -19,17 +19,17 @@ interface ButtonGroupProps {
    * Buttons to render
    */
   children: React.ReactElement<ButtonProps>[];
-  
+
   /**
    * Variant for the first button (second will be opposite)
    */
   variant?: ButtonVariant;
-  
+
   /**
    * Additional className
    */
   className?: string;
-  
+
   /**
    * Additional style
    */

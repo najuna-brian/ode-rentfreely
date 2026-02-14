@@ -1,6 +1,6 @@
 /**
  * ODE Card Component - React Native
- * 
+ *
  * Modern minimalist card with subtle elevation and clean styling
  */
 

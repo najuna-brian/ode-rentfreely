@@ -1,6 +1,6 @@
 /**
  * ODE Badge Component - React Native
- * 
+ *
  * Modern minimalist badge for labels and status indicators
  */
 

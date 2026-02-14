@@ -1,6 +1,6 @@
 /**
  * ODE Badge Component - React Web
- * 
+ *
  * Modern minimalist badge for labels and status indicators
  */
 
@@ -17,7 +17,9 @@ const getToken = (path: string): string => {
     value = (value as Record<string, unknown>)?.[part];
   }
   const resolved = (value as { value?: string })?.value ?? (value as string);
-  return resolved ?? (tokens?.color?.neutral?.black?.value ?? tokens?.color?.neutral?.black ?? '#000000');
+  return (
+    resolved ?? tokens?.color?.neutral?.black?.value ?? tokens?.color?.neutral?.black ?? '#000000'
+  );
 };
 
 const Badge: React.FC<BadgeProps> = ({
@@ -102,7 +104,11 @@ const Badge: React.FC<BadgeProps> = ({
   };
 
   return (
-    <span className={`ode-badge ode-badge--${variant} ode-badge--${size} ${className}`} style={badgeStyle} data-testid={testID}>
+    <span
+      className={`ode-badge ode-badge--${variant} ode-badge--${size} ${className}`}
+      style={badgeStyle}
+      data-testid={testID}
+    >
       {children}
     </span>
   );

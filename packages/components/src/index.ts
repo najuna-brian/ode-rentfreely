@@ -1,8 +1,8 @@
 /**
  * ODE Components
- * 
+ *
  * Main entry point - exports platform-specific components
- * 
+ *
  * Usage:
  * - For React Web: import { Button } from '@ode/components/react-web'
  * - For React Native: import { Button } from '@ode/components/react-native'

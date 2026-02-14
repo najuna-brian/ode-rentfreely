@@ -1,6 +1,6 @@
 /**
  * ODE Card Component - React Web
- * 
+ *
  * Modern minimalist card with subtle elevation and clean styling
  */
 
@@ -17,7 +17,9 @@ const getToken = (path: string): string => {
     value = (value as Record<string, unknown>)?.[part];
   }
   const resolved = (value as { value?: string })?.value ?? (value as string);
-  return resolved ?? (tokens?.color?.neutral?.black?.value ?? tokens?.color?.neutral?.black ?? '#000000');
+  return (
+    resolved ?? tokens?.color?.neutral?.black?.value ?? tokens?.color?.neutral?.black ?? '#000000'
+  );
 };
 
 const Card: React.FC<CardProps> = ({
@@ -71,7 +73,8 @@ const Card: React.FC<CardProps> = ({
   return (
     <>
       <style>
-        {onPress && `
+        {onPress &&
+          `
           .ode-card-clickable:hover {
             box-shadow: ${getToken('shadow.md')} !important;
             transform: translateY(-2px);

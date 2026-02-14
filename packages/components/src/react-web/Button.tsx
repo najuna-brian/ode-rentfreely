@@ -1,13 +1,13 @@
 /**
  * ODE Button Component - React Web
  *
- * Synkronus-style: partial border fade (no left or no right) and one-sided radii.
- * Single: fade right-to-left. Horizontal pair: left→toLeft, right→toRight. Vertical: top→toRight, bottom→toLeft.
+ * Synkronus-style: full borders on all sides, border.radius.md in px (8px),
+ * thin border, token-based spacing/typography. Same border radius in px for common design language.
  */
 
 import React, { useState, useMemo } from 'react';
 import type { ButtonProps, ButtonVariant } from '../shared/types';
-import { getOppositeVariant, getBorderFadeDirection } from '../shared/utils';
+import { getOppositeVariant } from '../shared/utils';
 import tokensJson from '@ode/tokens/dist/json/tokens.json';
 
 export interface WebButtonProps extends ButtonProps {
@@ -15,7 +15,7 @@ export interface WebButtonProps extends ButtonProps {
    * Whether this button is part of a pair (for opposite styling)
    */
   isPaired?: boolean;
-  
+
   /**
    * The variant of the paired button (if any)
    */
@@ -52,8 +52,6 @@ const Button: React.FC<WebButtonProps> = ({
     return variant;
   }, [isPaired, pairedVariant, variant]);
 
-  const borderFade = getBorderFadeDirection(position);
-
   const getToken = (path: string): string => {
     const parts = path.split('.');
     let value: unknown = tokens;
@@ -61,7 +59,9 @@ const Button: React.FC<WebButtonProps> = ({
       value = (value as Record<string, unknown>)?.[part];
     }
     const resolved = (value as { value?: string })?.value ?? (value as string);
-    return resolved ?? (tokens?.color?.neutral?.black?.value ?? tokens?.color?.neutral?.black ?? '#000000');
+    return (
+      resolved ?? tokens?.color?.neutral?.black?.value ?? tokens?.color?.neutral?.black ?? '#000000'
+    );
   };
 
   const primaryGreen = getToken('color.brand.primary.500');
@@ -88,25 +88,38 @@ const Button: React.FC<WebButtonProps> = ({
   // Danger: default = red (border, text, tint bg); hover = grey (border, text), transparent
   const dangerDefaultBorder = errorRed;
   const dangerHoverBorder = neutralGrey;
-  const hoverBg =
-    actualVariant === 'danger'
-      ? 'transparent'
-      : actualVariant === 'neutral' && position === 'left'
-        ? primaryGreen
-        : borderColor;
+  const hoverBg = actualVariant === 'danger' ? 'transparent' : borderColor;
   const activeBorderColor =
     actualVariant === 'danger'
-      ? isHovered ? dangerHoverBorder : dangerDefaultBorder
-      : isActiveOrHovered ? 'transparent' : borderColor;
+      ? isHovered
+        ? dangerHoverBorder
+        : dangerDefaultBorder
+      : isActiveOrHovered
+        ? 'transparent'
+        : borderColor;
   const activeTextColor =
     actualVariant === 'danger'
-      ? isHovered ? neutralGrey : errorRed
+      ? isHovered
+        ? neutralGrey
+        : errorRed
       : isActiveOrHovered
         ? textOnFill
         : borderColor;
-  const activeBg = actualVariant === 'danger' ? (isHovered ? 'transparent' : (errorRedAlpha || 'transparent')) : (isActiveOrHovered ? hoverBg : 'transparent');
+  const activeBg =
+    actualVariant === 'danger'
+      ? isHovered
+        ? 'transparent'
+        : errorRedAlpha || 'transparent'
+      : isActiveOrHovered
+        ? hoverBg
+        : 'transparent';
 
-  const borderRadius = getToken('border.radius.md');
+  // Common design language: border radius in px (token is 8px)
+  const borderRadiusRaw = getToken('border.radius.md');
+  const borderRadiusPx =
+    typeof borderRadiusRaw === 'string' && borderRadiusRaw.endsWith('px')
+      ? borderRadiusRaw
+      : `${parseInt(String(borderRadiusRaw).replace(/\D/g, ''), 10) || 8}px`;
   const borderWidth = getToken('border.width.thin');
 
   const paddingMap = {
@@ -124,40 +137,10 @@ const Button: React.FC<WebButtonProps> = ({
   const padding = paddingMap[size];
   const fontSize = fontSizeMap[size];
 
-  const isFull = borderFade === 'full';
-  const isToLeft = borderFade === 'toLeft';
-  const showTaper = !isFull && actualVariant !== 'danger' && !isActiveOrHovered;
-  const taperGradient =
-    borderFade === 'toLeft'
-      ? `linear-gradient(to right, transparent, ${borderColor})`
-      : `linear-gradient(to right, ${borderColor}, transparent)`;
-
-  const borderStyle: React.CSSProperties = isFull
-    ? {
-        border: `${borderWidth} solid ${activeBorderColor}`,
-        borderRadius,
-      }
-    : isToLeft
-      ? {
-          borderLeft: 'none',
-          borderRight: `${borderWidth} solid ${activeBorderColor}`,
-          borderTop: showTaper ? 'none' : `${borderWidth} solid ${activeBorderColor}`,
-          borderBottom: showTaper ? 'none' : `${borderWidth} solid ${activeBorderColor}`,
-          borderTopLeftRadius: 0,
-          borderBottomLeftRadius: 0,
-          borderTopRightRadius: borderRadius,
-          borderBottomRightRadius: borderRadius,
-        }
-      : {
-          borderLeft: `${borderWidth} solid ${activeBorderColor}`,
-          borderRight: 'none',
-          borderTop: showTaper ? 'none' : `${borderWidth} solid ${activeBorderColor}`,
-          borderBottom: showTaper ? 'none' : `${borderWidth} solid ${activeBorderColor}`,
-          borderTopLeftRadius: borderRadius,
-          borderBottomLeftRadius: borderRadius,
-          borderTopRightRadius: 0,
-          borderBottomRightRadius: 0,
-        };
+  const borderStyle: React.CSSProperties = {
+    border: `${borderWidth} solid ${activeBorderColor}`,
+    borderRadius: borderRadiusPx,
+  };
 
   const buttonStyle: React.CSSProperties = {
     position: 'relative',
@@ -201,38 +184,16 @@ const Button: React.FC<WebButtonProps> = ({
       aria-label={accessibilityLabel || (typeof children === 'string' ? children : undefined)}
       aria-disabled={disabled || loading}
     >
-      {showTaper && (
-        <>
-          <span
-            style={{
-              position: 'absolute',
-              top: 0,
-              left: 0,
-              right: 0,
-              height: borderWidth,
-              background: taperGradient,
-              pointerEvents: 'none',
-              borderTopLeftRadius: isToLeft ? 0 : borderRadius,
-              borderTopRightRadius: isToLeft ? borderRadius : 0,
-            }}
-          />
-          <span
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: borderWidth,
-              background: taperGradient,
-              pointerEvents: 'none',
-              borderBottomLeftRadius: isToLeft ? 0 : borderRadius,
-              borderBottomRightRadius: isToLeft ? borderRadius : 0,
-            }}
-          />
-        </>
-      )}
       {loading ? (
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', position: 'relative', zIndex: 1 }}>
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            position: 'relative',
+            zIndex: 1,
+          }}
+        >
           <span
             style={{
               width: '16px',

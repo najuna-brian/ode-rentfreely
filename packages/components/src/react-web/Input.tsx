@@ -1,6 +1,6 @@
 /**
  * ODE Input Component - React Web
- * 
+ *
  * Modern minimalist input with clean styling and error states
  */
 
@@ -17,7 +17,9 @@ const getToken = (path: string): string => {
     value = (value as Record<string, unknown>)?.[part];
   }
   const resolved = (value as { value?: string })?.value ?? (value as string);
-  return resolved ?? (tokens?.color?.neutral?.black?.value ?? tokens?.color?.neutral?.black ?? '#000000');
+  return (
+    resolved ?? tokens?.color?.neutral?.black?.value ?? tokens?.color?.neutral?.black ?? '#000000'
+  );
 };
 
 const Input: React.FC<InputProps> = ({
@@ -46,8 +48,8 @@ const Input: React.FC<InputProps> = ({
   const borderColor = error
     ? getToken('color.semantic.error.500')
     : isFocused
-    ? getToken('color.brand.primary.500')
-    : getToken('color.neutral.400');
+      ? getToken('color.brand.primary.500')
+      : getToken('color.neutral.400');
 
   const borderWidth = isFocused ? getToken('border.width.medium') : getToken('border.width.thin');
   const borderRadius = getToken('border.radius.sm');
@@ -95,7 +97,16 @@ const Input: React.FC<InputProps> = ({
       {label && (
         <label style={labelStyle}>
           {label}
-          {required && <span style={{ color: getToken('color.semantic.error.500'), marginLeft: getToken('spacing.1') }}>*</span>}
+          {required && (
+            <span
+              style={{
+                color: getToken('color.semantic.error.500'),
+                marginLeft: getToken('spacing.1'),
+              }}
+            >
+              *
+            </span>
+          )}
         </label>
       )}
       <input
