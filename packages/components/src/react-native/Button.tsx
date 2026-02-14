@@ -30,7 +30,6 @@ const Button: React.FC<NativeButtonProps> = ({
   size = 'medium',
   disabled = false,
   loading = false,
-  position = 'standalone',
   active = false,
   isPaired = false,
   pairedVariant,

@@ -32,7 +32,6 @@ const Button: React.FC<WebButtonProps> = ({
   size = 'medium',
   disabled = false,
   loading = false,
-  position = 'standalone',
   active = false,
   isPaired = false,
   pairedVariant,
