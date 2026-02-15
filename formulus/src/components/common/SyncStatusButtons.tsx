@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import colors from '../../theme/colors';
+import { View, StyleSheet } from 'react-native';
+import Button from './Button';
 
 export type SyncStatus = 'all' | 'synced' | 'pending';
 
@@ -21,22 +21,25 @@ const SyncStatusButtons: React.FC<SyncStatusButtonsProps> = ({
 
   return (
     <View style={styles.container}>
-      {buttons.map(button => {
+      {buttons.map((button, index) => {
         const isActive = selectedStatus === button.id;
+        const position =
+          index === 0
+            ? 'left'
+            : index === buttons.length - 1
+              ? 'right'
+              : 'middle';
         return (
-          <TouchableOpacity
+          <Button
             key={button.id}
-            style={[styles.button, isActive && styles.buttonActive]}
+            title={button.label}
             onPress={() => onStatusChange(button.id)}
-            activeOpacity={0.7}>
-            <Text
-              style={[styles.buttonText, isActive && styles.buttonTextActive]}
-              numberOfLines={1}
-              adjustsFontSizeToFit
-              minimumFontScale={0.8}>
-              {button.label}
-            </Text>
-          </TouchableOpacity>
+            variant="primary"
+            size="small"
+            position={position}
+            active={isActive}
+            style={styles.button}
+          />
         );
       })}
     </View>
@@ -46,9 +49,6 @@ const SyncStatusButtons: React.FC<SyncStatusButtonsProps> = ({
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: colors.neutral[100],
-    borderRadius: 8,
-    padding: 4,
     gap: 4,
     flex: 1,
     maxWidth: 300,
@@ -56,29 +56,6 @@ const styles = StyleSheet.create({
   },
   button: {
     flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    borderRadius: 6,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonActive: {
-    backgroundColor: colors.neutral.white,
-    shadowColor: colors.neutral.black,
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  buttonText: {
-    fontSize: 13,
-    fontWeight: '500',
-    color: colors.neutral[600],
-    textAlign: 'center',
-  },
-  buttonTextActive: {
-    color: colors.brand.primary[500],
-    fontWeight: '600',
   },
 });
 

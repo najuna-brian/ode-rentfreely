@@ -77,7 +77,16 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          cache-dependency-path: formulus/package-lock.json
+          cache-dependency-path: |
+            formulus/package-lock.json
+            packages/tokens/package-lock.json
+      
+      - name: Install and build @ode/tokens
+        working-directory: .
+        run: |
+          cd packages/tokens
+          npm install
+          npm run build
       
       - name: Install dependencies
         run: npm install
@@ -262,19 +271,19 @@ jobs:
           echo "| Synkronus | ${{ needs.synkronus.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "| Synkronus CLI | ${{ needs.synkronus-cli.result }} |" >> $GITHUB_STEP_SUMMARY
           
-          if [ "${{ needs.formulus.result }}" != "success" ] && [ "${{ needs.formulus.result }}" != "skipped" ]; then
+          if [ "${{ needs.formulus.result }}" == "failure" ]; then
             echo "❌ Formulus CI failed"
             exit 1
           fi
-          if [ "${{ needs.formulus-formplayer.result }}" != "success" ] && [ "${{ needs.formulus-formplayer.result }}" != "skipped" ]; then
+          if [ "${{ needs.formulus-formplayer.result }}" == "failure" ]; then
             echo "❌ Formulus Formplayer CI failed"
             exit 1
           fi
-          if [ "${{ needs.synkronus.result }}" != "success" ] && [ "${{ needs.synkronus.result }}" != "skipped" ]; then
+          if [ "${{ needs.synkronus.result }}" == "failure" ]; then
             echo "❌ Synkronus CI failed"
             exit 1
           fi
-          if [ "${{ needs.synkronus-cli.result }}" != "success" ] && [ "${{ needs.synkronus-cli.result }}" != "skipped" ]; then
+          if [ "${{ needs.synkronus-cli.result }}" == "failure" ]; then
             echo "❌ Synkronus CLI CI failed"
             exit 1
           fi

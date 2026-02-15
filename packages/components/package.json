@@ -35,10 +35,13 @@
   "license": "MIT",
   "peerDependencies": {
     "@ode/tokens": "file:../tokens",
-    "react": ">=18.0.0"
+    "react": ">=18.0.0",
+    "react-native": ">=0.70.0"
   },
   "dependencies": {
-    "@ode/tokens": "file:../tokens"
+    "@babel/runtime": "^7.28.0",
+    "@ode/tokens": "file:../tokens",
+    "react-native-svg": "^15.15.3"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

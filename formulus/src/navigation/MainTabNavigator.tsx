@@ -49,7 +49,7 @@ const MainTabNavigator: React.FC = () => {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: colors.semantic.info.ios,
+        tabBarActiveTintColor: colors.brand.primary[500],
         tabBarInactiveTintColor: colors.neutral[500],
         tabBarStyle: {
           backgroundColor: colors.neutral.white,

@@ -1,6 +1,6 @@
 /**
  * ODE Badge Component - React Web
- * 
+ *
  * Modern minimalist badge for labels and status indicators
  */
 
@@ -10,13 +10,16 @@ import tokensJson from '@ode/tokens/dist/json/tokens.json';
 
 const tokens = tokensJson as any;
 
-const getColor = (colorPath: string): string => {
-  const parts = colorPath.split('.');
-  let value: any = tokens;
+const getToken = (path: string): string => {
+  const parts = path.split('.');
+  let value: unknown = tokens;
   for (const part of parts) {
-    value = value?.[part];
+    value = (value as Record<string, unknown>)?.[part];
   }
-  return value?.value || value || '#000000';
+  const resolved = (value as { value?: string })?.value ?? (value as string);
+  return (
+    resolved ?? tokens?.color?.neutral?.black?.value ?? tokens?.color?.neutral?.black ?? '#000000'
+  );
 };
 
 const Badge: React.FC<BadgeProps> = ({
@@ -31,58 +34,58 @@ const Badge: React.FC<BadgeProps> = ({
     switch (variant) {
       case 'primary':
         return {
-          bg: getColor('color.brand.primary.50'),
-          text: getColor('color.brand.primary.700'),
+          bg: getToken('color.brand.primary.50'),
+          text: getToken('color.brand.primary.700'),
         };
       case 'secondary':
         return {
-          bg: getColor('color.brand.secondary.50'),
-          text: getColor('color.brand.secondary.700'),
+          bg: getToken('color.brand.secondary.50'),
+          text: getToken('color.brand.secondary.700'),
         };
       case 'success':
         return {
-          bg: getColor('color.semantic.success.50'),
-          text: getColor('color.semantic.success.600'),
+          bg: getToken('color.semantic.success.50'),
+          text: getToken('color.semantic.success.600'),
         };
       case 'error':
         return {
-          bg: getColor('color.semantic.error.50'),
-          text: getColor('color.semantic.error.600'),
+          bg: getToken('color.semantic.error.50'),
+          text: getToken('color.semantic.error.600'),
         };
       case 'warning':
         return {
-          bg: getColor('color.semantic.warning.50'),
-          text: getColor('color.semantic.warning.600'),
+          bg: getToken('color.semantic.warning.50'),
+          text: getToken('color.semantic.warning.600'),
         };
       case 'info':
         return {
-          bg: getColor('color.semantic.info.50'),
-          text: getColor('color.semantic.info.600'),
+          bg: getToken('color.semantic.info.50'),
+          text: getToken('color.semantic.info.600'),
         };
       case 'neutral':
       default:
         return {
-          bg: getColor('color.neutral.100'),
-          text: getColor('color.neutral.700'),
+          bg: getToken('color.neutral.100'),
+          text: getToken('color.neutral.700'),
         };
     }
   };
 
   const colors = getVariantColors();
-  const borderRadius = getColor('border.radius.md');
+  const borderRadius = getToken('border.radius.md');
 
   const sizeMap = {
     small: {
-      padding: `${getColor('spacing.1')} ${getColor('spacing.2')}`,
-      fontSize: getColor('font.size.xs'),
+      padding: `${getToken('spacing.1')} ${getToken('spacing.2')}`,
+      fontSize: getToken('font.size.xs'),
     },
     medium: {
-      padding: `${getColor('spacing.2')} ${getColor('spacing.3')}`,
-      fontSize: getColor('font.size.sm'),
+      padding: `${getToken('spacing.2')} ${getToken('spacing.3')}`,
+      fontSize: getToken('font.size.sm'),
     },
     large: {
-      padding: `${getColor('spacing.2')} ${getColor('spacing.4')}`,
-      fontSize: getColor('font.size.base'),
+      padding: `${getToken('spacing.2')} ${getToken('spacing.4')}`,
+      fontSize: getToken('font.size.base'),
     },
   };
 
@@ -93,15 +96,19 @@ const Badge: React.FC<BadgeProps> = ({
     backgroundColor: colors.bg,
     color: colors.text,
     borderRadius,
-    fontWeight: getColor('font.weight.medium'),
-    fontFamily: getColor('font.family.sans'),
-    lineHeight: getColor('font.lineHeight.none'),
+    fontWeight: getToken('font.weight.medium'),
+    fontFamily: getToken('font.family.sans'),
+    lineHeight: getToken('font.lineHeight.none'),
     ...sizeMap[size],
     ...style,
   };
 
   return (
-    <span className={`ode-badge ode-badge--${variant} ode-badge--${size} ${className}`} style={badgeStyle} data-testid={testID}>
+    <span
+      className={`ode-badge ode-badge--${variant} ode-badge--${size} ${className}`}
+      style={badgeStyle}
+      data-testid={testID}
+    >
       {children}
     </span>
   );

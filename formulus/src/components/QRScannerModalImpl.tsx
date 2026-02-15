@@ -4,7 +4,6 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Dimensions,
   StatusBar,
 } from 'react-native';
@@ -16,6 +15,8 @@ import {
   CodeType,
 } from 'react-native-vision-camera';
 import { colors } from '../theme/colors';
+import Button from './common/Button';
+
 const { width } = Dimensions.get('window');
 
 export interface ScannerModalResults {
@@ -131,14 +132,18 @@ const QRScannerModalImpl: React.FC<QRScannerModalProps> = ({
             <Text style={styles.permissionText}>
               Camera permission is required to scan QR codes
             </Text>
-            <TouchableOpacity style={styles.button} onPress={requestPermission}>
-              <Text style={styles.buttonText}>Grant Permission</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={handleCancel}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
-            </TouchableOpacity>
+            <Button
+              title="Grant Permission"
+              onPress={requestPermission}
+              variant="primary"
+              style={styles.permissionButton}
+            />
+            <Button
+              title="Cancel"
+              onPress={handleCancel}
+              variant="tertiary"
+              style={styles.cancelButtonFormulus}
+            />
           </View>
         </View>
       </Modal>
@@ -151,11 +156,12 @@ const QRScannerModalImpl: React.FC<QRScannerModalProps> = ({
         <View style={styles.container}>
           <View style={styles.errorContainer}>
             <Text style={styles.errorText}>No camera device found</Text>
-            <TouchableOpacity
-              style={styles.cancelButton}
-              onPress={handleCancel}>
-              <Text style={styles.cancelButtonText}>Close</Text>
-            </TouchableOpacity>
+            <Button
+              title="Close"
+              onPress={handleCancel}
+              variant="tertiary"
+              style={styles.cancelButtonFormulus}
+            />
           </View>
         </View>
       </Modal>
@@ -195,24 +201,27 @@ const QRScannerModalImpl: React.FC<QRScannerModalProps> = ({
                   {scannedData}
                 </Text>
                 <View style={styles.buttonRow}>
-                  <TouchableOpacity
-                    style={styles.retryButton}
-                    onPress={handleRetry}>
-                    <Text style={styles.buttonText}>Scan Again</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.confirmButton}
-                    onPress={handleConfirm}>
-                    <Text style={styles.buttonText}>Confirm</Text>
-                  </TouchableOpacity>
+                  <Button
+                    title="Scan Again"
+                    onPress={handleRetry}
+                    variant="secondary"
+                    style={styles.optionButton}
+                  />
+                  <Button
+                    title="Confirm"
+                    onPress={handleConfirm}
+                    variant="primary"
+                    style={styles.optionButton}
+                  />
                 </View>
               </View>
             ) : (
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={handleCancel}>
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
+              <Button
+                title="Cancel"
+                onPress={handleCancel}
+                variant="tertiary"
+                style={styles.cancelButtonFormulus}
+              />
             )}
           </View>
         </View>
@@ -299,44 +308,9 @@ const styles = StyleSheet.create({
     fontFamily: 'monospace',
   },
   buttonRow: { flexDirection: 'row', gap: 20 },
-  button: {
-    backgroundColor: colors.semantic.info.ios,
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 8,
-    marginVertical: 10,
-  },
-  retryButton: {
-    backgroundColor: colors.semantic.warning[500],
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 8,
-  },
-  confirmButton: {
-    backgroundColor: colors.semantic.success[500],
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 8,
-  },
-  cancelButton: {
-    backgroundColor: colors.neutral.transparent,
-    borderWidth: 2,
-    borderColor: colors.neutral.white,
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: colors.neutral.white,
-    fontSize: 16,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-  cancelButtonText: {
-    color: colors.neutral.white,
-    fontSize: 16,
-    textAlign: 'center',
-  },
+  permissionButton: { marginVertical: 10 },
+  optionButton: { flex: 1 },
+  cancelButtonFormulus: { marginTop: 10 },
   permissionContainer: {
     flex: 1,
     justifyContent: 'center',

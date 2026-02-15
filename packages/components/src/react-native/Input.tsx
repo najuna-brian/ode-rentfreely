@@ -1,13 +1,13 @@
 /**
  * ODE Input Component - React Native
- * 
+ *
  * Modern minimalist input with clean styling and error states
  */
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, StyleSheet, ViewStyle, TextStyle } from 'react-native';
 import { InputProps } from '../shared/types';
-import { tokens } from '@ode/tokens/dist/react-native/tokens';
+import tokens from '@ode/tokens/dist/react-native/tokens-resolved';
 
 const Input: React.FC<InputProps> = ({
   label,
@@ -17,6 +17,7 @@ const Input: React.FC<InputProps> = ({
   error,
   disabled = false,
   required = false,
+  secureTextEntry = false,
   style,
   testID,
 }) => {
@@ -25,10 +26,12 @@ const Input: React.FC<InputProps> = ({
   const borderColor = error
     ? tokens.color.semantic.error[500]
     : isFocused
-    ? tokens.color.brand.primary[500]
-    : tokens.color.neutral[400];
+      ? tokens.color.brand.primary[500]
+      : tokens.color.neutral[400];
 
-  const borderWidth = isFocused ? parseInt(tokens.border.width.medium.replace('px', '')) : parseInt(tokens.border.width.thin.replace('px', ''));
+  const borderWidth = isFocused
+    ? parseInt(tokens.border.width.medium.replace('px', ''))
+    : parseInt(tokens.border.width.thin.replace('px', ''));
   const borderRadius = parseInt(tokens.border.radius.sm.replace('px', ''));
 
   return (
@@ -47,6 +50,7 @@ const Input: React.FC<InputProps> = ({
         placeholder={placeholder}
         placeholderTextColor={tokens.color.neutral[400]}
         editable={!disabled}
+        secureTextEntry={secureTextEntry}
         style={[
           styles.input,
           {

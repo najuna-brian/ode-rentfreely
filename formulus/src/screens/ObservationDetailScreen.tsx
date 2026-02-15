@@ -15,6 +15,7 @@ import { FormService } from '../services/FormService';
 import { openFormplayerFromNative } from '../webview/FormulusMessageHandlers';
 import { useNavigation } from '@react-navigation/native';
 import colors from '../theme/colors';
+import { Button } from '../components/common';
 
 interface ObservationDetailScreenProps {
   route: {
@@ -220,12 +221,20 @@ const ObservationDetailScreen: React.FC<ObservationDetailScreenProps> = ({
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Observation Details</Text>
         <View style={styles.headerActions}>
-          <TouchableOpacity onPress={handleEdit} style={styles.actionButton}>
-            <Icon name="pencil" size={24} color={colors.brand.primary[500]} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={handleDelete} style={styles.actionButton}>
-            <Icon name="delete" size={24} color={colors.semantic.error[500]} />
-          </TouchableOpacity>
+          <Button
+            title="Edit"
+            onPress={handleEdit}
+            variant="primary"
+            size="small"
+            position="left"
+          />
+          <Button
+            title="Delete"
+            onPress={handleDelete}
+            variant="danger"
+            size="small"
+            position="right"
+          />
         </View>
       </View>
 
@@ -371,9 +380,6 @@ const styles = StyleSheet.create({
   headerActions: {
     flexDirection: 'row',
     gap: 8,
-  },
-  actionButton: {
-    padding: 4,
   },
   content: {
     flex: 1,

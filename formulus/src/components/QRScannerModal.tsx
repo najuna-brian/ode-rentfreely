@@ -1,6 +1,7 @@
 import React, { Component, ErrorInfo } from 'react';
-import { Modal, View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Modal, View, Text, StyleSheet } from 'react-native';
 import { colors } from '../theme/colors';
+import Button from './common/Button';
 
 class VisionCameraErrorBoundary extends Component<
   { children: React.ReactNode; fallback: React.ReactNode },
@@ -59,9 +60,12 @@ const FallbackContent: React.FC<{ onClose: () => void }> = ({ onClose }) => (
         QR scanner not available. Camera module (react-native-vision-camera) is
         not linked. Re-enable it in react-native.config.js and rebuild.
       </Text>
-      <TouchableOpacity style={styles.button} onPress={onClose}>
-        <Text style={styles.buttonText}>Close</Text>
-      </TouchableOpacity>
+      <Button
+        title="Close"
+        onPress={onClose}
+        variant="secondary"
+        size="medium"
+      />
     </View>
   </View>
 );
@@ -92,9 +96,12 @@ const QRScannerModal: React.FC<QRScannerModalProps> = props => {
             QR scanner not available. Camera module (react-native-vision-camera)
             is not linked. Re-enable it in react-native.config.js and rebuild.
           </Text>
-          <TouchableOpacity style={styles.button} onPress={props.onClose}>
-            <Text style={styles.buttonText}>Close</Text>
-          </TouchableOpacity>
+          <Button
+            title="Close"
+            onPress={props.onClose}
+            variant="secondary"
+            size="medium"
+          />
         </View>
       </View>
     </Modal>
@@ -114,17 +121,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: 'center',
     marginBottom: 24,
-  },
-  button: {
-    backgroundColor: colors.semantic.info.ios,
-    paddingHorizontal: 30,
-    paddingVertical: 15,
-    borderRadius: 8,
-  },
-  buttonText: {
-    color: colors.neutral.white,
-    fontSize: 16,
-    fontWeight: 'bold',
   },
 });
 

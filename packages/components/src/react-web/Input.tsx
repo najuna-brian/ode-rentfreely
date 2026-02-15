@@ -1,6 +1,6 @@
 /**
  * ODE Input Component - React Web
- * 
+ *
  * Modern minimalist input with clean styling and error states
  */
 
@@ -10,13 +10,16 @@ import tokensJson from '@ode/tokens/dist/json/tokens.json';
 
 const tokens = tokensJson as any;
 
-const getColor = (colorPath: string): string => {
-  const parts = colorPath.split('.');
-  let value: any = tokens;
+const getToken = (path: string): string => {
+  const parts = path.split('.');
+  let value: unknown = tokens;
   for (const part of parts) {
-    value = value?.[part];
+    value = (value as Record<string, unknown>)?.[part];
   }
-  return value?.value || value || '#000000';
+  const resolved = (value as { value?: string })?.value ?? (value as string);
+  return (
+    resolved ?? tokens?.color?.neutral?.black?.value ?? tokens?.color?.neutral?.black ?? '#000000'
+  );
 };
 
 const Input: React.FC<InputProps> = ({
@@ -43,50 +46,50 @@ const Input: React.FC<InputProps> = ({
   };
 
   const borderColor = error
-    ? getColor('color.semantic.error.500')
+    ? getToken('color.semantic.error.500')
     : isFocused
-    ? getColor('color.brand.primary.500')
-    : getColor('color.neutral.400');
+      ? getToken('color.brand.primary.500')
+      : getToken('color.neutral.400');
 
-  const borderWidth = isFocused ? getColor('border.width.medium') : getColor('border.width.thin');
-  const borderRadius = getColor('border.radius.sm');
+  const borderWidth = isFocused ? getToken('border.width.medium') : getToken('border.width.thin');
+  const borderRadius = getToken('border.radius.sm');
 
   const containerStyle: React.CSSProperties = {
-    marginBottom: getColor('spacing.4'),
+    marginBottom: getToken('spacing.4'),
     width: '100%',
     ...style,
   };
 
   const labelStyle: React.CSSProperties = {
     display: 'block',
-    fontSize: getColor('font.size.sm'),
-    fontWeight: getColor('font.weight.medium'),
-    color: getColor('color.neutral.900'),
-    marginBottom: getColor('spacing.2'),
-    fontFamily: getColor('font.family.sans'),
+    fontSize: getToken('font.size.sm'),
+    fontWeight: getToken('font.weight.medium'),
+    color: getToken('color.neutral.900'),
+    marginBottom: getToken('spacing.2'),
+    fontFamily: getToken('font.family.sans'),
   };
 
   const inputStyle: React.CSSProperties = {
     width: '100%',
-    padding: getColor('spacing.4'),
-    fontSize: getColor('font.size.base'),
-    fontFamily: getColor('font.family.sans'),
-    lineHeight: getColor('font.lineHeight.normal'),
-    color: getColor('color.neutral.900'),
-    backgroundColor: disabled ? getColor('color.neutral.100') : getColor('color.neutral.white'),
+    padding: getToken('spacing.4'),
+    fontSize: getToken('font.size.base'),
+    fontFamily: getToken('font.family.sans'),
+    lineHeight: getToken('font.lineHeight.normal'),
+    color: getToken('color.neutral.900'),
+    backgroundColor: disabled ? getToken('color.neutral.100') : getToken('color.neutral.white'),
     border: `${borderWidth} solid ${borderColor}`,
     borderRadius,
-    minHeight: getColor('touchTarget.large') || '56px',
+    minHeight: getToken('touchTarget.large') || getToken('touchTarget.comfortable'),
     outline: 'none',
     transition: 'all 0.2s cubic-bezier(0.4, 0, 0.2, 1)',
     boxSizing: 'border-box',
   };
 
   const errorStyle: React.CSSProperties = {
-    marginTop: getColor('spacing.1'),
-    fontSize: getColor('font.size.sm'),
-    color: getColor('color.semantic.error.500'),
-    fontFamily: getColor('font.family.sans'),
+    marginTop: getToken('spacing.1'),
+    fontSize: getToken('font.size.sm'),
+    color: getToken('color.semantic.error.500'),
+    fontFamily: getToken('font.family.sans'),
   };
 
   return (
@@ -94,7 +97,16 @@ const Input: React.FC<InputProps> = ({
       {label && (
         <label style={labelStyle}>
           {label}
-          {required && <span style={{ color: getColor('color.semantic.error.500'), marginLeft: '4px' }}>*</span>}
+          {required && (
+            <span
+              style={{
+                color: getToken('color.semantic.error.500'),
+                marginLeft: getToken('spacing.1'),
+              }}
+            >
+              *
+            </span>
+          )}
         </label>
       )}
       <input

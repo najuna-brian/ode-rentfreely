@@ -1,6 +1,6 @@
 /**
  * ODE Button Group Component - React Native
- * 
+ *
  * Container for paired buttons with opposite styling
  */
 
@@ -12,7 +12,7 @@ import { ButtonVariant, ButtonProps } from '../shared/types';
 interface NativeButtonProps extends ButtonProps {
   isPaired?: boolean;
   pairedVariant?: ButtonVariant;
-  position?: 'left' | 'right' | 'standalone';
+  position?: 'left' | 'right' | 'middle' | 'standalone';
 }
 
 interface ButtonGroupProps {
@@ -20,23 +20,19 @@ interface ButtonGroupProps {
    * Buttons to render
    */
   children: React.ReactElement<ButtonProps>[];
-  
+
   /**
    * Variant for the first button (second will be opposite)
    */
   variant?: ButtonVariant;
-  
+
   /**
    * Additional style
    */
   style?: ViewStyle;
 }
 
-const ButtonGroup: React.FC<ButtonGroupProps> = ({
-  children,
-  variant = 'primary',
-  style,
-}) => {
+const ButtonGroup: React.FC<ButtonGroupProps> = ({ children, variant = 'primary', style }) => {
   const buttons = React.Children.toArray(children) as React.ReactElement<NativeButtonProps>[];
 
   return (
@@ -44,7 +40,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = ({
       {buttons.map((button, index) => {
         const isFirst = index === 0;
         const isLast = index === buttons.length - 1;
-        const position = isFirst ? 'left' : isLast ? 'right' : 'standalone';
+        const position = isFirst ? 'left' : isLast ? 'right' : 'middle';
         const isPaired = buttons.length > 1;
 
         return React.cloneElement(button, {

@@ -3,6 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from '@react-native-vector-icons/material-design-icons';
 import { Observation } from '../../database/models/Observation';
 import colors from '../../theme/colors';
+import Button from './Button';
 
 interface ObservationCardProps {
   observation: Observation;
@@ -94,28 +95,22 @@ const ObservationCard: React.FC<ObservationCardProps> = ({
         </View>
         <View style={styles.actions}>
           {onEdit && (
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={e => {
-                e.stopPropagation();
-                onEdit();
-              }}>
-              <Icon name="pencil" size={20} color={colors.brand.primary[500]} />
-            </TouchableOpacity>
+            <Button
+              title="Edit"
+              onPress={onEdit}
+              variant="primary"
+              size="small"
+              position="left"
+            />
           )}
           {onDelete && (
-            <TouchableOpacity
-              style={styles.actionButton}
-              onPress={e => {
-                e.stopPropagation();
-                onDelete();
-              }}>
-              <Icon
-                name="delete"
-                size={20}
-                color={colors.semantic.error[500]}
-              />
-            </TouchableOpacity>
+            <Button
+              title="Delete"
+              onPress={onDelete}
+              variant="danger"
+              size="small"
+              position="right"
+            />
           )}
         </View>
       </View>
@@ -196,9 +191,6 @@ const styles = StyleSheet.create({
   actions: {
     flexDirection: 'row',
     gap: 8,
-  },
-  actionButton: {
-    padding: 4,
   },
 });
 

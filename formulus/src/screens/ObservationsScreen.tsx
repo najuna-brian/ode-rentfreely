@@ -8,8 +8,8 @@ import {
   ActivityIndicator,
   Alert,
   TouchableOpacity,
-  TextInput,
 } from 'react-native';
+import { Input as ODEInput } from '@ode/components/react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from '@react-native-vector-icons/material-design-icons';
 import { useObservations } from '../hooks/useObservations';
@@ -224,13 +224,11 @@ const ObservationsScreen: React.FC = () => {
             color={colors.neutral[500]}
             style={styles.searchIcon}
           />
-          <TextInput
-            style={styles.searchInput}
+          <ODEInput
             placeholder="Search observations..."
-            placeholderTextColor={colors.neutral[500]}
             value={searchQuery}
             onChangeText={setSearchQuery}
-            autoFocus
+            style={styles.searchInput}
           />
           {searchQuery.length > 0 && (
             <TouchableOpacity onPress={() => setSearchQuery('')}>
@@ -334,9 +332,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
-    color: colors.neutral[900],
-    paddingVertical: 10,
+    marginBottom: 0,
   },
   filtersContainer: {
     backgroundColor: colors.neutral.white,

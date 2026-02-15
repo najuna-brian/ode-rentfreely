@@ -6,9 +6,9 @@ import {
   TouchableOpacity,
   Alert,
   ScrollView,
-  ActivityIndicator,
   Animated,
   Easing,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Icon from '@react-native-vector-icons/material-design-icons';
@@ -20,6 +20,7 @@ import RNFS from 'react-native-fs';
 import { databaseService } from '../database/DatabaseService';
 import { getUserInfo } from '../api/synkronus/Auth';
 import colors from '../theme/colors';
+import { Button } from '../components/common';
 
 type ActiveOperation = 'sync' | 'update' | 'sync_then_update' | null;
 
@@ -514,11 +515,12 @@ const SyncScreen = () => {
               %
             </Text>
             {syncState.canCancel && (
-              <TouchableOpacity
-                style={styles.cancelButton}
-                onPress={cancelSync}>
-                <Text style={styles.cancelButtonText}>Cancel</Text>
-              </TouchableOpacity>
+              <Button
+                title="Cancel"
+                onPress={cancelSync}
+                variant="danger"
+                size="medium"
+              />
             )}
           </View>
         )}
@@ -534,19 +536,18 @@ const SyncScreen = () => {
               <Text style={styles.errorTitle}>Error</Text>
             </View>
             <Text style={styles.errorText}>{syncState.error}</Text>
-            <TouchableOpacity style={styles.dismissButton} onPress={clearError}>
-              <Text style={styles.dismissButtonText}>Dismiss</Text>
-            </TouchableOpacity>
+            <Button
+              title="Dismiss"
+              onPress={clearError}
+              variant="danger"
+              size="medium"
+            />
           </View>
         )}
 
         <View style={styles.actionsSection}>
-          <TouchableOpacity
-            style={[
-              styles.actionButton,
-              styles.primaryButton,
-              syncState.isActive && styles.buttonDisabled,
-            ]}
+          <Button
+            title={syncState.isActive ? 'Syncing...' : 'Sync Data'}
             onPress={handleSync}
             disabled={syncState.isActive}>
             {isSyncButtonActive ? (
@@ -557,15 +558,10 @@ const SyncScreen = () => {
             <Text style={styles.actionButtonText}>
               {isSyncButtonActive ? 'Syncing...' : 'Sync Data'}
             </Text>
-          </TouchableOpacity>
+          </Button>
 
-          <TouchableOpacity
-            style={[
-              styles.actionButton,
-              styles.secondaryButton,
-              (syncState.isActive || (!updateAvailable && !isAdmin)) &&
-                styles.buttonDisabled,
-            ]}
+          <Button
+            title={syncState.isActive ? 'Updating...' : 'Update App Bundle'}
             onPress={handleCustomAppUpdate}
             disabled={syncState.isActive || (!updateAvailable && !isAdmin)}>
             {isUpdateButtonActive ? (
@@ -583,7 +579,7 @@ const SyncScreen = () => {
             <Text style={[styles.actionButtonText, styles.secondaryButtonText]}>
               {isUpdateButtonActive ? 'Updating...' : 'Update App Bundle'}
             </Text>
-          </TouchableOpacity>
+          </Button>
 
           {!syncState.isActive && updateAvailable && (
             <Text style={styles.updateNotification}>Update available</Text>
@@ -796,18 +792,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 12,
   },
-  cancelButton: {
-    backgroundColor: colors.semantic.error[500],
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    alignSelf: 'center',
-  },
-  cancelButtonText: {
-    color: colors.neutral.white,
-    fontSize: 14,
-    fontWeight: '600',
-  },
   errorCard: {
     backgroundColor: colors.semantic.error[50],
     borderRadius: 12,
@@ -832,52 +816,8 @@ const styles = StyleSheet.create({
     color: colors.semantic.error[600],
     marginBottom: 12,
   },
-  dismissButton: {
-    backgroundColor: colors.semantic.error[500],
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    alignSelf: 'flex-end',
-  },
-  dismissButtonText: {
-    color: colors.neutral.white,
-    fontSize: 14,
-    fontWeight: '600',
-  },
   actionsSection: {
     gap: 12,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    padding: 16,
-    borderRadius: 12,
-    shadowColor: colors.neutral.black,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  primaryButton: {
-    backgroundColor: colors.brand.primary[500],
-  },
-  secondaryButton: {
-    backgroundColor: colors.neutral.white,
-    borderWidth: 2,
-    borderColor: colors.brand.primary[500],
-  },
-  buttonDisabled: {
-    opacity: 0.6,
-  },
-  actionButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: colors.neutral.white,
-  },
-  secondaryButtonText: {
-    color: colors.brand.primary[500],
   },
   hintText: {
     fontSize: 12,

@@ -1,13 +1,13 @@
 /**
  * ODE Badge Component - React Native
- * 
+ *
  * Modern minimalist badge for labels and status indicators
  */
 
 import React from 'react';
 import { View, Text, StyleSheet, ViewStyle } from 'react-native';
 import { BadgeProps } from '../shared/types';
-import { tokens } from '@ode/tokens/dist/react-native/tokens';
+import tokens from '@ode/tokens/dist/react-native/tokens-resolved';
 
 const Badge: React.FC<BadgeProps> = ({
   children,

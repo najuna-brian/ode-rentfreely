@@ -1,0 +1,23 @@
+{
+  "component": {
+    "button": {
+      "radius": { "value": "{border.radius.md}" },
+      "borderWidth": { "value": "{border.width.thin}" },
+      "padding": {
+        "small": {
+          "vertical": { "value": "{spacing.2}" },
+          "horizontal": { "value": "{spacing.4}" }
+        },
+        "medium": {
+          "vertical": { "value": "{spacing.3}" },
+          "horizontal": { "value": "{spacing.6}" }
+        },
+        "large": {
+          "vertical": { "value": "{spacing.4}" },
+          "horizontal": { "value": "{spacing.8}" }
+        }
+      },
+      "minHeight": { "value": "{touchTarget.comfortable}" }
+    }
+  }
+}

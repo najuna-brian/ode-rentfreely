@@ -14,6 +14,7 @@ import {
 import Icon from '@react-native-vector-icons/material-design-icons';
 import { getUserInfo, UserInfo, UserRole } from '../api/synkronus/Auth';
 import { colors } from '../theme/colors';
+import Button from './common/Button';
 
 interface MenuItem {
   icon: React.ComponentProps<typeof Icon>['name'];
@@ -174,16 +175,13 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({
 
             {userInfo && (
               <View style={styles.footer}>
-                <TouchableOpacity
-                  style={styles.logoutButton}
-                  onPress={onLogout}>
-                  <Icon
-                    name="logout"
-                    size={24}
-                    color={colors.semantic.error.ios}
-                  />
-                  <Text style={styles.logoutText}>Logout</Text>
-                </TouchableOpacity>
+                <Button
+                  title="Logout"
+                  onPress={onLogout}
+                  variant="danger"
+                  size="medium"
+                  fullWidth
+                />
               </View>
             )}
           </SafeAreaView>
@@ -312,17 +310,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: colors.ui.gray.light,
     padding: 16,
-  },
-  logoutButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 12,
-  },
-  logoutText: {
-    marginLeft: 16,
-    fontSize: 16,
-    color: colors.semantic.error.ios,
-    fontWeight: '500',
   },
 });
 
