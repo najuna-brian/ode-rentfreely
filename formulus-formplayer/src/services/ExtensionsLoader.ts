@@ -44,8 +44,7 @@ export interface LoadedRenderer {
  */
 export interface ExtensionLoadResult {
   renderers: JsonFormsRendererRegistryEntry[];
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  functions: Map<string, Function>;
+  functions: Map<string, (...args: any[]) => any>;
   definitions: Record<string, any>;
   errors: Array<{ type: string; message: string; details?: any }>;
 }
@@ -58,7 +57,7 @@ export async function loadExtensions(
 ): Promise<ExtensionLoadResult> {
   const result: ExtensionLoadResult = {
     renderers: [],
-    functions: new Map(),
+    functions: new Map<string, (...args: any[]) => any>(),
     definitions: metadata.definitions || {},
     errors: [],
   };
@@ -95,7 +94,10 @@ export async function loadExtensions(
       try {
         const loadedFunction = await loadFunction(funcMeta, basePath);
         if (loadedFunction) {
-          result.functions.set(funcMeta.name, loadedFunction);
+          result.functions.set(
+            funcMeta.name,
+            loadedFunction as (...args: any[]) => any,
+          );
           console.log(
             `[ExtensionsLoader] Registered extension function "${funcMeta.name}" from module "${funcMeta.module}" (metadata key: ${key})`,
           );

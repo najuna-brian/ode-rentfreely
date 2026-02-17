@@ -45,7 +45,7 @@ class ErrorBoundary extends Component<Props, State> {
             padding: (tokens as any).spacing?.[5] ?? '20px',
             margin: (tokens as any).spacing?.[5] ?? '20px',
             border: `${(tokens as any).border?.width?.medium ?? '2px'} solid ${tokens.color.semantic.error[500]}`,
-            borderRadius: tokens.border.radius.md, 
+            borderRadius: tokens.border.radius.md,
             backgroundColor: tokens.color.semantic.error[50],
             color: tokens.color.semantic.error[600],
           }}>

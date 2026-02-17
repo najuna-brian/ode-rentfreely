@@ -113,7 +113,6 @@ const Button: React.FC<WebButtonProps> = ({
   const errorRed = getToken('color.semantic.error.500');
   const errorRedDark = getToken('color.semantic.error.600');
   const errorRedLight = getToken('color.semantic.error.50');
-  const neutralDarkBg = getToken('color.neutral.800'); // Darker background for dark mode
   const textOnFill = getToken('color.neutral.white');
 
   const neutralGrey = getToken('color.neutral.600');

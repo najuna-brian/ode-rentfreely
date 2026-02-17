@@ -339,7 +339,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
               borderColor: tokens.color.semantic.error[500],
             },
           },
-          // Ensure size="small" 
+          // Ensure size="small"
           sizeSmall: {
             borderRadius: parsePx(tokens.border.radius.md),
             '& fieldset': {
