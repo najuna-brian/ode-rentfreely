@@ -6,8 +6,6 @@
  * type-check the component implementations.
  */
 
-/// <reference types="react" />
-
 declare module '@ode/components/react-web' {
   import type { FC, CSSProperties, ReactElement } from 'react';
 
