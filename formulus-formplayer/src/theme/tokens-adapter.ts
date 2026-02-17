@@ -8,6 +8,66 @@
 
 import tokensJson from '@ode/tokens/dist/json/tokens.json';
 
+// TypeScript interface for tokens structure
+export interface Tokens {
+  spacing: Record<string, string>;
+  border: {
+    width: Record<string, string>;
+    radius: Record<string, string>;
+  };
+  color: {
+    semantic: {
+      error: Record<string, string>;
+      success: Record<string, string>;
+      info: Record<string, string>;
+      warning: Record<string, string>;
+      scanner: Record<string, string>;
+      theme: Record<string, any>;
+      'theme-light': Record<string, any>;
+      ui: Record<string, any>;
+    };
+    neutral: Record<string, string>;
+    brand: {
+      primary: Record<string, string | Record<string, string>>;
+      secondary: Record<string, string | Record<string, string>>;
+    };
+  };
+  typography?: {
+    fontFamily: Record<string, string>;
+    fontSize: Record<string, string>;
+    fontWeight: Record<string, string>;
+    lineHeight: Record<string, string>;
+    letterSpacing: Record<string, string>;
+  };
+  font?: {
+    family: Record<string, string>;
+    size: Record<string, string>;
+    weight: Record<string, string>;
+    lineHeight: Record<string, string>;
+    letterSpacing: Record<string, string>;
+  };
+  touchTarget: {
+    min: number;
+    comfortable: number;
+    large: number;
+  };
+  contrast?: Record<string, string>;
+  focus?: Record<string, string>;
+  filter?: Record<string, any>;
+  duration?: Record<string, string>;
+  easing?: Record<string, string>;
+  opacity?: Record<string, string>;
+  shadow?: Record<string, any>;
+  zIndex?: Record<string, string>;
+  component?: Record<string, any>;
+  icon?: Record<string, any>;
+  avatar?: Record<string, string>;
+  logo?: Record<string, string>;
+  breakpoint?: Record<string, string>;
+  container?: Record<string, string>;
+  grid?: Record<string, string>;
+}
+
 // Helper to recursively extract values from { value: "..." } structure
 const extractValues = (obj: any): any => {
   if (
@@ -64,4 +124,4 @@ if (transformed.touchTarget) {
   };
 }
 
-export const tokens = transformed as any;
+export const tokens: Tokens = transformed;

@@ -5,7 +5,7 @@ import { tokens } from '../theme/tokens-adapter';
 
 const parsePx = (value: string): number =>
   parseInt(String(value).replace('px', ''), 10);
-const spacing5 = parsePx((tokens as any).spacing?.[5] ?? '20px');
+const spacing5 = parsePx(tokens.spacing?.[5] ?? '20px');
 
 interface FormLayoutProps {
   /**
