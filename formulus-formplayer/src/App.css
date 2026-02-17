@@ -36,3 +36,27 @@
     transform: rotate(360deg);
   }
 }
+
+/* Reverse-style button */
+.button-reverse-primary {
+  background-color: var(--ode-color-brand-primary-500, #4f7f4e) !important;
+  color: var(--ode-color-neutral-white, #ffffff) !important;
+  border-color: var(--ode-color-brand-primary-500, #4f7f4e) !important;
+}
+
+.button-reverse-primary:hover {
+  background-color: transparent !important;
+  color: var(--ode-color-brand-primary-500, #4f7f4e) !important;
+  border-color: var(--ode-color-brand-primary-500, #4f7f4e) !important;
+}
+
+/* Hide native number input spinners - replaced with custom NumberStepperRenderer */
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type='number'] {
+  -moz-appearance: textfield;
+}

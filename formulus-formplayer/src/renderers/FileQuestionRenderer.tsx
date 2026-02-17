@@ -23,6 +23,13 @@ import {
   and,
   schemaMatches,
 } from '@jsonforms/core';
+import { tokens } from '../theme/tokens-adapter';
+
+// Helper to parse pixel values from tokens
+const parsePx = (value: string): number => {
+  return parseInt(value.replace('px', ''), 10);
+};
+
 import FormulusClient from '../services/FormulusInterface';
 import { FileResult } from '../types/FormulusInterfaceDefinition';
 import QuestionShell from '../components/QuestionShell';
@@ -89,21 +96,21 @@ const FileQuestionRenderer: React.FC<ControlProps> = ({
     setError(null);
   }, [handleChange, path]);
 
-  // Get file icon based on MIME type
+  // Get file icon based on MIME type - using tokens for colors
   const getFileIcon = (mimeType: string) => {
     if (mimeType.startsWith('image/')) {
-      return <ImageIcon sx={{ color: '#4CAF50' }} />;
+      return <ImageIcon sx={{ color: tokens.color.semantic.success[500] }} />;
     } else if (mimeType === 'application/pdf') {
-      return <PdfIcon sx={{ color: '#F44336' }} />;
+      return <PdfIcon sx={{ color: tokens.color.semantic.error[500] }} />;
     } else if (
       mimeType.startsWith('text/') ||
       mimeType.includes('document') ||
       mimeType.includes('spreadsheet') ||
       mimeType.includes('presentation')
     ) {
-      return <TextIcon sx={{ color: '#2196F3' }} />;
+      return <TextIcon sx={{ color: tokens.color.semantic.info[500] }} />;
     } else {
-      return <DocumentIcon sx={{ color: '#9E9E9E' }} />;
+      return <DocumentIcon sx={{ color: tokens.color.neutral[500] }} />;
     }
   };
 
@@ -161,7 +168,13 @@ const FileQuestionRenderer: React.FC<ControlProps> = ({
       helperText="Attach a file. Images, PDFs, and documents are supported."
       metadata={
         process.env.NODE_ENV === 'development' ? (
-          <Box sx={{ mt: 1, p: 1, bgcolor: 'info.light', borderRadius: 1 }}>
+          <Box
+            sx={{
+              mt: 1,
+              p: 1,
+              bgcolor: 'info.light',
+              borderRadius: `${parsePx(tokens.border.radius.md)}px`,
+            }}>
             <Typography variant="caption" sx={{ fontFamily: 'monospace' }}>
               Debug: fieldId="{fieldId}", path="{path}", format="select_file"
             </Typography>

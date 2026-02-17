@@ -20,6 +20,12 @@ import {
 import FormulusClient from '../services/FormulusInterface';
 import { AudioResult } from '../types/FormulusInterfaceDefinition';
 import QuestionShell from '../components/QuestionShell';
+import { tokens } from '../theme/tokens-adapter';
+
+// Helper to parse pixel values from tokens
+const parsePx = (value: string): number => {
+  return parseInt(value.replace('px', ''), 10);
+};
 
 interface AudioQuestionRendererProps extends ControlProps {
   data: any;
@@ -229,7 +235,7 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
         variant="outlined"
         sx={{
           p: 3,
-          borderRadius: 2,
+          borderRadius: `${parsePx(tokens.border.radius.md)}px`, // Match button border radius
           backgroundColor: hasAudio ? 'background.paper' : 'grey.50',
         }}>
         {!hasAudio ? (
@@ -386,7 +392,7 @@ const AudioQuestionRenderer: React.FC<AudioQuestionRendererProps> = ({
                   mt: 2,
                   p: 1,
                   backgroundColor: 'grey.100',
-                  borderRadius: 1,
+                  borderRadius: `${parsePx(tokens.border.radius.md)}px`,
                 }}>
                 <Typography variant="caption" color="text.secondary">
                   <strong>Dev Info:</strong> {audioData.uri}

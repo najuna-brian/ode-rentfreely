@@ -1,4 +1,5 @@
 import React, { Component, ReactNode } from 'react';
+import { tokens } from '../theme/tokens-adapter';
 
 interface Props {
   children: ReactNode;
@@ -41,26 +42,27 @@ class ErrorBoundary extends Component<Props, State> {
       return (
         <div
           style={{
-            padding: '20px',
-            margin: '20px',
-            border: '2px solid #ff6b6b',
-            borderRadius: '8px',
-            backgroundColor: '#fff5f5',
-            color: '#c92a2a',
+            padding: (tokens as any).spacing?.[5] ?? '20px',
+            margin: (tokens as any).spacing?.[5] ?? '20px',
+            border: `${(tokens as any).border?.width?.medium ?? '2px'} solid ${tokens.color.semantic.error[500]}`,
+            borderRadius: tokens.border.radius.md, 
+            backgroundColor: tokens.color.semantic.error[50],
+            color: tokens.color.semantic.error[600],
           }}>
           <h2>🚨 Something went wrong</h2>
-          <details style={{ marginTop: '10px' }}>
+          <details
+            style={{ marginTop: (tokens as any).spacing?.[3] ?? '12px' }}>
             <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
               Error Details (click to expand)
             </summary>
             <pre
               style={{
-                marginTop: '10px',
-                padding: '10px',
-                backgroundColor: '#f8f8f8',
-                border: '1px solid #ddd',
-                borderRadius: '4px',
-                fontSize: '12px',
+                marginTop: (tokens as any).spacing?.[3] ?? '12px',
+                padding: (tokens as any).spacing?.[3] ?? '12px',
+                backgroundColor: tokens.color.neutral[50],
+                border: `${(tokens as any).border?.width?.thin ?? '1px'} solid ${tokens.color.neutral[300]}`,
+                borderRadius: tokens.border.radius.md,
+                fontSize: (tokens as any).typography?.fontSize?.sm ?? '12px',
                 overflow: 'auto',
               }}>
               {this.state.error?.toString()}
@@ -70,12 +72,12 @@ class ErrorBoundary extends Component<Props, State> {
           <button
             onClick={() => this.setState({ hasError: false, error: undefined })}
             style={{
-              marginTop: '15px',
-              padding: '8px 16px',
-              backgroundColor: '#ff6b6b',
-              color: 'white',
+              marginTop: (tokens as any).spacing?.[4] ?? '16px',
+              padding: `${(tokens as any).spacing?.[2] ?? '8px'} ${(tokens as any).spacing?.[4] ?? '16px'}`,
+              backgroundColor: tokens.color.semantic.error[500],
+              color: tokens.color.neutral.white,
               border: 'none',
-              borderRadius: '4px',
+              borderRadius: tokens.border.radius.md,
               cursor: 'pointer',
             }}>
             Try Again

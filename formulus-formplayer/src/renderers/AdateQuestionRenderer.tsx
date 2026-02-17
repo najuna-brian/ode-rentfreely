@@ -10,6 +10,13 @@ import {
 import { TextField, Box, Typography, Alert, Button } from '@mui/material';
 import { CalendarToday } from '@mui/icons-material';
 import QuestionShell from '../components/QuestionShell';
+import { tokens } from '../theme/tokens-adapter';
+
+// Helper to parse pixel values from tokens
+const parsePx = (value: string): number => {
+  return parseInt(value.replace('px', ''), 10);
+};
+
 import {
   adateToStorageFormat,
   storageFormatToAdate,
@@ -339,7 +346,13 @@ const AdateQuestionRenderer: React.FC<ControlProps> = ({
 
         {/* Display current value */}
         {displayValue && displayValue !== 'n/a' && (
-          <Box sx={{ mt: 2, p: 1.5, bgcolor: 'grey.50', borderRadius: 1 }}>
+          <Box
+            sx={{
+              mt: 2,
+              p: 1.5,
+              bgcolor: 'grey.50',
+              borderRadius: `${parsePx(tokens.border.radius.md)}px`,
+            }}>
             <Typography variant="body2" color="text.secondary">
               Current value: <strong>{displayValue}</strong>
             </Typography>

@@ -11,7 +11,9 @@ import {
   RankedTester,
 } from '@jsonforms/core';
 import { useSwipeable } from 'react-swipeable';
-import { Snackbar, Button } from '@mui/material';
+import { Snackbar } from '@mui/material';
+import { Button } from '@ode/components/react-web';
+import { tokens } from '../theme/tokens-adapter';
 import { useFormContext } from '../App';
 import { draftService } from '../services/DraftService';
 import FormProgressBar from '../components/FormProgressBar';
@@ -316,29 +318,16 @@ const SwipeLayoutRenderer = ({
         onClose={handleSnackbarClose}
         message={snackbarMessage || 'Some required fields are missing'}
         action={
-          <Button
-            size="small"
-            onClick={handleGoBack}
-            sx={{
-              color: 'primary.light',
-              minWidth: 'auto',
-              textTransform: 'none',
-              fontWeight: 500,
-              padding: '4px 8px',
-              '&:hover': {
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-              },
-            }}>
+          <Button variant="secondary" size="small" onPress={handleGoBack}>
             Go Back
           </Button>
         }
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
         sx={{
           '& .MuiSnackbarContent-root': {
-            backgroundColor: 'rgba(0, 0, 0, 0.87)',
-            color: '#fff',
-            boxShadow:
-              '0px 3px 5px -1px rgba(0,0,0,0.2), 0px 6px 10px 0px rgba(0,0,0,0.14), 0px 1px 18px 0px rgba(0,0,0,0.12)',
+            backgroundColor: `rgba(0, 0, 0, ${(tokens as any).opacity?.['90'] ?? 0.9})`,
+            color: tokens.color.neutral.white,
+            boxShadow: (tokens as any).shadow?.portal?.md ?? tokens.shadow?.md,
           },
         }}
       />

@@ -1,5 +1,11 @@
 import React, { ReactNode, useState, useEffect } from 'react';
-import { Box, Paper, Stack, Button } from '@mui/material';
+import { Box, Paper, Stack } from '@mui/material';
+import { Button } from '@ode/components/react-web';
+import { tokens } from '../theme/tokens-adapter';
+
+const parsePx = (value: string): number =>
+  parseInt(String(value).replace('px', ''), 10);
+const spacing5 = parsePx((tokens as any).spacing?.[5] ?? '20px');
 
 interface FormLayoutProps {
   /**
@@ -32,7 +38,7 @@ interface FormLayoutProps {
 
   /**
    * Additional padding at the bottom of content area (in pixels)
-   * Default: 120px to ensure content is never hidden behind navigation
+   * Default: 6 * spacing[5] to ensure content is never hidden behind navigation
    */
   contentBottomPadding?: number;
 
@@ -123,7 +129,7 @@ const FormLayout: React.FC<FormLayoutProps> = ({
             zIndex: 100,
             backgroundColor: 'background.default',
             paddingTop: 'env(safe-area-inset-top, 0px)',
-            boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+            boxShadow: tokens.shadow?.xs ?? '0 1px 2px 0 rgba(0,0,0,0.05)',
             width: '100%',
             overflow: 'hidden',
           }}>
@@ -178,7 +184,7 @@ const FormLayout: React.FC<FormLayoutProps> = ({
               backgroundColor: 'background.paper',
               borderTop: 'none',
               borderColor: 'divider',
-              boxShadow: '0 -4px 12px rgba(0,0,0,0.15)',
+              boxShadow: `0 -4px 12px rgba(0,0,0,${(tokens as any).opacity?.['15'] ?? 0.15})`,
               transition:
                 'opacity 0.2s ease-in-out, transform 0.2s ease-in-out',
               boxSizing: 'border-box',
@@ -190,51 +196,30 @@ const FormLayout: React.FC<FormLayoutProps> = ({
               sx={{
                 '& > *': {
                   flex: { xs: 1, sm: '0 1 auto' },
-                  minWidth: { xs: 'auto', sm: '120px', md: '140px' },
-                  maxWidth: { md: '200px' },
+                  minWidth: {
+                    xs: 'auto',
+                    sm: `${spacing5 * 6}px`,
+                    md: `${spacing5 * 7}px`,
+                  },
+                  maxWidth: { md: `${spacing5 * 10}px` },
                 },
               }}>
               {previousButton && (
                 <Button
-                  variant="outlined"
-                  onClick={previousButton.onClick}
+                  variant="primary"
+                  onPress={previousButton.onClick}
                   disabled={previousButton.disabled}
-                  fullWidth={false}
-                  sx={{
-                    minHeight: { xs: '48px', sm: '48px', md: '52px' },
-                    fontSize: {
-                      xs: '0.875rem',
-                      sm: '0.875rem',
-                      md: '0.9375rem',
-                    },
-                    fontWeight: 600,
-                    borderWidth: 2,
-                    '&:hover': {
-                      borderWidth: 2,
-                    },
-                  }}>
+                  size="medium">
                   {previousButton.label || 'Previous'}
                 </Button>
               )}
               {nextButton && (
                 <Button
-                  variant="contained"
-                  onClick={nextButton.onClick}
+                  variant="primary"
+                  onPress={nextButton.onClick}
                   disabled={nextButton.disabled}
-                  fullWidth={false}
-                  sx={{
-                    minHeight: { xs: '48px', sm: '48px', md: '52px' },
-                    fontSize: {
-                      xs: '0.875rem',
-                      sm: '0.875rem',
-                      md: '0.9375rem',
-                    },
-                    fontWeight: 600,
-                    boxShadow: 2,
-                    '&:hover': {
-                      boxShadow: 4,
-                    },
-                  }}>
+                  size="medium"
+                  className="button-reverse-primary">
                   {nextButton.label || 'Next'}
                 </Button>
               )}

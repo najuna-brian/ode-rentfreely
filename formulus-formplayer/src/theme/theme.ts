@@ -23,6 +23,22 @@ const parsePx = (value: string): number => {
   return parseInt(value.replace('px', ''), 10);
 };
 
+// Token-based helpers (single source: @ode/tokens)
+const getDisabledOpacity = (): number =>
+  parseFloat(
+    (tokens as any).opacity?.['40'] ?? (tokens as any).opacity?.['50'] ?? '0.4',
+  );
+const _getDarkInputBackground = (): string =>
+  (tokens as any).color?.theme?.['theme-dark']?.background?.elevated ??
+  tokens.color.neutral[800];
+const getDarkElevationShadow = (level: 'sm' | 'md' | 'lg'): string =>
+  (tokens as any).shadow?.portal?.[level] ??
+  (level === 'sm'
+    ? `0 2px 8px rgba(0, 0, 0, ${(tokens as any).opacity?.['40'] ?? 0.4})`
+    : level === 'md'
+      ? `0 4px 12px rgba(0, 0, 0, ${(tokens as any).opacity?.['50'] ?? 0.5})`
+      : `0 8px 24px rgba(0, 0, 0, ${(tokens as any).opacity?.['60'] ?? 0.6})`);
+
 /**
  * Get theme options based on the mode (light or dark)
  * @param mode - 'light' or 'dark'
@@ -185,7 +201,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
               boxShadow: tokens.shadow.md,
             },
             '&:disabled': {
-              opacity: 0.38,
+              opacity: getDisabledOpacity(),
               backgroundColor: isDark
                 ? tokens.color.neutral[800]
                 : tokens.color.neutral[300],
@@ -233,9 +249,10 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
             width: '100%',
             marginBottom: parsePx(tokens.spacing[4]),
             '& .MuiOutlinedInput-root': {
-              borderRadius: parsePx(tokens.border.radius.sm), // 4px - Material Design 3 text field
-              backgroundColor: isDark ? '#2d2d2d' : 'transparent', // Dark: #2d2d2d (slightly lighter than paper for subtle differentiation), Light: transparent
+              borderRadius: parsePx(tokens.border.radius.md), // 8px - match button, not too rounded
+              backgroundColor: 'transparent',
               '& fieldset': {
+                borderRadius: parsePx(tokens.border.radius.md), // Same as root so all sizes match
                 borderColor: isDark
                   ? tokens.color.neutral[700]
                   : tokens.color.neutral[400], // Dark: #616161, Light: #BDBDBD
@@ -254,8 +271,12 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
                 borderColor: tokens.color.semantic.error[500],
               },
               '&.Mui-disabled': {
-                backgroundColor: isDark ? '#2d2d2d' : tokens.color.neutral[100],
-                opacity: isDark ? 0.5 : 1,
+                backgroundColor: isDark
+                  ? 'transparent'
+                  : tokens.color.neutral[100],
+                opacity: isDark
+                  ? parseFloat((tokens as any).opacity?.['50'] ?? '0.5')
+                  : 1,
                 '& fieldset': {
                   borderColor: isDark
                     ? tokens.color.neutral[700]
@@ -296,8 +317,10 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
       MuiOutlinedInput: {
         styleOverrides: {
           root: {
-            borderRadius: parsePx(tokens.border.radius.sm),
+            borderRadius: parsePx(tokens.border.radius.md), // 8px - match button (Name, Birth date, etc.)
+            backgroundColor: 'transparent',
             '& fieldset': {
+              borderRadius: parsePx(tokens.border.radius.md), // Force fieldset to match (fixes size="small" e.g. Birth date)
               borderColor: isDark
                 ? tokens.color.neutral[700]
                 : tokens.color.neutral[400],
@@ -314,6 +337,13 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
             },
             '&.Mui-error fieldset': {
               borderColor: tokens.color.semantic.error[500],
+            },
+          },
+          // Ensure size="small" 
+          sizeSmall: {
+            borderRadius: parsePx(tokens.border.radius.md),
+            '& fieldset': {
+              borderRadius: parsePx(tokens.border.radius.md),
             },
           },
           input: {
@@ -426,7 +456,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
               margin: 2,
               transitionDuration: '300ms',
               '&.Mui-checked': {
-                transform: 'translateX(20px)',
+                transform: `translateX(${tokens.spacing?.[5] ?? '20px'})`,
                 color: tokens.color.neutral.white,
                 '& + .MuiSwitch-track': {
                   backgroundColor: tokens.color.brand.primary[500],
@@ -462,7 +492,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
       MuiSelect: {
         styleOverrides: {
           root: {
-            borderRadius: parsePx(tokens.border.radius.sm),
+            borderRadius: parsePx(tokens.border.radius.md), // Same as text fields (8px, match button)
             minHeight: `${tokens.touchTarget.large}px`,
             '&.Mui-focused': {
               '& .MuiOutlinedInput-notchedOutline': {
@@ -493,19 +523,13 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
               : tokens.color.neutral.white, // Dark: #212121, Light: #FFFFFF
           },
           elevation1: {
-            boxShadow: isDark
-              ? '0 2px 8px rgba(0, 0, 0, 0.4)'
-              : tokens.shadow.sm,
+            boxShadow: isDark ? getDarkElevationShadow('sm') : tokens.shadow.sm,
           },
           elevation2: {
-            boxShadow: isDark
-              ? '0 4px 12px rgba(0, 0, 0, 0.5)'
-              : tokens.shadow.md,
+            boxShadow: isDark ? getDarkElevationShadow('md') : tokens.shadow.md,
           },
           elevation3: {
-            boxShadow: isDark
-              ? '0 8px 24px rgba(0, 0, 0, 0.6)'
-              : tokens.shadow.lg,
+            boxShadow: isDark ? getDarkElevationShadow('lg') : tokens.shadow.lg,
           },
         },
       },
@@ -517,9 +541,7 @@ export const getThemeOptions = (mode: 'light' | 'dark'): ThemeOptions => {
             backgroundColor: isDark
               ? tokens.color.neutral[800]
               : tokens.color.neutral.white, // Dark: #424242 (medium dark for cards), Light: #FFFFFF
-            boxShadow: isDark
-              ? '0 2px 8px rgba(0, 0, 0, 0.4)'
-              : tokens.shadow.sm,
+            boxShadow: isDark ? getDarkElevationShadow('sm') : tokens.shadow.sm,
           },
         },
       },

@@ -24,6 +24,7 @@ import {
   ThemeProvider,
 } from '@mui/material';
 import { createTheme, getThemeOptions } from './theme/theme';
+import { tokens } from './theme/tokens-adapter';
 import Ajv from 'ajv';
 import addErrors from 'ajv-errors';
 import addFormats from 'ajv-formats';
@@ -62,6 +63,7 @@ import AdateQuestionRenderer, {
   adateQuestionTester,
 } from './renderers/AdateQuestionRenderer';
 import { shellMaterialRenderers } from './theme/material-wrappers';
+import { numberStepperRenderer } from './renderers/NumberStepperRenderer';
 import DynamicEnumControl, { dynamicEnumTester } from './DynamicEnumControl';
 
 import ErrorBoundary from './components/ErrorBoundary';
@@ -219,6 +221,8 @@ export const customRenderers = [
   { tester: adateQuestionTester, renderer: AdateQuestionRenderer },
   // Dynamic choice list renderer for x-dynamicEnum fields
   { tester: dynamicEnumTester, renderer: DynamicEnumControl },
+  // Number/integer fields with simple +/- buttons via InputAdornment
+  numberStepperRenderer,
 ];
 
 function App() {
@@ -263,10 +267,8 @@ function App() {
     JsonFormsRendererRegistryEntry[]
   >([]);
   // Store extension functions for potential future use (e.g., validation context injection)
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [extensionFunctions, setExtensionFunctions] = useState<
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-    Map<string, Function>
+    Map<string, (...args: any[]) => any>
   >(new Map());
   const [extensionDefinitions, setExtensionDefinitions] = useState<
     Record<string, any>
@@ -295,7 +297,10 @@ function App() {
         try {
           const properties = (formSchema as any)?.properties || {};
           const dynamicEnumFields = Object.entries(properties)
-            .filter(([, propSchema]: [string, any]) => !!propSchema?.['x-dynamicEnum'])
+            .filter(
+              ([, propSchema]: [string, any]) =>
+                !!propSchema?.['x-dynamicEnum'],
+            )
             .map(([key]) => key);
 
           console.log('[Formplayer] Form init received', {
@@ -306,7 +311,10 @@ function App() {
             dynamicEnumFields,
           });
         } catch (schemaLogError) {
-          console.warn('[Formplayer] Failed to log schema details', schemaLogError);
+          console.warn(
+            '[Formplayer] Failed to log schema details',
+            schemaLogError,
+          );
         }
 
         // Extract dark mode preference from params
@@ -320,17 +328,20 @@ function App() {
         if (extensions) {
           try {
             const extensionResult = await loadExtensions(extensions);
-            
+
             // Merge loaded functions with built-ins (loaded functions take precedence)
             extensionResult.functions.forEach((func, name) => {
-              allFunctions.set(name, func);
+              allFunctions.set(name, func as (...args: any[]) => any);
             });
-            
+
             setExtensionRenderers(extensionResult.renderers);
             setExtensionFunctions(allFunctions);
             setExtensionDefinitions(extensionResult.definitions);
 
-            console.log('[Formplayer] Final extension functions:', Array.from(allFunctions.keys()));
+            console.log(
+              '[Formplayer] Final extension functions:',
+              Array.from(allFunctions.keys()),
+            );
 
             // Log errors but don't fail form initialization
             if (extensionResult.errors.length > 0) {
@@ -786,6 +797,25 @@ function App() {
     return createTheme(getThemeOptions(darkMode ? 'dark' : 'light'));
   }, [darkMode]);
 
+  // Set CSS custom properties from tokens for use in CSS files
+  // Must be called before any early returns to follow React Hooks rules
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty(
+      '--ode-color-brand-primary-500',
+      tokens.color.brand.primary[500],
+    );
+    root.style.setProperty(
+      '--ode-color-neutral-white',
+      tokens.color.neutral.white,
+    );
+    root.style.setProperty(
+      '--ode-color-neutral-200',
+      tokens.color.neutral[200],
+    );
+    root.style.setProperty('--ode-color-neutral-50', tokens.color.neutral[50]);
+  }, []);
+
   // Show draft selector if we have pending form init and available drafts
   if (showDraftSelector && pendingFormInit) {
     return (
@@ -836,10 +866,15 @@ function App() {
             p: 3,
             backgroundColor: 'background.paper',
           }}>
-          <Typography variant="h6" color="error" sx={{ mb: 2, textAlign: 'center' }}>
+          <Typography
+            variant="h6"
+            color="error"
+            sx={{ mb: 2, textAlign: 'center' }}>
             Error Loading Form
           </Typography>
-          <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary' }}>
+          <Typography
+            variant="body2"
+            sx={{ textAlign: 'center', color: 'text.secondary' }}>
             {loadError}
           </Typography>
         </Box>
@@ -895,7 +930,7 @@ function App() {
             style={{
               width: process.env.NODE_ENV === 'development' ? '60%' : '100%',
               overflow: 'hidden', // Prevent outer scrolling - FormLayout handles scrolling internally
-              padding: '4px',
+              padding: tokens.spacing[1],
               boxSizing: 'border-box',
               height: '100%', // Ensure it takes full height
               backgroundColor: 'transparent', // Use theme background
@@ -904,11 +939,11 @@ function App() {
               {loadError ? (
                 <Box
                   sx={{
-                    padding: '20px',
+                    padding: tokens.spacing[5],
                     backgroundColor: 'error.light',
-                    border: '1px solid',
+                    border: `${tokens.border.width.thin} solid`,
                     borderColor: 'error.main',
-                    borderRadius: '4px',
+                    borderRadius: tokens.border.radius.md, // Match button border radius
                     color: 'error.dark',
                   }}>
                   <Typography variant="h6" color="error">
@@ -969,8 +1004,8 @@ function App() {
             <div
               style={{
                 width: '40%',
-                borderLeft: '2px solid #e0e0e0',
-                backgroundColor: '#fafafa',
+                borderLeft: `${tokens.border.width.medium} solid ${tokens.color.neutral[200]}`,
+                backgroundColor: tokens.color.neutral[50],
               }}>
               <ErrorBoundary>
                 <DevTestbed isVisible={true} />
