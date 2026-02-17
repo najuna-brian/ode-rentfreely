@@ -16,13 +16,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "@ode/components/react-web": ["../packages/components/src/react-web/index.ts"],
-      "@ode/components/react-native": ["../packages/components/src/react-native/index.ts"]
-    }
+    "jsx": "react-jsx"
   },
-  "include": ["src"],
-  "exclude": ["../packages/components"]
+  "include": ["src"]
 }
