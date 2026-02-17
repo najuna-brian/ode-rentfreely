@@ -28,11 +28,15 @@ export interface Tokens {
     };
     neutral: Record<string, string>;
     brand: {
-      primary: Record<string, string | Record<string, string>>;
-      secondary: Record<string, string | Record<string, string>>;
+      primary: Record<string, string> & {
+        alpha?: Record<string, string>;
+      };
+      secondary: Record<string, string> & {
+        alpha?: Record<string, string>;
+      };
     };
   };
-  typography?: {
+  typography: {
     fontFamily: Record<string, string>;
     fontSize: Record<string, string>;
     fontWeight: Record<string, string>;
@@ -57,7 +61,7 @@ export interface Tokens {
   duration?: Record<string, string>;
   easing?: Record<string, string>;
   opacity?: Record<string, string>;
-  shadow?: Record<string, any>;
+  shadow: Record<string, any>;
   zIndex?: Record<string, string>;
   component?: Record<string, any>;
   icon?: Record<string, any>;
@@ -104,6 +108,7 @@ const parsePx = (value: string): number => {
 const transformed = extractValues(tokensJson);
 
 // Map font structure to typography structure to match theme.ts expectations
+// typography is always created from font, so it's guaranteed to exist
 if (transformed.font) {
   transformed.typography = {
     fontFamily: transformed.font.family,
@@ -113,6 +118,15 @@ if (transformed.font) {
     letterSpacing: transformed.font.letterSpacing,
   };
   // Keep font for backwards compatibility, but typography is the primary
+} else {
+  // Fallback if font doesn't exist (shouldn't happen, but TypeScript needs this)
+  transformed.typography = {
+    fontFamily: {},
+    fontSize: {},
+    fontWeight: {},
+    lineHeight: {},
+    letterSpacing: {},
+  };
 }
 
 // Parse touchTarget values from "48px" strings to numbers (48)

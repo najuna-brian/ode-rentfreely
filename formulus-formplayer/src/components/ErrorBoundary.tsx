@@ -50,8 +50,7 @@ class ErrorBoundary extends Component<Props, State> {
             color: tokens.color.semantic.error[600],
           }}>
           <h2>🚨 Something went wrong</h2>
-          <details
-            style={{ marginTop: tokens.spacing?.[3] ?? '12px' }}>
+          <details style={{ marginTop: tokens.spacing?.[3] ?? '12px' }}>
             <summary style={{ cursor: 'pointer', fontWeight: 'bold' }}>
               Error Details (click to expand)
             </summary>
@@ -62,7 +61,7 @@ class ErrorBoundary extends Component<Props, State> {
                 backgroundColor: tokens.color.neutral[50],
                 border: `${tokens.border?.width?.thin ?? '1px'} solid ${tokens.color.neutral[300]}`,
                 borderRadius: tokens.border.radius.md,
-                fontSize: tokens.typography?.fontSize?.sm ?? '12px',
+                fontSize: tokens.typography.fontSize.sm ?? '12px',
                 overflow: 'auto',
               }}>
               {this.state.error?.toString()}
