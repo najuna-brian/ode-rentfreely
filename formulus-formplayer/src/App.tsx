@@ -56,6 +56,9 @@ import GPSQuestionRenderer, {
 import VideoQuestionRenderer, {
   videoQuestionTester,
 } from './renderers/VideoQuestionRenderer';
+import QrcodeQuestionRenderer, {
+  qrcodeQuestionTester,
+} from './renderers/QrcodeQuestionRenderer';
 import HtmlLabelRenderer, {
   htmlLabelTester,
 } from './renderers/HtmlLabelRenderer';
@@ -217,6 +220,7 @@ export const customRenderers = [
   { tester: audioQuestionTester, renderer: AudioQuestionRenderer },
   { tester: gpsQuestionTester, renderer: GPSQuestionRenderer },
   { tester: videoQuestionTester, renderer: VideoQuestionRenderer },
+  { tester: qrcodeQuestionTester, renderer: QrcodeQuestionRenderer },
   { tester: htmlLabelTester, renderer: HtmlLabelRenderer },
   { tester: adateQuestionTester, renderer: AdateQuestionRenderer },
   // Dynamic choice list renderer for x-dynamicEnum fields
@@ -267,6 +271,7 @@ function App() {
     JsonFormsRendererRegistryEntry[]
   >([]);
   // Store extension functions for potential future use (e.g., validation context injection)
+
   const [extensionFunctions, setExtensionFunctions] = useState<
     Map<string, (...args: any[]) => any>
   >(new Map());
