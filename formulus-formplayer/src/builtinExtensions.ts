@@ -411,10 +411,8 @@ export async function getDynamicChoiceList(
  * Get all built-in extension functions as a Map
  * @returns Map of function name to function
  */
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-export function getBuiltinExtensions(): Map<string, Function> {
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
-  const functions = new Map<string, Function>();
+export function getBuiltinExtensions(): Map<string, (...args: any[]) => any> {
+  const functions = new Map<string, (...args: any[]) => any>();
   functions.set('getDynamicChoiceList', getDynamicChoiceList);
   return functions;
 }
