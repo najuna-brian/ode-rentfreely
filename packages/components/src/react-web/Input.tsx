@@ -34,7 +34,7 @@ const Input: React.FC<InputProps> = ({
   className = '',
   style,
   testID,
-}) => {
+}: InputProps) => {
   const [isFocused, setIsFocused] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 

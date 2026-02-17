@@ -17,6 +17,12 @@ import { ControlProps, rankWith, formatIs } from '@jsonforms/core';
 import FormulusClient from '../services/FormulusInterface';
 import { SignatureResult } from '../types/FormulusInterfaceDefinition';
 import QuestionShell from '../components/QuestionShell';
+import { tokens } from '../theme/tokens-adapter';
+
+// Helper to parse pixel values from tokens
+const parsePx = (value: string): number => {
+  return parseInt(value.replace('px', ''), 10);
+};
 
 // Tester function - determines when this renderer should be used
 export const signatureQuestionTester = rankWith(
@@ -143,7 +149,7 @@ const SignatureQuestionRenderer: React.FC<ControlProps> = ({
       ctx.beginPath();
       ctx.moveTo(lastPointRef.current.x, lastPointRef.current.y);
       ctx.lineTo(point.x, point.y);
-      ctx.strokeStyle = '#000';
+      ctx.strokeStyle = tokens.color.neutral.black;
       ctx.lineWidth = 2;
       ctx.lineCap = 'round';
       ctx.lineJoin = 'round';
@@ -236,7 +242,9 @@ const SignatureQuestionRenderer: React.FC<ControlProps> = ({
         const isDark =
           window.matchMedia &&
           window.matchMedia('(prefers-color-scheme: dark)').matches;
-        ctx.fillStyle = isDark ? '#212121' : 'white';
+        ctx.fillStyle = isDark
+          ? tokens.color.neutral[900]
+          : tokens.color.neutral.white;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
       }
     }
@@ -268,8 +276,8 @@ const SignatureQuestionRenderer: React.FC<ControlProps> = ({
               mt: 1,
               p: 1,
               bgcolor: 'background.paper',
-              borderRadius: 1,
-              border: '1px solid',
+              borderRadius: parsePx(tokens.border.radius.md), // Match button border radius
+              border: `${tokens.border.width.thin} solid`,
               borderColor: 'divider',
             }}>
             <Typography
@@ -288,9 +296,9 @@ const SignatureQuestionRenderer: React.FC<ControlProps> = ({
           </Typography>
           <Box
             sx={{
-              border: '2px dashed',
+              border: `${tokens.border.width.medium} dashed`,
               borderColor: 'divider',
-              borderRadius: 1,
+              borderRadius: parsePx(tokens.border.radius.md), // Match button border radius
               p: 1,
               mb: 2,
               display: 'flex',
@@ -300,9 +308,9 @@ const SignatureQuestionRenderer: React.FC<ControlProps> = ({
             <canvas
               ref={canvasRef}
               style={{
-                border: '1px solid',
+                border: `${tokens.border.width.thin} solid`,
                 borderColor: 'divider',
-                borderRadius: '4px',
+                borderRadius: tokens.border.radius.md, // Match button border radius
                 cursor: 'crosshair',
                 backgroundColor: 'background.paper',
                 touchAction: 'none',
@@ -408,9 +416,9 @@ const SignatureQuestionRenderer: React.FC<ControlProps> = ({
               </Typography>
               <Box
                 sx={{
-                  border: '1px solid',
+                  border: `${tokens.border.width.thin} solid`,
                   borderColor: 'divider',
-                  borderRadius: 1,
+                  borderRadius: `${parsePx(tokens.border.radius.md)}px`,
                   p: 1,
                   mb: 2,
                   backgroundColor: 'background.paper',

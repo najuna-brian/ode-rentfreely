@@ -15,6 +15,14 @@ The formplayer is solely responsible for
 - submitting the forms to Formulus (either as draft or final)
 - (soft-)deleting observations
 
+## Development setup
+This project depends on `@ode/tokens` (local `packages/tokens`). On a fresh clone or new branch, install in order:
+
+1. From repo root: `cd packages/tokens && npm install`
+2. Then: `cd formulus-formplayer && npm install && npm start`
+
+If you run `npm install` only in formulus-formplayer, the tokens package’s `prepare` script may fail with "Cannot find module 'style-dictionary'" until tokens has its own dependencies installed.
+
 ## Building this project
 Use 'npm run build:rn' to build the project. This will build the project and copy the build to the formulus app. 
 

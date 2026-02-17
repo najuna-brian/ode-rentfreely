@@ -19,6 +19,12 @@ import { PhotoCamera, Delete, Refresh } from '@mui/icons-material';
 import FormulusClient from '../services/FormulusInterface';
 import { CameraResult } from '../types/FormulusInterfaceDefinition';
 import QuestionShell from '../components/QuestionShell';
+import { tokens } from '../theme/tokens-adapter';
+
+// Helper to parse pixel values from tokens
+const parsePx = (value: string): number => {
+  return parseInt(value.replace('px', ''), 10);
+};
 
 // Tester function to identify photo question types
 export const photoQuestionTester = rankWith(
@@ -213,8 +219,8 @@ const PhotoQuestionRenderer: React.FC<PhotoQuestionProps> = ({
             sx={{
               p: 1,
               bgcolor: 'background.paper',
-              borderRadius: 1,
-              border: '1px solid',
+              borderRadius: `${parsePx(tokens.border.radius.md)}px`, // Match button border radius
+              border: `${tokens.border.width.thin} solid`,
               borderColor: 'divider',
             }}>
             <Typography

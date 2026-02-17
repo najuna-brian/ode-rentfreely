@@ -6,7 +6,14 @@
  */
 
 import React, { useState, useMemo } from 'react';
-import { TouchableOpacity, Text, StyleSheet, View, ActivityIndicator } from 'react-native';
+import {
+  TouchableOpacity,
+  Text,
+  StyleSheet,
+  View,
+  ActivityIndicator,
+  useColorScheme,
+} from 'react-native';
 import { ButtonProps, ButtonVariant } from '../shared/types';
 import { getOppositeVariant } from '../shared/utils';
 import tokens from '@ode/tokens/dist/react-native/tokens-resolved';
@@ -38,6 +45,8 @@ const Button: React.FC<NativeButtonProps> = ({
   accessibilityLabel,
 }) => {
   const [isPressed, setIsPressed] = useState(false);
+  const colorScheme = useColorScheme();
+  const isDarkMode = colorScheme === 'dark';
   const isActiveOrPressed = active || isPressed;
 
   // Determine actual variant - if paired, use opposite of paired variant
@@ -51,7 +60,10 @@ const Button: React.FC<NativeButtonProps> = ({
   const primaryGreen = tokens.color.brand.primary[500];
   const errorRed =
     (tokens.color.semantic as any)?.error?.[500] ?? tokens.color.semantic?.error?.[500];
-  const errorRedAlpha = (tokens.color.semantic as any)?.error?.alpha?.[15];
+  const errorRedDark =
+    (tokens.color.semantic as any)?.error?.[600] ?? tokens.color.semantic?.error?.[600];
+  const errorRedLight =
+    (tokens.color.semantic as any)?.error?.[50] ?? tokens.color.semantic?.error?.[50];
   const neutralGrey = tokens.color.neutral[600];
   const textOnFill = tokens.color.neutral.white;
 
@@ -70,34 +82,32 @@ const Button: React.FC<NativeButtonProps> = ({
     }
   }, [actualVariant, primaryGreen, neutralGrey, errorRed]);
 
-  const dangerRed = errorRed ?? tokens.color.semantic?.error?.[500];
-  const dangerRedAlpha = errorRedAlpha ?? (tokens.color.semantic as any)?.error?.alpha?.[15];
-  const dangerDefaultBorder = dangerRed;
-  const dangerPressedBorder = neutralGrey;
+  // Danger button style (matches formplayer error buttons):
+  // Default: light pink background (error.50) in light mode, error.500 at 15% in dark mode
+  //          red border (error.500), darker red text (error.600)
+  // Pressed: transparent background, red border (same), darker red text (same)
+  const dangerDefaultBorder = errorRed ?? neutralGrey;
+  const dangerDefaultText = errorRedDark ?? errorRed ?? neutralGrey;
+  const dangerDefaultBg = isDarkMode
+    ? 'rgba(244, 67, 54, 0.15)' // error.500 (#f44336) at 15% for dark mode
+    : (errorRedLight ?? 'transparent'); // Light pink (error.50) in light mode
+
   const pressedBg = actualVariant === 'danger' ? 'transparent' : borderColor;
-  const pressedBorderColor = actualVariant === 'danger' ? dangerPressedBorder : 'transparent';
+  const pressedBorderColor = actualVariant === 'danger' ? dangerDefaultBorder : 'transparent';
 
   const textColor =
     actualVariant === 'danger'
-      ? isPressed
-        ? neutralGrey
-        : dangerRed
+      ? dangerDefaultText
       : isActiveOrPressed
         ? textOnFill
         : borderColor;
   const activeBorderColor =
-    actualVariant === 'danger'
-      ? isPressed
-        ? dangerPressedBorder
-        : dangerDefaultBorder
-      : isActiveOrPressed
-        ? pressedBorderColor
-        : borderColor;
+    actualVariant === 'danger' ? dangerDefaultBorder : isActiveOrPressed ? pressedBorderColor : borderColor;
   const backgroundColor =
     actualVariant === 'danger'
       ? isPressed
         ? 'transparent'
-        : (dangerRedAlpha ?? 'transparent')
+        : dangerDefaultBg
       : isActiveOrPressed
         ? pressedBg
         : 'transparent';

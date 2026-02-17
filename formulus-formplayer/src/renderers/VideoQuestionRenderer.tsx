@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { rankWith, ControlProps, formatIs } from '@jsonforms/core';
 import { withJsonFormsControlProps } from '@jsonforms/react';
+import { tokens } from '../theme/tokens-adapter';
 import {
   Typography,
   Box,
@@ -11,6 +12,11 @@ import {
   Divider,
   IconButton,
 } from '@mui/material';
+
+// Helper to parse pixel values from tokens
+const parsePx = (value: string): number => {
+  return parseInt(value.replace('px', ''), 10);
+};
 import {
   Videocam as VideocamIcon,
   PlayArrow as PlayIcon,
@@ -151,7 +157,13 @@ const VideoQuestionRenderer: React.FC<VideoQuestionRendererProps> = props => {
       helperText="Capture a video if required. Current app version may not support recording."
       metadata={
         process.env.NODE_ENV === 'development' ? (
-          <Box sx={{ mt: 1, p: 1, bgcolor: 'grey.100', borderRadius: 1 }}>
+          <Box
+            sx={{
+              mt: 1,
+              p: 1,
+              bgcolor: 'grey.100',
+              borderRadius: `${parsePx(tokens.border.radius.md)}px`,
+            }}>
             <Typography variant="caption" color="text.secondary">
               Debug - Path: {path} | Data: {JSON.stringify(data)}
             </Typography>
@@ -184,10 +196,10 @@ const VideoQuestionRenderer: React.FC<VideoQuestionRendererProps> = props => {
                 src={videoData.uri}
                 style={{
                   width: '100%',
-                  maxWidth: '400px',
+                  maxWidth: `${parsePx((tokens as any).spacing?.[5] ?? '20px') * 20}px`,
                   height: 'auto',
-                  borderRadius: '8px',
-                  backgroundColor: '#000',
+                  borderRadius: tokens.border.radius.md, // Match button border radius
+                  backgroundColor: tokens.color.neutral.black,
                 }}
                 onEnded={() => setIsPlaying(false)}
                 onLoadedMetadata={() => {

@@ -5,20 +5,19 @@ import {
   ControlProps,
 } from '@jsonforms/core';
 import { withJsonFormsControlProps } from '@jsonforms/react';
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  Typography,
-  Box,
-} from '@mui/material';
+import { Typography, Box, useTheme } from '@mui/material';
 import QuestionShell from '../components/QuestionShell';
+import { tokens } from './tokens-adapter';
+
+const parsePx = (value: string): number =>
+  parseInt(String(value).replace('px', ''), 10) || 1;
 
 type AnyControlProps = ControlProps & { errors?: string };
 
 const cardEnumControlTester: RankedTester = rankWith(6, isEnumControl);
 
 const CardEnumControl = (props: AnyControlProps) => {
+  const theme = useTheme();
   const {
     data,
     handleChange,
@@ -51,26 +50,71 @@ const CardEnumControl = (props: AnyControlProps) => {
         {options.map(opt => {
           const selected = data === opt.value;
           return (
-            <Card
+            <Box
               key={String(opt.value)}
-              variant={selected ? 'elevation' : 'outlined'}
-              sx={{
-                borderColor: selected ? 'primary.main' : 'divider',
-                boxShadow: selected ? 3 : 0,
+              onClick={() => enabled && handleChange(path, opt.value)}
+              sx={theme => {
+                const isDark = theme.palette.mode === 'dark';
+                const grey = theme.palette.grey as unknown as
+                  | Record<number, string>
+                  | undefined;
+                const lineColor = isDark
+                  ? (grey?.[800] ?? theme.palette.divider)
+                  : (grey?.[200] ?? theme.palette.divider);
+                const borderColor = selected
+                  ? theme.palette.primary.main
+                  : lineColor;
+                const leftBorderWidth =
+                  (tokens as any).border?.width?.medium ?? '2px';
+                const linePx = parsePx(leftBorderWidth);
+                const borderBg = (color: string) => ({
+                  backgroundImage: [
+                    `linear-gradient(to right, ${color} 0, ${color} ${linePx}px, transparent 100%)`,
+                    `linear-gradient(to right, ${color} 0, ${color} ${linePx}px, transparent 100%)`,
+                  ].join(', '),
+                  backgroundSize: `100% ${linePx}px, 100% ${linePx}px`,
+                  backgroundPosition: '0 0, 0 100%',
+                  backgroundRepeat: 'no-repeat',
+                });
+                return {
+                  position: 'relative',
+                  borderRadius: tokens.border.radius.lg,
+                  backgroundColor: 'transparent',
+                  ...borderBg(borderColor),
+                  cursor: enabled ? 'pointer' : 'default',
+                  overflow: 'hidden',
+                  px: 2,
+                  py: 1.5,
+                  '&:hover': enabled
+                    ? {
+                        ...borderBg(theme.palette.primary.main),
+                      }
+                    : {},
+                  '&:active': enabled
+                    ? {
+                        ...borderBg(theme.palette.primary.main),
+                        '--option-active-color': theme.palette.primary.main,
+                        '& > .MuiTypography-root.MuiTypography-subtitle1': {
+                          color: 'var(--option-active-color)',
+                          fontWeight: 500,
+                        },
+                      }
+                    : {},
+                };
               }}>
-              <CardActionArea
-                disabled={!enabled}
-                onClick={() => handleChange(path, opt.value)}
-                sx={{ p: 1.5 }}>
-                <CardContent sx={{ py: 0.5, '&:last-child': { pb: 0.5 } }}>
-                  <Typography
-                    variant="subtitle1"
-                    sx={{ fontWeight: selected ? 700 : 500 }}>
-                    {opt.label}
-                  </Typography>
-                </CardContent>
-              </CardActionArea>
-            </Card>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  fontWeight: 500,
+                  position: 'relative',
+                  zIndex: 1,
+                  color: selected
+                    ? theme.palette.primary.main
+                    : 'var(--option-active-color, inherit)',
+                }}>
+                {opt.label}
+              </Typography>
+            </Box>
           );
         })}
       </Box>

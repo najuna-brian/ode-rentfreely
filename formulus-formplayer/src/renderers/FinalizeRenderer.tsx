@@ -1,14 +1,7 @@
 import React, { useMemo } from 'react';
-import {
-  Box,
-  Button,
-  List,
-  ListItem,
-  Typography,
-  Paper,
-  Divider,
-  Link,
-} from '@mui/material';
+import { Box, List, ListItem, Typography, IconButton } from '@mui/material';
+import { tokens } from '../theme/tokens-adapter';
+import { Button } from '@ode/components/react-web';
 import { JsonFormsRendererRegistryEntry } from '@jsonforms/core';
 import { withJsonFormsControlProps, useJsonForms } from '@jsonforms/react';
 import { ControlProps } from '@jsonforms/core';
@@ -302,55 +295,45 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
       sx={{ p: 3, height: '100%', display: 'flex', flexDirection: 'column' }}>
       {hasErrors ? (
         <>
-          <Typography variant="h5" color="error" gutterBottom>
+          <Typography
+            variant="h5"
+            color="error"
+            gutterBottom
+            sx={{ textAlign: 'center' }}>
             Please fix the following errors before finalizing:
           </Typography>
-          <Paper sx={{ mb: 3, p: 2 }}>
-            <Box
-              sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 1,
-                alignItems: 'center',
-              }}>
-              {errors.map((error: ErrorObject, index: number) => (
-                <Button
-                  key={index}
-                  variant="outlined"
-                  color="error"
-                  onClick={() => handleErrorClick(error.instancePath)}
-                  sx={{
-                    justifyContent: 'center',
-                    textAlign: 'center',
-                    textTransform: 'none',
-                    py: 1.5,
-                    px: 2,
-                    width: '100%',
-                    borderColor: 'error.main',
-                    whiteSpace: 'normal',
-                    wordBreak: 'break-word',
-                    '&:hover': {
-                      borderColor: 'error.dark',
-                      backgroundColor: 'error.light',
-                    },
-                  }}>
-                  <Typography
-                    variant="body2"
-                    sx={{
-                      textAlign: 'center',
-                      width: '100%',
-                      whiteSpace: 'normal',
-                      wordBreak: 'break-word',
-                    }}>
-                    {formatErrorMessage(error)}
-                  </Typography>
-                </Button>
-              ))}
-            </Box>
-          </Paper>
+          <Box
+            sx={{
+              mb: 3,
+              p: 2,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 1,
+              alignItems: 'center',
+            }}>
+            {errors.map((error: ErrorObject, index: number) => (
+              <Button
+                key={index}
+                variant="danger"
+                size="medium"
+                onPress={() => handleErrorClick(error.instancePath)}
+                style={{
+                  width: '100%',
+                  whiteSpace: 'normal',
+                  wordBreak: 'break-word',
+                  textAlign: 'center',
+                }}>
+                {formatErrorMessage(error)}
+              </Button>
+            ))}
+          </Box>
         </>
       ) : (
-        <Typography variant="subtitle1" color="success.main" gutterBottom>
+        <Typography
+          variant="subtitle1"
+          color="success.main"
+          gutterBottom
+          sx={{ textAlign: 'center' }}>
           All validations passed! You can now finalize your submission.
         </Typography>
       )}
@@ -364,44 +347,66 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
             display: 'flex',
             flexDirection: 'column',
             mb: 3,
+            backgroundColor: 'transparent',
           }}>
-          <Typography variant="h5" gutterBottom sx={{ fontWeight: 700 }}>
+          <Typography
+            variant="h5"
+            gutterBottom
+            sx={{ fontWeight: 700, textAlign: 'center' }}>
             FORM SUMMARY
           </Typography>
           <Typography
             variant="body2"
             color="text.secondary"
             gutterBottom
-            sx={{ mb: 2 }}>
+            sx={{ mb: 2, textAlign: 'center' }}>
             Review all your entered data below. Click on any field to edit it.
           </Typography>
-          <Paper
+          <Box
             sx={{
               flex: 1,
               overflow: 'auto',
               p: 2,
               maxHeight: '100%',
-              backgroundColor: 'transparent', // Remove background - let it be transparent
-              boxShadow: 'none', // Remove shadow since there's no background
+              backgroundColor: 'transparent',
             }}>
             <List
               sx={{
                 width: '100%',
-                backgroundColor: 'transparent', // Ensure List is transparent
+                backgroundColor: 'transparent',
+                '&.MuiList-root': {
+                  backgroundColor: 'transparent',
+                },
+                '& .MuiListItem-root': {
+                  backgroundColor: 'transparent',
+                  borderRadius: 0,
+                },
               }}>
               {summaryItems.map((item, index) => (
                 <React.Fragment key={index}>
                   <ListItem
-                    sx={{
-                      flexDirection: 'column',
-                      alignItems: 'stretch',
-                      py: 1.5,
-                      px: 0,
-                      backgroundColor: 'transparent', // Ensure items are transparent
-                      '&:hover': {
-                        backgroundColor: 'action.hover',
-                        borderRadius: 1,
-                      },
+                    sx={theme => {
+                      const lineColor =
+                        theme.palette.mode === 'dark'
+                          ? theme.palette.divider
+                          : ((
+                              theme.palette.grey as unknown as Record<
+                                number,
+                                string
+                              >
+                            )?.[300] ?? theme.palette.divider);
+                      return {
+                        flexDirection: 'column',
+                        alignItems: 'stretch',
+                        py: 1.5,
+                        px: 2,
+                        backgroundColor: 'transparent',
+                        borderLeft: `${(tokens as any).border?.width?.thin ?? '1px'} solid ${lineColor}`,
+                        '&:hover': {
+                          backgroundColor: 'action.hover',
+                          borderRadius: 0,
+                        },
+                      };
                     }}>
                     <Box
                       sx={{
@@ -434,46 +439,59 @@ const FinalizeRenderer = ({ data }: ControlProps) => {
                         </Typography>
                       </Box>
                       {item.pageIndex >= 0 && (
-                        <Link
-                          component="button"
-                          variant="body2"
+                        <IconButton
                           onClick={() => handleFieldEdit(item)}
+                          size="small"
                           sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 0.5,
-                            cursor: 'pointer',
-                            textDecoration: 'none',
-                            color: 'primary.main',
+                            padding: (tokens as any).spacing?.[1] ?? '4px',
+                            color: 'text.secondary',
                             '&:hover': {
-                              textDecoration: 'underline',
+                              color: 'primary.main',
+                              backgroundColor: 'transparent',
                             },
                             flexShrink: 0,
-                          }}>
-                          <EditIcon sx={{ fontSize: 16 }} />
-                          Edit
-                        </Link>
+                          }}
+                          aria-label="Edit field">
+                          <EditIcon sx={{ fontSize: 18 }} />
+                        </IconButton>
                       )}
                     </Box>
                   </ListItem>
                   {index < summaryItems.length - 1 && (
-                    <Divider sx={{ opacity: 1 }} />
+                    <Box
+                      sx={theme => {
+                        const lineColor =
+                          theme.palette.mode === 'dark'
+                            ? theme.palette.divider
+                            : ((
+                                theme.palette.grey as unknown as Record<
+                                  number,
+                                  string
+                                >
+                              )?.[300] ?? theme.palette.divider);
+                        return {
+                          height: (tokens as any).border?.width?.thin ?? '1px',
+                          width: '100%',
+                          background: `linear-gradient(to right, ${lineColor}, ${lineColor} 75%, transparent 100%)`,
+                        };
+                      }}
+                    />
                   )}
                 </React.Fragment>
               ))}
             </List>
-          </Paper>
+          </Box>
         </Box>
       )}
 
       <Box sx={{ mt: 'auto', pt: 2 }}>
         <Button
-          variant="contained"
-          color="primary"
-          size="large"
-          fullWidth
-          onClick={handleFinalize}
-          disabled={Boolean(hasErrors)}>
+          variant="primary"
+          size="medium"
+          onPress={handleFinalize}
+          disabled={Boolean(hasErrors)}
+          className="button-reverse-primary"
+          style={{ width: '100%' }}>
           Finalize
         </Button>
       </Box>

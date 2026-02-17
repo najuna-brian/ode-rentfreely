@@ -5,7 +5,7 @@
  * thin border, token-based spacing/typography. Same border radius in px for common design language.
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import type { ButtonProps, ButtonVariant } from '../shared/types';
 import { getOppositeVariant } from '../shared/utils';
 import tokensJson from '@ode/tokens/dist/json/tokens.json';
@@ -41,7 +41,53 @@ const Button: React.FC<WebButtonProps> = ({
   accessibilityLabel,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    // Check MUI theme mode first (if available)
+    const muiThemeMode = document.documentElement.getAttribute('data-mui-color-scheme');
+    if (muiThemeMode === 'dark') return true;
+    // Fallback to system preference
+    if (window.matchMedia) {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
   const isActiveOrHovered = active || isHovered;
+
+  // Listen for dark mode changes (both system preference and MUI theme)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    
+    // Check for MUI theme changes via MutationObserver
+    const observer = new MutationObserver(() => {
+      const muiThemeMode = document.documentElement.getAttribute('data-mui-color-scheme');
+      if (muiThemeMode === 'dark' || muiThemeMode === 'light') {
+        setIsDarkMode(muiThemeMode === 'dark');
+      }
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-mui-color-scheme'],
+    });
+
+    // Also listen to system preference changes
+    if (window.matchMedia) {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = (e: MediaQueryListEvent) => {
+        // Only update if MUI theme mode is not set
+        if (!document.documentElement.getAttribute('data-mui-color-scheme')) {
+          setIsDarkMode(e.matches);
+        }
+      };
+      mediaQuery.addEventListener('change', handleChange);
+      return () => {
+        observer.disconnect();
+        mediaQuery.removeEventListener('change', handleChange);
+      };
+    }
+    
+    return () => observer.disconnect();
+  }, []);
 
   // Determine actual variant - if paired, use opposite of paired variant
   const actualVariant: ButtonVariant = useMemo(() => {
@@ -65,7 +111,8 @@ const Button: React.FC<WebButtonProps> = ({
 
   const primaryGreen = getToken('color.brand.primary.500');
   const errorRed = getToken('color.semantic.error.500');
-  const errorRedAlpha = getToken('color.semantic.error.alpha.15');
+  const errorRedDark = getToken('color.semantic.error.600');
+  const errorRedLight = getToken('color.semantic.error.50');
   const textOnFill = getToken('color.neutral.white');
 
   const neutralGrey = getToken('color.neutral.600');
@@ -84,23 +131,28 @@ const Button: React.FC<WebButtonProps> = ({
     }
   }, [actualVariant, primaryGreen, neutralGrey, errorRed]);
 
-  // Danger: default = red (border, text, tint bg); hover = grey (border, text), transparent
+  // Danger button style (matches Logout button in formulus app):
+  // Default: light pink background (error.50) in light mode, darker background in dark mode
+  //          red border (error.500), darker red text (error.600)
+  // Hover: transparent background, red border (same thickness), darker red text (error.600)
   const dangerDefaultBorder = errorRed;
-  const dangerHoverBorder = neutralGrey;
+  const dangerDefaultText = errorRedDark;
+  // Use darker background in dark mode, light pink in light mode
+  // In dark mode, use a darker red with alpha (error.500 with 15% opacity) for better contrast
+  // In light mode, use light pink background (error.50)
+  const dangerDefaultBg = isDarkMode
+    ? `rgba(244, 67, 54, 0.15)` // error.500 (#f44336) with 15% opacity for dark mode
+    : errorRedLight; // Light pink (#fef2f2 / error.50) in light mode
   const hoverBg = actualVariant === 'danger' ? 'transparent' : borderColor;
   const activeBorderColor =
     actualVariant === 'danger'
-      ? isHovered
-        ? dangerHoverBorder
-        : dangerDefaultBorder
+      ? dangerDefaultBorder 
       : isActiveOrHovered
         ? 'transparent'
         : borderColor;
   const activeTextColor =
     actualVariant === 'danger'
-      ? isHovered
-        ? neutralGrey
-        : errorRed
+      ? dangerDefaultText 
       : isActiveOrHovered
         ? textOnFill
         : borderColor;
@@ -108,7 +160,7 @@ const Button: React.FC<WebButtonProps> = ({
     actualVariant === 'danger'
       ? isHovered
         ? 'transparent'
-        : errorRedAlpha || 'transparent'
+        : dangerDefaultBg
       : isActiveOrHovered
         ? hoverBg
         : 'transparent';

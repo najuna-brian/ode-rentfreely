@@ -12,7 +12,6 @@ import {
   Card,
   CardContent,
   CardActions,
-  Button,
   IconButton,
   Dialog,
   DialogTitle,
@@ -23,9 +22,9 @@ import {
   Grid,
   Divider,
 } from '@mui/material';
+import { Button } from '@ode/components/react-web';
 import {
   Delete as DeleteIcon,
-  PlayArrow as ResumeIcon,
   Schedule as ClockIcon,
   Description as FormIcon,
 } from '@mui/icons-material';
@@ -220,10 +219,9 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
 
                   <CardActions sx={{ pt: 0 }}>
                     <Button
-                      startIcon={<ResumeIcon />}
-                      onClick={() => onResumeDraft(draft.id)}
-                      variant="contained"
-                      size="small">
+                      variant="primary"
+                      size="medium"
+                      onPress={() => onResumeDraft(draft.id)}>
                       Resume Draft
                     </Button>
                   </CardActions>
@@ -251,10 +249,10 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
           Begin a new form without any saved data.
         </Typography>
         <Button
-          variant="outlined"
+          variant="secondary"
           size="large"
-          onClick={onStartNew}
-          sx={{ minWidth: 200 }}>
+          onPress={onStartNew}
+          style={{ minWidth: 200 }}>
           Start New Form
         </Button>
       </Box>
@@ -271,11 +269,10 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setDeleteConfirmOpen(false)}>Cancel</Button>
-          <Button
-            onClick={confirmDeleteDraft}
-            color="error"
-            variant="contained">
+          <Button variant="neutral" onPress={() => setDeleteConfirmOpen(false)}>
+            Cancel
+          </Button>
+          <Button variant="danger" onPress={confirmDeleteDraft}>
             Delete
           </Button>
         </DialogActions>
@@ -303,7 +300,11 @@ export const DraftSelector: React.FC<DraftSelectorProps> = ({
               alignItems: 'center',
             }}>
             <Typography variant="h6">Select Draft</Typography>
-            {onClose && <Button onClick={onClose}>Close</Button>}
+            {onClose && (
+              <Button variant="secondary" onPress={onClose}>
+                Close
+              </Button>
+            )}
           </Box>
         </DialogTitle>
         <DialogContent>{content}</DialogContent>

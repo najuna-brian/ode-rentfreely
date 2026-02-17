@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { Box, LinearProgress, Typography } from '@mui/material';
+import { tokens } from '../theme/tokens-adapter';
 
 type JsonSchema = {
   type?: string | string[];
@@ -188,7 +189,7 @@ const FormProgressBar: React.FC<FormProgressBarProps> = ({
             flexGrow: 1,
             height: 8,
             borderRadius: 4,
-            backgroundColor: 'rgba(0, 0, 0, 0.1)',
+            backgroundColor: `rgba(0, 0, 0, ${(tokens as any).opacity?.['10'] ?? 0.1})`,
             '& .MuiLinearProgress-bar': {
               borderRadius: 4,
               transition: 'transform 0.4s ease-in-out',
@@ -198,7 +199,7 @@ const FormProgressBar: React.FC<FormProgressBarProps> = ({
         <Typography
           variant="caption"
           sx={{
-            minWidth: '45px',
+            minWidth: `${tokens.touchTarget.comfortable}px`,
             textAlign: 'right',
             color: 'text.secondary',
             fontWeight: 500,

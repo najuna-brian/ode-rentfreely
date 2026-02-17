@@ -19,6 +19,12 @@ import {
   MyLocation as MyLocationIcon,
 } from '@mui/icons-material';
 import QuestionShell from '../components/QuestionShell';
+import { tokens } from '../theme/tokens-adapter';
+
+// Helper to parse pixel values from tokens
+const parsePx = (value: string): number => {
+  return parseInt(value.replace('px', ''), 10);
+};
 // GPS is now captured automatically by the native app for all forms.
 // This renderer is kept only for backward-compatibility with existing
 // form schemas that still reference the "gps" format. It no longer
@@ -118,7 +124,13 @@ const GPSQuestionRenderer: React.FC<GPSQuestionRendererProps> = props => {
       helperText="GPS is captured automatically; use this only if the form requires manual capture."
       metadata={
         process.env.NODE_ENV === 'development' ? (
-          <Box sx={{ mt: 1, p: 1, bgcolor: 'grey.100', borderRadius: 1 }}>
+          <Box
+            sx={{
+              mt: 1,
+              p: 1,
+              bgcolor: 'grey.100',
+              borderRadius: `${parsePx(tokens.border.radius.md)}px`,
+            }}>
             <Typography variant="caption" color="text.secondary">
               Debug - Path: {path} | Data: {JSON.stringify(data)}
             </Typography>

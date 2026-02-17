@@ -14,7 +14,7 @@ interface WebButtonProps extends ButtonProps {
   position?: 'left' | 'right' | 'middle' | 'standalone';
 }
 
-interface ButtonGroupProps {
+export interface ButtonGroupProps {
   /**
    * Buttons to render
    */

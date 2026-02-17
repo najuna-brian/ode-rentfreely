@@ -57,6 +57,8 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      // Resolve @ode/tokens from app root when bundling @ode/components (symlinked package)
+      '@ode/tokens': path.resolve(__dirname, 'node_modules/@ode/tokens'),
     },
   },
 
