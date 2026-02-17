@@ -23,5 +23,6 @@
       "@ode/components/react-native": ["../packages/components/src/react-native/index.ts"]
     }
   },
-  "include": ["src"]
+  "include": ["src"],
+  "exclude": ["../packages/components"]
 }
