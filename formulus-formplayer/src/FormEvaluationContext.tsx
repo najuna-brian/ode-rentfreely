@@ -17,7 +17,8 @@ export interface FormEvaluationContextValue {
    * Key: function name (e.g., "getDynamicChoiceList")
    * Value: the actual function
    */
-  functions: Map<string, (...args: any[]) => any>;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  functions: Map<string, Function>;
 }
 
 /**
@@ -48,7 +49,8 @@ export interface FormEvaluationProviderProps {
   /**
    * Map of extension functions to provide
    */
-  functions: Map<string, (...args: any[]) => any>;
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+  functions: Map<string, Function>;
   /**
    * Child components
    */
