@@ -444,6 +444,17 @@ export interface FormulusInterface {
   requestSyncStatus(): Promise<void>;
 
   /**
+   * Trigger a background sync of observations to/from the server.
+   * Safe to call frequently — silently no-ops if a sync is already running.
+   * @param {boolean} [includeAttachments=true] - Whether to sync attachments too
+   * @returns {Promise<{success: boolean, message?: string}>}
+   */
+  syncNow(includeAttachments?: boolean): Promise<{
+    success: boolean;
+    message?: string;
+  }>;
+
+  /**
    * Run a local ML model
    * @param {string} fieldId - The ID of the field
    * @param {string} modelId - The ID of the model to run

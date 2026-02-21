@@ -1,0 +1,86 @@
+# Docker Compose configuration for Synkronus (RentFreely local dev)
+# This setup includes:
+# - Synkronus API server (built from local source)
+# - PostgreSQL database
+# - Nginx reverse proxy
+#
+# Usage:
+#   docker compose up --build -d
+#   docker compose logs -f synkronus
+
+services:
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - synkronus
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 -O - http://127.0.0.1/health || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+
+  # Synkronus API server — built from local source so our /auth/register
+  # endpoint is included.
+  synkronus:
+    build: .
+    expose:
+      - "8080"
+    # Also expose directly for debugging (optional — nginx already proxies)
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: "8080"
+      LOG_LEVEL: "debug"
+      # Database configuration
+      DB_CONNECTION: "postgres://synkronus_user:Password@postgres:5432/synkronus?sslmode=disable"
+      # JWT Secret
+      JWT_SECRET: "IamNajunaBrianFromKampalaUganda0"
+      ADMIN_USERNAME: "admin"
+      ADMIN_PASSWORD: "Password"
+      # App bundle storage path (inside container)
+      APP_BUNDLE_PATH: "/app/data/app-bundles"
+      MAX_VERSIONS_KEPT: "5"
+    volumes:
+      - app-bundles:/app/data/app-bundles
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget --no-verbose --tries=1 -O - http://127.0.0.1:8080/health || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+  # PostgreSQL database
+  postgres:
+    image: postgres:17
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Password
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      # Init script runs only on first start (empty data dir)
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    expose:
+      - "5432"
+    # Expose for local debugging with psql/pgAdmin
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:
+  app-bundles:

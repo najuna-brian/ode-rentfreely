@@ -42,6 +42,9 @@ export interface FormulusMessageHandlers {
   onRequestBiometric?: (fieldId: string) => void;
   onRequestConnectivityStatus?: () => void;
   onRequestSyncStatus?: () => void;
+  onSyncNow?: (data: {
+    includeAttachments?: boolean;
+  }) => Promise<{ success: boolean; message?: string }>;
   onRunLocalModel?: (
     fieldId: string,
     modelId: string,

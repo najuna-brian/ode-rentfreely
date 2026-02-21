@@ -60,9 +60,6 @@ func Login(username, password string) (*TokenResponse, error) {
 		return nil, fmt.Errorf("error reading response body: %w", err)
 	}
 
-	// Print the raw response for debugging
-	fmt.Printf("DEBUG - Raw API response: %s\n", string(body))
-
 	// Parse response
 	var tokenResp TokenResponse
 	if err := json.Unmarshal(body, &tokenResp); err != nil {

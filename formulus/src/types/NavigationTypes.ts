@@ -1,7 +1,5 @@
 export type MainTabParamList = {
   Home: undefined;
-  Forms: undefined;
-  Observations: undefined;
   Sync: undefined;
   Settings: undefined;
   About: undefined;
@@ -10,7 +8,7 @@ export type MainTabParamList = {
 };
 
 export type MainAppStackParamList = {
-  Welcome: undefined;
+  Auth: undefined;
   MainApp: undefined;
   ObservationDetail: { observationId: string };
 };

@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Formulus</string>
+	<string>RentFreely</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -34,9 +34,9 @@
 	<key>NSCameraUsageDescription</key>
 	<string>This app needs access to camera to scan QR codes and barcodes for form data collection.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Formulus needs access to your location to add geolocation data to observations for accurate data collection.</string>
+	<string>RentFreely needs access to your location to pinpoint properties on the map for accurate navigation.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Formulus needs access to your location to add geolocation data to observations for accurate data collection.</string>
+	<string>RentFreely needs access to your location to pinpoint properties on the map for accurate navigation.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

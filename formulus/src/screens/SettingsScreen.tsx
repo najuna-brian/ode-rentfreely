@@ -330,7 +330,7 @@ const SettingsScreen = () => {
       <View style={styles.header}>
         <View style={styles.logoContainer}>
           <Image source={Logo} style={styles.logo} resizeMode="contain" />
-          <Text style={styles.brandName}>ODE</Text>
+          <Text style={styles.brandName}>RentFreely</Text>
         </View>
         <Text style={styles.version}>v1.0.0</Text>
       </View>

@@ -88,10 +88,11 @@ func NewRouter(log *logger.Logger, h *handlers.Handler) http.Handler {
 		FileServer(r, "/openapi", http.Dir(openapiDir))
 	}
 
-	// Authentication routes
+	// Authentication routes (public — no auth required)
 	authRoutes := func(r chi.Router) {
 		r.Post("/login", h.Login)
 		r.Post("/refresh", h.RefreshToken)
+		r.Post("/register", h.Register)
 	}
 	r.Route("/auth", authRoutes)
 	// Also register under /api for portal compatibility

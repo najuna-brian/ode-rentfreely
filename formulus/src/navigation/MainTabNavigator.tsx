@@ -3,8 +3,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from '@react-native-vector-icons/material-design-icons';
 import HomeScreen from '../screens/HomeScreen';
-import FormsScreen from '../screens/FormsScreen';
-import ObservationsScreen from '../screens/ObservationsScreen';
 import SyncScreen from '../screens/SyncScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import AboutScreen from '../screens/AboutScreen';
@@ -23,14 +21,6 @@ type TabBarIconProps = {
 
 const renderHomeIcon = ({ color, size }: TabBarIconProps) => (
   <Icon name="home" size={size} color={color} />
-);
-
-const renderFormsIcon = ({ color, size }: TabBarIconProps) => (
-  <Icon name="file-document-outline" size={size} color={color} />
-);
-
-const renderObservationsIcon = ({ color, size }: TabBarIconProps) => (
-  <Icon name="clipboard-text-outline" size={size} color={color} />
 );
 
 const renderSyncIcon = ({ color, size }: TabBarIconProps) => (
@@ -72,25 +62,12 @@ const MainTabNavigator: React.FC = () => {
           tabBarIcon: renderHomeIcon,
         }}
       />
-      <Tab.Screen
-        name="Forms"
-        component={FormsScreen}
-        options={{
-          tabBarIcon: renderFormsIcon,
-        }}
-      />
-      <Tab.Screen
-        name="Observations"
-        component={ObservationsScreen}
-        options={{
-          tabBarIcon: renderObservationsIcon,
-        }}
-      />
+      {/* Sync is kept but hidden from tab bar — accessible via More menu */}
       <Tab.Screen
         name="Sync"
         component={SyncScreen}
         options={{
-          tabBarIcon: renderSyncIcon,
+          tabBarButton: () => null,
         }}
       />
       <Tab.Screen

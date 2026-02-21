@@ -4,12 +4,30 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+
+	"github.com/opendataensemble/synkronus/internal/models"
+	"github.com/opendataensemble/synkronus/pkg/user"
 )
 
 // LoginRequest represents the login request payload
 type LoginRequest struct {
 	Username string `json:"username"` // Using 'username' as per memory requirements
 	Password string `json:"password"`
+}
+
+// RegisterRequest represents the self-registration request payload
+type RegisterRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+// RegisterResponse represents the self-registration response
+type RegisterResponse struct {
+	Token        string `json:"token"`
+	RefreshToken string `json:"refreshToken"`
+	ExpiresAt    int64  `json:"expiresAt"`
+	Username     string `json:"username"`
+	Role         string `json:"role"`
 }
 
 // LoginResponse represents the login response payload
@@ -121,5 +139,77 @@ func (h *Handler) RefreshToken(w http.ResponseWriter, r *http.Request) {
 		Token:        token,
 		RefreshToken: refreshToken,
 		ExpiresAt:    expiresAt,
+	})
+}
+
+// Register handles the /auth/register endpoint (public — no auth required)
+// It creates a new user with read-write role and returns a JWT token so
+// the client is immediately logged in after registration.
+func (h *Handler) Register(w http.ResponseWriter, r *http.Request) {
+	var req RegisterRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		h.log.Error("Failed to decode register request", "error", err)
+		SendErrorResponse(w, http.StatusBadRequest, err, "Invalid request format")
+		return
+	}
+
+	if req.Username == "" {
+		SendErrorResponse(w, http.StatusBadRequest, nil, "Username is required")
+		return
+	}
+
+	if req.Password == "" {
+		SendErrorResponse(w, http.StatusBadRequest, nil, "Password is required")
+		return
+	}
+
+	if len(req.Password) < 6 {
+		SendErrorResponse(w, http.StatusBadRequest, nil, "Password must be at least 6 characters")
+		return
+	}
+
+	if len(req.Username) < 3 {
+		SendErrorResponse(w, http.StatusBadRequest, nil, "Username must be at least 3 characters")
+		return
+	}
+
+	// Create user with read-write role (standard app user)
+	newUser, err := h.userService.CreateUser(r.Context(), req.Username, req.Password, models.RoleReadWrite)
+	if err != nil {
+		if err == user.ErrUserExists {
+			SendErrorResponse(w, http.StatusConflict, err, "Username already taken")
+			return
+		}
+		h.log.Error("Failed to create user during registration", "error", err)
+		SendErrorResponse(w, http.StatusInternalServerError, err, "Registration failed")
+		return
+	}
+
+	// Generate JWT token so the user is immediately logged in
+	token, err := h.authService.GenerateToken(newUser)
+	if err != nil {
+		h.log.Error("Failed to generate token after registration", "error", err)
+		SendErrorResponse(w, http.StatusInternalServerError, err, "Registration succeeded but login failed")
+		return
+	}
+
+	refreshToken, err := h.authService.GenerateRefreshToken(newUser)
+	if err != nil {
+		h.log.Error("Failed to generate refresh token after registration", "error", err)
+		SendErrorResponse(w, http.StatusInternalServerError, err, "Registration succeeded but login failed")
+		return
+	}
+
+	expiresAt := time.Now().Add(h.authService.Config().TokenExpiration).Unix()
+
+	h.log.Info("User registered successfully", "username", req.Username)
+
+	SendJSONResponse(w, http.StatusCreated, RegisterResponse{
+		Token:        token,
+		RefreshToken: refreshToken,
+		ExpiresAt:    expiresAt,
+		Username:     newUser.Username,
+		Role:         string(newUser.Role),
 	})
 }

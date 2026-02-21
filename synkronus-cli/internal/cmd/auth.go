@@ -29,14 +29,22 @@ func init() {
 				fmt.Scanln(&username)
 			}
 
-			fmt.Print("Password: ")
-			passwordBytes, err := term.ReadPassword(int(syscall.Stdin))
+			// Check if password was provided via flag (non-interactive / scripts)
+			password, err := cmd.Flags().GetString("password")
 			if err != nil {
-				return fmt.Errorf("error reading password: %w", err)
+				return err
 			}
-			fmt.Println() // Add newline after password input
 
-			password := string(passwordBytes)
+			if password == "" {
+				fmt.Print("Password: ")
+				passwordBytes, err := term.ReadPassword(int(syscall.Stdin))
+				if err != nil {
+					return fmt.Errorf("error reading password: %w", err)
+				}
+				fmt.Println() // Add newline after password input
+				password = string(passwordBytes)
+			}
+
 			tokenResp, err := auth.Login(username, password)
 			if err != nil {
 				return fmt.Errorf("login failed: %w", err)
@@ -54,6 +62,7 @@ func init() {
 	}
 
 	loginCmd.Flags().StringP("username", "u", "", "Username for authentication")
+	loginCmd.Flags().StringP("password", "p", "", "Password for authentication (for non-interactive use)")
 	rootCmd.AddCommand(loginCmd)
 
 	// Logout command

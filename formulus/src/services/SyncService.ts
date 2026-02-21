@@ -21,6 +21,13 @@ export class SyncService {
   private shouldCancel: boolean = false;
   private autoLoginRetryCount: number = 0; // Track auto-login retries to prevent loops
 
+  /**
+   * Waiters that should be resolved once the current sync completes.
+   * Used by callers that arrive while a sync is already in progress
+   * so they can await the result instead of skipping.
+   */
+  private syncWaiters: Array<{ resolve: () => void; reject: (err: Error) => void }> = [];
+
   private constructor() {}
 
   public static getInstance(): SyncService {
@@ -69,6 +76,19 @@ export class SyncService {
 
   public getCanCancel(): boolean {
     return this.canCancel;
+  }
+
+  /**
+   * Returns a Promise that resolves when the current in-progress sync
+   * completes. If no sync is running, resolves immediately.
+   */
+  public waitForSyncComplete(): Promise<void> {
+    if (!this.isSyncing) {
+      return Promise.resolve();
+    }
+    return new Promise<void>((resolve, reject) => {
+      this.syncWaiters.push({ resolve, reject });
+    });
   }
 
   /**
@@ -291,6 +311,13 @@ export class SyncService {
       this.isSyncing = false;
       this.canCancel = false;
       this.shouldCancel = false;
+
+      // Notify all callers waiting for this sync to finish
+      const waiters = this.syncWaiters.splice(0);
+      for (const w of waiters) {
+        w.resolve();
+      }
+
       await notificationService.stopForegroundService();
     }
   }
@@ -376,7 +403,61 @@ export class SyncService {
       this.isSyncing = false;
       this.canCancel = false;
       this.shouldCancel = false;
+
+      // Notify all callers waiting for this sync to finish
+      const waiters = this.syncWaiters.splice(0);
+      for (const w of waiters) {
+        w.resolve();
+      }
+
       await notificationService.stopForegroundService();
+    }
+  }
+
+  /**
+   * Lightweight bundle update that does NOT start a foreground service.
+   * Safe to call from HomeScreen's initial load or background checks
+   * where the notification system may not be fully configured yet.
+   */
+  public async updateAppBundleSilently(): Promise<void> {
+    if (this.isSyncing) {
+      // If a sync is running, wait for it then check again
+      await this.waitForSyncComplete();
+      // After the sync, don't try again — the caller can re-check
+      return;
+    }
+
+    this.isSyncing = true;
+    this.autoLoginRetryCount = 0;
+
+    try {
+      const manifest = await this.withAutoLoginRetry(
+        () => synkronusApi.getManifest(),
+        'get manifest (silent)',
+      );
+
+      await this.downloadAppBundle();
+
+      await AsyncStorage.setItem('@appVersion', manifest.version);
+
+      const formService = await FormService.getInstance();
+      await formService.invalidateCache();
+
+      const syncTime = new Date().toLocaleTimeString();
+      await AsyncStorage.setItem('@lastSync', syncTime);
+
+      appEvents.emit('bundleUpdated');
+      console.log('[SyncService] Silent bundle update complete');
+    } catch (error) {
+      console.warn('[SyncService] Silent bundle update failed:', error);
+      // Non-fatal — swallow the error so caller doesn't crash
+    } finally {
+      this.isSyncing = false;
+
+      const waiters = this.syncWaiters.splice(0);
+      for (const w of waiters) {
+        w.resolve();
+      }
     }
   }
 

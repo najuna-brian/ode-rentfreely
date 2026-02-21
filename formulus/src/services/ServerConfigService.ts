@@ -3,6 +3,13 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 const SERVER_URL_KEY = '@server_url';
 const SERVER_URL_STORAGE_KEY = '@settings';
 
+/**
+ * ─── RentFreely Configuration ──────────────────────────────────────
+ * Pre-configured server URL so end-users never need to enter one.
+ * Change this to your production Synkronus server URL.
+ */
+const DEFAULT_SERVER_URL = 'http://192.168.1.201';
+
 export class ServerConfigService {
   private static instance: ServerConfigService;
 
@@ -38,14 +45,31 @@ export class ServerConfigService {
       const settings = await AsyncStorage.getItem(SERVER_URL_STORAGE_KEY);
       if (settings) {
         const parsed = JSON.parse(settings);
-        return parsed.serverUrl || null;
+        if (parsed.serverUrl) return parsed.serverUrl;
       }
 
-      return null;
+      // Return the pre-configured default for RentFreely
+      return DEFAULT_SERVER_URL;
     } catch (error) {
       console.error('Failed to get server URL:', error);
-      return null;
+      return DEFAULT_SERVER_URL;
     }
+  }
+
+  /** Returns the default server URL (for display in UI or auto-config). */
+  getDefaultServerUrl(): string {
+    return DEFAULT_SERVER_URL;
+  }
+
+  /**
+   * Ensures the default server URL is saved to storage on first launch.
+   * Call this during app startup so the API client has a URL to work with.
+   */
+  async ensureConfigured(): Promise<string> {
+    const existing = await AsyncStorage.getItem(SERVER_URL_KEY);
+    if (existing) return existing;
+    await this.saveServerUrl(DEFAULT_SERVER_URL);
+    return DEFAULT_SERVER_URL;
   }
 
   async clearServerUrl(): Promise<void> {
@@ -66,8 +90,8 @@ export class ServerConfigService {
     }
 
     try {
-      const url = new URL(serverUrl);
-      if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      const url = new URL(serverUrl) as { protocol?: string };
+      if (url.protocol && url.protocol !== 'http:' && url.protocol !== 'https:') {
         return { success: false, message: 'URL must be HTTP or HTTPS' };
       }
     } catch {

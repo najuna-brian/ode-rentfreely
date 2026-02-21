@@ -1080,6 +1080,34 @@ export function createFormulusMessageHandlers(): FormulusMessageHandlers {
     }) => {
       // Reserved for future hooks (e.g., native-side loading indicators or analytics).
     },
+    onSyncNow: async (
+      data: { includeAttachments?: boolean } = {},
+    ): Promise<{ success: boolean; message?: string }> => {
+      try {
+        const { SyncService } = await import('../services/SyncService');
+        const svc = SyncService.getInstance();
+        if (svc.getIsSyncing()) {
+          // A sync is already running (e.g. started by DataContext).
+          // Wait for it to finish so the caller gets up-to-date data.
+          console.log(
+            'FormulusMessageHandlers: syncNow — sync already in progress, waiting for it to finish…',
+          );
+          await svc.waitForSyncComplete();
+          console.log(
+            'FormulusMessageHandlers: syncNow — in-progress sync finished',
+          );
+          return { success: true, message: 'Waited for in-progress sync' };
+        }
+        console.log('FormulusMessageHandlers: syncNow — starting background sync');
+        await svc.syncObservations(data?.includeAttachments ?? true);
+        console.log('FormulusMessageHandlers: syncNow — background sync complete');
+        return { success: true };
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        console.warn('FormulusMessageHandlers: syncNow — sync failed:', msg);
+        return { success: false, message: msg };
+      }
+    },
     onFormulusReady: () => {
       // TODO: Perform any actions needed when the WebView content signals it's ready
     },

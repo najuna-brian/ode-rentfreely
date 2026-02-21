@@ -107,6 +107,58 @@ export const login = async (
   return userInfo;
 };
 
+/**
+ * Self-registration: calls POST /auth/register (public endpoint).
+ * Creates a new user with read-write role and returns a JWT token
+ * so the user is immediately logged in after registration.
+ */
+export const register = async (
+  username: string,
+  password: string,
+): Promise<UserInfo> => {
+  const { serverConfigService } = await import(
+    '../../services/ServerConfigService'
+  );
+  const serverUrl = await serverConfigService.getServerUrl();
+  if (!serverUrl) {
+    throw new Error('Server URL not configured');
+  }
+
+  const registerUrl = `${serverUrl.replace(/\/$/, '')}/auth/register`;
+
+  const response = await fetch(registerUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Accept: 'application/json',
+    },
+    body: JSON.stringify({ username, password }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => null);
+    const message =
+      errorData?.error || errorData?.message || `Registration failed (${response.status})`;
+    throw new Error(message);
+  }
+
+  const data = await response.json();
+
+  // Store tokens (same as login)
+  await AsyncStorage.setItem('@token', data.token);
+  await AsyncStorage.setItem('@refreshToken', data.refreshToken);
+  await AsyncStorage.setItem('@tokenExpiresAt', data.expiresAt.toString());
+
+  const userInfo: UserInfo = {
+    username: data.username || username,
+    role: data.role || 'read-write',
+  };
+
+  await AsyncStorage.setItem('@user', JSON.stringify(userInfo));
+
+  return userInfo;
+};
+
 export const getUserInfo = async (): Promise<UserInfo | null> => {
   try {
     const userJson = await AsyncStorage.getItem('@user');

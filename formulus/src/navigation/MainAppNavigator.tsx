@@ -1,41 +1,62 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
-import { useFocusEffect } from '@react-navigation/native';
 import MainTabNavigator from './MainTabNavigator';
-import WelcomeScreen from '../screens/WelcomeScreen';
+import AuthScreen from '../screens/AuthScreen';
 import ObservationDetailScreen from '../screens/ObservationDetailScreen';
 import { MainAppStackParamList } from '../types/NavigationTypes';
+import { getUserInfo } from '../api/synkronus/Auth';
 import { serverConfigService } from '../services/ServerConfigService';
 import { useAppTheme } from '../contexts/AppThemeContext';
 
 const Stack = createStackNavigator<MainAppStackParamList>();
 
-const MainAppNavigator: React.FC = () => {
-  const [isConfigured, setIsConfigured] = useState<boolean | null>(null);
+/**
+ * Module-level callback so AuthScreen can tell the navigator
+ * "the user just logged in" without prop-drilling or context.
+ */
+let _onAuthStateChanged: ((loggedIn: boolean) => void) | null = null;
 
-  // Theme colors come from AppThemeContext — they update automatically
-  // when the custom app's config is loaded or the color scheme changes.
+/** Called by AuthScreen after a successful login/register */
+export function notifyAuthStateChanged(loggedIn: boolean) {
+  _onAuthStateChanged?.(loggedIn);
+}
+
+const MainAppNavigator: React.FC = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
   const { themeColors } = useAppTheme();
+  const mounted = useRef(true);
 
   useEffect(() => {
-    const checkConfiguration = async () => {
-      const serverUrl = await serverConfigService.getServerUrl();
-      setIsConfigured(!!serverUrl);
-    };
-    checkConfiguration();
+    mounted.current = true;
+    return () => { mounted.current = false; };
   }, []);
 
-  useFocusEffect(
-    React.useCallback(() => {
-      const checkConfig = async () => {
-        const serverUrl = await serverConfigService.getServerUrl();
-        setIsConfigured(!!serverUrl);
-      };
-      checkConfig();
-    }, []),
-  );
+  // Register the module-level callback so AuthScreen can update us
+  useEffect(() => {
+    _onAuthStateChanged = (loggedIn: boolean) => {
+      if (mounted.current) {
+        setIsLoggedIn(loggedIn);
+      }
+    };
+    return () => { _onAuthStateChanged = null; };
+  }, []);
 
-  if (isConfigured === null) {
+  useEffect(() => {
+    const checkAuth = async () => {
+      // Ensure server URL is configured on first launch
+      await serverConfigService.ensureConfigured();
+
+      // Check if user has a valid session
+      const user = await getUserInfo();
+      if (mounted.current) {
+        setIsLoggedIn(!!user);
+      }
+    };
+    checkAuth();
+  }, []);
+
+  if (isLoggedIn === null) {
+    // Still checking — return nothing (splash screen handles this briefly)
     return null;
   }
 
@@ -45,23 +66,27 @@ const MainAppNavigator: React.FC = () => {
         headerStyle: { backgroundColor: themeColors.surface },
         headerTintColor: themeColors.onBackground,
         headerTitleStyle: { color: themeColors.onBackground },
-      }}
-      initialRouteName={isConfigured ? 'MainApp' : 'Welcome'}>
-      <Stack.Screen
-        name="Welcome"
-        component={WelcomeScreen}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="MainApp"
-        component={MainTabNavigator}
-        options={{ headerShown: false }}
-      />
-      <Stack.Screen
-        name="ObservationDetail"
-        component={ObservationDetailScreen}
-        options={{ title: 'Observation Details' }}
-      />
+      }}>
+      {isLoggedIn ? (
+        <>
+          <Stack.Screen
+            name="MainApp"
+            component={MainTabNavigator}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="ObservationDetail"
+            component={ObservationDetailScreen}
+            options={{ title: 'Observation Details' }}
+          />
+        </>
+      ) : (
+        <Stack.Screen
+          name="Auth"
+          component={AuthScreen}
+          options={{ headerShown: false }}
+        />
+      )}
     </Stack.Navigator>
   );
 };

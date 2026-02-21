@@ -10,6 +10,7 @@ import { BottomTabNavigationProp } from '@react-navigation/bottom-tabs';
 import { MainTabParamList } from '../types/NavigationTypes';
 import MenuDrawer from '../components/MenuDrawer';
 import { logout } from '../api/synkronus/Auth';
+import { notifyAuthStateChanged } from '../navigation/MainAppNavigator';
 import { colors } from '../theme/colors';
 
 type MoreScreenNavigationProp = BottomTabNavigationProp<
@@ -59,7 +60,8 @@ const MoreScreen: React.FC = () => {
         onPress: async () => {
           await logout();
           setDrawerVisible(false);
-          navigation.navigate('Home');
+          // Tell MainAppNavigator to switch back to the Auth screen
+          notifyAuthStateChanged(false);
         },
       },
     ]);
