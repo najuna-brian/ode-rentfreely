@@ -1,22 +1,39 @@
-synkronus/.env
-.vscode
-**/.vscode
-.idea
-**/.idea
+# ── Editor / OS ───────────────────────────────────────
+.vscode/
+**/.vscode/
+.idea/
+**/.idea/
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
 
-# Dependencies
+# ── Dependencies ──────────────────────────────────────
 node_modules/
 **/node_modules/
 
-# Generated credentials
+# ── Environment & Credentials ─────────────────────────
+.env
+**/.env
 **/credentials.txt
-synkronus/credentials.txt
 
-# Android release keys
+# ── Android ───────────────────────────────────────────
 formulus/android/keystores/
 *.jks
 *.keystore
 local.properties
-
-# Formplayer built assets
 formulus/android/app/src/main/assets/formplayer_dist/
+
+# ── Go build artifacts ────────────────────────────────
+synkronus-cli/synk
+synkronus/synkronus
+
+# ── Synkronus CLI dev files ───────────────────────────
+synkronus-cli/test_*.json
+synkronus-cli/*.png
+synkronus-cli/*.qr
+
+# ── Build output ──────────────────────────────────────
+**/dist/
+**/build/
+**/*.apk

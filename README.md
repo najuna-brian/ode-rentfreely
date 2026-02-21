@@ -1,126 +1,179 @@
-# Open Data Ensemble (ODE) 🎼
+# ode-rentfreely
 
-Welcome to the **Open Data Ensemble** - a comprehensive platform for mobile data collection and synchronization! 
+Private platform fork powering [RentFreely](https://github.com/najuna-brian/rentfreely) — a property rental app for Uganda.
 
-## About ODE
+This repo contains the native mobile shell, sync server, and CLI tools. The custom React app lives in the [rentfreely](https://github.com/najuna-brian/rentfreely) repo.
 
-ODE is a monorepo containing all the core components in the ODE universe - the essential members of our *ensemble*, if you will. We're building a modern, open-source solution for field data collection that works seamlessly across mobile devices and web platforms.
+## Components
+
+| Component | Path | Language | Description |
+|---|---|---|---|
+| **Formulus** | `formulus/` | React Native (TypeScript) | Android/iOS app that hosts the RentFreely WebView |
+| **Synkronus** | `synkronus/` | Go | Sync server — data, auth, app bundles |
+| **synk CLI** | `synkronus-cli/` | Go | CLI for uploading bundles, managing users, exporting data |
+| **Synkronus Portal** | `synkronus-portal/` | React (TypeScript) | Web admin dashboard for Synkronus |
+| **Formulus FormPlayer** | `formulus-formplayer/` | React (TypeScript) | JSON form renderer used inside the WebView |
+| **Packages** | `packages/` | TypeScript | Shared libraries (form engine, API client, etc.) |
 
 ## Architecture
 
-This repository houses four main components:
-
-### **formulus**
-A React Native project containing the code for Android and iOS apps. This is your mobile data collection companion, designed for field work and offline-first data gathering.
-
-### **formulus-formplayer**
-A React web application responsible for rendering JSON forms and communicating with the Formulus mobile app. It provides the dynamic form interface that powers your data collection workflows.
-
-### **synkronus**
-The server component written in Go. This handles data synchronization, storage, and provides the backbone for all data operations across the platform.
-
-### **synkronus-cli**
-A command-line utility to interact with the Synkronus server. Use it to manage custom app data, handle user administration, export data to Parquet format, and perform various administrative tasks.
-
-## We're Young & Fresh! 🌱🌱🌱
-
-ODE is a **young and vibrant open-source project**, and we're incredibly welcoming to contributors of all experience levels and interests! Whether you're passionate about:
-
-- **Software Development** (React Native, React, Go, TypeScript)
-- **Documentation** (helping others understand and use ODE)
-- **Implementation** (deploying, testing, real-world usage)
-- **Community Building** (fostering collaboration and growth)
-- **UI/UX Design** (making data collection delightful)
-- **Data Science** (improving data workflows and analytics)
-
-...we'd love to have you join our ensemble! 
-
-## 🤝 Contributing
-
-We believe that diverse perspectives and varied skill sets make our project stronger. Don't worry if you're new to open source or if you think your skills might not be "technical enough" - there's a place for everyone here.
-
-**Getting Started:**
-- Browse our issues to find something that interests you
-- Join our discussions to share ideas
-- Improve documentation where you see gaps
-- Test the platform and report your experience
-- Share how you're using ODE in your work
-
-## CI/CD Pipeline 
-
-This monorepo uses GitHub Actions for continuous integration and deployment:
-
-### Current Pipelines
-
-#### Synkronus Docker Build & Publish
-- **Trigger**: Push to `main` branch or pull requests affecting `synkronus/` directory
-- **Registry**: GitHub Container Registry (ghcr.io)
-- **Image**: `ghcr.io/opendataensemble/synkronus`
-- **Tagging Strategy**:
-  - `main` branch → `latest` + `v{version}` (release versions)
-  - Other branches → `{branch-name}` (pre-release versions)
-- **Workflow**: `.github/workflows/synkronus-docker.yml`
-
-### Image Versioning
-
-Images follow semantic versioning:
-- **Release**: `ghcr.io/opendataensemble/synkronus:latest` or `ghcr.io/opendataensemble/synkronus:v1.0.0`
-- **Pre-release**: `ghcr.io/opendataensemble/synkronus:develop` or `ghcr.io/opendataensemble/synkronus:feature-xyz`
-
-### Using Published Images
-
-Pull and run the latest Synkronus image:
-
-```bash
-docker pull ghcr.io/opendataensemble/synkronus:latest
-docker run -d -p 8080:8080 \
-  -e DB_CONNECTION="postgres://user:pass@host:5432/synkronus" \
-  -e JWT_SECRET="your-secret-key" \
-  -v synkronus-bundles:/app/data/app-bundles \
-  ghcr.io/opendataensemble/synkronus:latest
+```
+┌─────────────────────────────────────────────────────┐
+│                   User's Phone                       │
+│  ┌───────────────────────────────────────────────┐  │
+│  │  Formulus (React Native)                      │  │
+│  │  ┌─────────────────────────────────────────┐  │  │
+│  │  │  RentFreely (WebView)                   │  │  │
+│  │  │  React + Vite + MUI                     │  │  │
+│  │  │  ← formulusApi bridge →                 │  │  │
+│  │  └─────────────────────────────────────────┘  │  │
+│  │  WatermelonDB (local)  ←→  SyncService        │  │
+│  └───────────────────────────────────────────────┘  │
+└─────────────────────┬───────────────────────────────┘
+                      │ HTTP/S
+          ┌───────────┴───────────┐
+          │  Synkronus Server     │
+          │  (Go + PostgreSQL)    │
+          │  ┌─────────────────┐  │
+          │  │ Auth  │ Sync    │  │
+          │  │ Bundles │ Users │  │
+          │  └─────────────────┘  │
+          └───────────────────────┘
 ```
 
-**Documentation:**
-- [CI/CD Pipeline Details](.github/CICD.md) - Comprehensive CI/CD documentation
-- [Synkronus Docker Guide](synkronus/DOCKER.md) - Quick start guide
-- [Synkronus Deployment Guide](synkronus/DEPLOYMENT.md) - Production deployment
+## Prerequisites
 
-## Code Quality: Linting & Formatting 
+| Tool | Version | Purpose |
+|---|---|---|
+| [Node.js](https://nodejs.org/) | ≥ 18 | Formulus build |
+| [Java JDK](https://adoptium.net/) | 17 | Android builds |
+| [Android SDK](https://developer.android.com/studio) | API 34 | Android builds |
+| [Go](https://go.dev/) | ≥ 1.22 | Synkronus server & CLI builds |
+| [Docker](https://www.docker.com/) | ≥ 24 | Running the server stack |
+| [ADB](https://developer.android.com/tools/adb) | — | Deploying APKs to devices |
 
-ODE enforces consistent formatting and linting for the frontend projects both **locally** and in **CI**.
+> **Workspace layout** — This repo should sit alongside the RentFreely app repo:
+> ```
+> ode-workspaces/
+> ├── ode/           ← this repo
+> └── RentFreely/    ← github.com/najuna-brian/rentfreely
+> ```
 
-### Formulus (React Native)
+## Getting Started
 
-- **Run linting**: `cd formulus && npm run lint`
-- **Run linting with auto-fix**: `cd formulus && npm run lint:fix`
-- **Format code**: `cd formulus && npm run format`
-- **Check formatting (no writes)**: `cd formulus && npm run format:check`
+### 1. Clone both repos
 
-### Formulus Formplayer (React Web)
+```bash
+mkdir ode-workspaces && cd ode-workspaces
+git clone git@github.com:najuna-brian/ode-rentfreely.git ode
+git clone git@github.com:najuna-brian/rentfreely.git RentFreely
+```
 
-- **Run linting**: `cd formulus-formplayer && npm run lint`
-- **Run linting with auto-fix**: `cd formulus-formplayer && npm run lint:fix`
-- **Format code**: `cd formulus-formplayer && npm run format`
-- **Check formatting (no writes)**: `cd formulus-formplayer && npm run format:check`
+### 2. Start the Synkronus server
 
-### What CI Enforces
+```bash
+cd ode/synkronus
+docker compose up --build -d
+```
 
-In the main CI workflow:
+This starts:
+- **Synkronus API** on port `8080` (also proxied via nginx on port `80`)
+- **PostgreSQL** database
+- **Nginx** reverse proxy
 
-- For `formulus`:
-  - Runs `npm run format:check` and `npm run lint` after install and before tests.
-- For `formulus-formplayer`:
-  - Runs `npm run lint`, `npm run format:check`, then tests and build.
+Default credentials: `admin` / `Password` (change in `docker-compose.yml` for production).
 
-CI will **fail** if:
+### 3. Build the synk CLI
 
-- ESLint finds errors, or
-- Prettier formatting checks fail (unformatted files).
+```bash
+cd ode/synkronus-cli
+go build -o synk ./cmd/synkronus/
+./synk login --username admin --password Password
+```
 
-## Get Involved 📬 
+### 4. Install Formulus dependencies
 
-Ready to join the ensemble? We're excited to meet you and see what unique perspective you'll bring to ODE!
+```bash
+cd ode/formulus
+npm install
+```
 
----
+### 5. Deploy the full stack
 
-*Building the future of open data collection, one contribution at a time.* ✨
+From the RentFreely app directory:
+
+```bash
+cd RentFreely/app
+npm install
+npm run deploy
+```
+
+This builds the custom app, uploads it to the server, embeds it in the APK, and installs on a connected device.
+
+## Server Configuration
+
+### Docker Compose (`synkronus/docker-compose.yml`)
+
+| Variable | Default | Description |
+|---|---|---|
+| `ADMIN_USERNAME` | `admin` | Default admin account |
+| `ADMIN_PASSWORD` | `Password` | Default admin password |
+| `JWT_SECRET` | (set in file) | JWT signing key — **change for production** |
+| `DB_CONNECTION` | (set in file) | PostgreSQL connection string |
+| `APP_BUNDLE_PATH` | `/app/data/app-bundles` | Where bundles are stored |
+| `MAX_VERSIONS_KEPT` | `5` | Number of bundle versions to retain |
+
+### Changing the server URL
+
+Update the default URL in Formulus so the mobile app points to your server:
+
+```
+formulus/src/services/ServerConfigService.ts → DEFAULT_SERVER_URL
+```
+
+Then update the synk CLI:
+
+```bash
+./synk config set api.url https://your-server.example.com
+./synk login --username admin
+```
+
+## Formulus Customizations
+
+Key files modified for RentFreely (relative to upstream ODE):
+
+| File | Change |
+|---|---|
+| `formulus/src/screens/AuthScreen.tsx` | Login/register screen with reactive auth state |
+| `formulus/src/screens/HomeScreen.tsx` | Version-aware pre-bundle extraction, silent bundle updates |
+| `formulus/src/navigation/MainAppNavigator.tsx` | Conditional auth flow with `notifyAuthStateChanged` |
+| `formulus/src/services/SyncService.ts` | `waitForSyncComplete()`, silent bundle updates |
+| `formulus/src/services/ServerConfigService.ts` | Pre-configured server URL for RentFreely |
+| `formulus/src/webview/FormulusMessageHandlers.ts` | `onSyncNow` waits for in-progress sync |
+| `synkronus/internal/handlers/auth.go` | Public `/auth/register` endpoint |
+| `synkronus-cli/internal/cmd/auth.go` | `--password` flag for non-interactive login |
+
+## Pulling Upstream ODE Updates
+
+This repo tracks the upstream ODE project. To pull new features or fixes:
+
+```bash
+git remote add upstream https://github.com/OpenDataEnsemble/ode.git  # once
+git fetch upstream
+git merge upstream/dev
+```
+
+Resolve any conflicts, test, and push to your private repo:
+
+```bash
+git push private main
+```
+
+## Related
+
+- **[rentfreely](https://github.com/najuna-brian/rentfreely)** — Custom React app (UI, forms, deploy script)
+- **[OpenDataEnsemble/ode](https://github.com/OpenDataEnsemble/ode)** — Upstream ODE project
+
+## License
+
+Private — All rights reserved.
