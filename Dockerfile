@@ -1,6 +1,6 @@
 # Multi-stage build for combined Synkronus + Portal
 # Stage 1: Build the Go application (Synkronus)
-FROM golang:1.24.2-alpine AS synkronus-builder
+FROM golang:1.25.6-alpine AS synkronus-builder
 
 # Install build dependencies
 RUN apk add --no-cache git
@@ -71,7 +71,7 @@ RUN npm run build
 FROM nginx:alpine
 
 # Install runtime dependencies for synkronus (wget for healthcheck, su-exec for user switching)
-RUN apk --no-cache add ca-certificates tzdata wget su-exec
+RUN apk update && apk --no-cache add ca-certificates tzdata wget su-exec
 
 # Create non-root user for synkronus
 RUN addgroup -g 1000 synkronus && \
