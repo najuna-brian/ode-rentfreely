@@ -1,0 +1,70 @@
+name: Deploy to Oracle Cloud Server
+
+# Runs after the Docker image is built and pushed, or can be triggered manually.
+# Connects to your Oracle Cloud VM via SSH and pulls the latest image.
+
+on:
+  workflow_run:
+    workflows: ["Synkronus & Portal Docker Build & Publish"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: 'Image tag to deploy (default: latest)'
+        required: false
+        default: 'latest'
+
+jobs:
+  deploy:
+    name: Deploy to Production Server
+    runs-on: ubuntu-latest
+    # Only deploy if the Docker build succeeded (or if manually triggered)
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.ORACLE_SERVER_HOST }}
+          username: ${{ secrets.ORACLE_SERVER_USER }}
+          key: ${{ secrets.ORACLE_SERVER_SSH_KEY }}
+          port: 22
+          script: |
+            set -e
+            cd ~/rentfreely-server
+
+            echo "═══ Pulling latest Synkronus image… ═══"
+            docker compose pull
+
+            echo "═══ Restarting services… ═══"
+            docker compose up -d --remove-orphans
+
+            echo "═══ Cleaning old images… ═══"
+            docker image prune -f
+
+            echo "═══ Waiting for health check… ═══"
+            for i in $(seq 1 20); do
+              if curl -sf http://localhost/api/health > /dev/null 2>&1; then
+                echo "✅ Server is healthy!"
+                exit 0
+              fi
+              sleep 3
+            done
+
+            echo "⚠️ Health check timed out, checking logs…"
+            docker compose logs --tail=20 synkronus
+            exit 1
+
+      - name: Notify deployment result
+        if: always()
+        run: |
+          if [ "${{ job.status }}" = "success" ]; then
+            echo "## ✅ Deployment Successful" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Server has been updated with the latest Synkronus image." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ Deployment Failed" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Check the SSH action logs above for details." >> $GITHUB_STEP_SUMMARY
+          fi

@@ -63,7 +63,8 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/opendataensemble/synkronus
+          # Use the current repo owner so this works on both upstream and private forks
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/synkronus
           tags: |
             # For main branch: latest + version tag (manual dispatch) or release tag
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
@@ -85,7 +86,7 @@ jobs:
           labels: |
             org.opencontainers.image.title=Synkronus
             org.opencontainers.image.description=Synchronization API and Web Portal for offline-first applications
-            org.opencontainers.image.vendor=Open Data Ensemble
+            org.opencontainers.image.vendor=${{ github.repository_owner }}
       
       - name: Build and push Docker image
         id: build
@@ -93,7 +94,7 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          platforms: linux/amd64
+          platforms: linux/amd64,linux/arm64
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
@@ -104,6 +105,6 @@ jobs:
         if: github.event_name != 'pull_request'
         uses: actions/attest-build-provenance@v1
         with:
-          subject-name: ${{ env.REGISTRY }}/opendataensemble/synkronus
+          subject-name: ${{ env.REGISTRY }}/${{ github.repository_owner }}/synkronus
           subject-digest: ${{ steps.build.outputs.digest }}
           push-to-registry: true

@@ -1,0 +1,84 @@
+# ─────────────────────────────────────────────────────────────────
+#  RentFreely / Synkronus — Production Docker Compose
+#
+#  Designed for Oracle Cloud Always Free (ARM64) or any Linux server.
+#  Runs the combined Synkronus API + Portal image with PostgreSQL.
+#
+#  Usage:
+#    1. Copy .env.example → .env and fill in your secrets
+#    2. docker compose -f docker-compose.production.yml up -d
+#    3. Set up Cloudflare Tunnel for HTTPS (see setup.sh)
+#
+#  The Synkronus container includes:
+#    - Go API server (port 8080 internal)
+#    - Synkronus Portal (React dashboard)
+#    - Nginx (proxies /api → Go, / → Portal)
+#    - Exposed on port 80
+# ─────────────────────────────────────────────────────────────────
+
+services:
+  # ── Synkronus API + Portal (combined image) ───────────────────
+  synkronus:
+    image: ghcr.io/${GITHUB_OWNER:-najuna-brian}/synkronus:${IMAGE_TAG:-latest}
+    container_name: synkronus
+    ports:
+      - "80:80"
+    environment:
+      # Database — must match the postgres service credentials
+      DB_CONNECTION: "postgres://${DB_USER:-synkronus_user}:${DB_PASSWORD}@postgres:5432/${DB_NAME:-synkronus}?sslmode=disable"
+      # JWT — MUST be a strong random string (≥32 chars)
+      JWT_SECRET: "${JWT_SECRET}"
+      # API server settings
+      PORT: "8080"
+      LOG_LEVEL: "${LOG_LEVEL:-info}"
+      # Admin account (created on first start)
+      ADMIN_USERNAME: "${ADMIN_USERNAME:-admin}"
+      ADMIN_PASSWORD: "${ADMIN_PASSWORD}"
+      # App bundle storage
+      APP_BUNDLE_PATH: "/app/data/app-bundles"
+      MAX_VERSIONS_KEPT: "5"
+    volumes:
+      - app-bundles:/app/data/app-bundles
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "-O", "-", "http://127.0.0.1/api/health"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 15s
+    networks:
+      - synkronus-net
+
+  # ── PostgreSQL Database ────────────────────────────────────────
+  postgres:
+    image: postgres:17
+    container_name: synkronus-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: "${POSTGRES_ROOT_PASSWORD}"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql:ro
+    expose:
+      - "5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - synkronus-net
+
+volumes:
+  postgres-data:
+    driver: local
+  app-bundles:
+    driver: local
+
+networks:
+  synkronus-net:
+    driver: bridge
